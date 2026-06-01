@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samuel OS</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1B1E26;
+    --line: #262932;
+    --ink: #F2F3F5;
+    --ink-soft: #B4B7C1;
+    --ink-mute: #767986;
+    --green: #2BC79A;
+    --green-bg: #11271F;
+    --orange: #E08A6A;
+    --orange-bg: #2A1C16;
+    --purple: #8B93FF;
+    --purple-bg: #1A1B30;
+    --yellow: #F5C842;
+    --yellow-bg: #272210;
+    --code-bg: #06070A;
+    --sent: #1A2E1F;
+    --sent-border: #1E4A2A;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Layout ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+  .topbar .logo {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .topbar .logo .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .topbar .date-badge {
+    font-size: 12px;
+    color: var(--ink-mute);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    padding: 5px 12px;
+    border-radius: 999px;
+  }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* ── Wake time card ── */
+  .wake-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 32px;
+  }
+  .wake-card h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    margin-bottom: 20px;
+  }
+  .wake-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .wake-form label {
+    font-size: 14px;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .time-input-wrap {
+    position: relative;
+    flex: 0 0 auto;
+  }
+  .time-input-wrap input[type="time"] {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--ink);
+    font-size: 22px;
+    font-weight: 600;
+    font-family: inherit;
+    padding: 10px 16px;
+    outline: none;
+    cursor: pointer;
+    color-scheme: dark;
+    width: 160px;
+    transition: border-color 0.15s;
+  }
+  .time-input-wrap input[type="time"]:focus {
+    border-color: var(--green);
+  }
+  .btn-set {
+    background: var(--green);
+    color: #0B0C10;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn-set:hover { opacity: 0.85; }
+  .btn-set:active { transform: scale(0.97); }
+  .btn-set:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .wake-meta {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--ink-mute);
+    display: none;
+  }
+  .wake-meta.visible { display: block; }
+  .wake-meta strong { color: var(--green); }
+
+  /* ── Status bar ── */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .status-pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .dot-sent { background: var(--green); }
+  .dot-next { background: var(--yellow); }
+  .dot-pending { background: var(--line); }
+  .status-pill.next-session { border-color: var(--yellow); color: var(--yellow); }
+
+  /* ── Section labels ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-mute);
+    margin-bottom: 14px;
+    padding-left: 2px;
+  }
+
+  /* ── Session cards ── */
+  .sessions { display: flex; flex-direction: column; gap: 10px; }
+
+  .session-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 20px;
+    transition: border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .session-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--line);
+    border-radius: 3px 0 0 3px;
+  }
+  .session-card.is-sent { background: var(--sent); border-color: var(--sent-border); }
+  .session-card.is-sent::before { background: var(--green); }
+  .session-card.is-next { border-color: var(--yellow); }
+  .session-card.is-next::before { background: var(--yellow); }
+  .session-card.no-schedule { opacity: 0.45; }
+
+  .session-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .session-emoji { font-size: 20px; flex-shrink: 0; }
+  .session-name {
+    font-size: 15px;
+    font-weight: 600;
+    flex: 1;
+  }
+  .session-time {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .session-card.is-next .session-time { color: var(--yellow); }
+  .session-card.is-sent .session-time { color: var(--green); }
+
+  .session-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+    padding-left: 32px;
+  }
+  .tag {
+    font-size: 11px;
+    color: var(--ink-mute);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 2px 7px;
+  }
+  .session-card.is-sent .tag { border-color: var(--sent-border); background: transparent; }
+  .tag.tag-fasted { color: var(--orange); background: var(--orange-bg); border-color: #3D2218; }
+
+  .session-note {
+    padding-left: 32px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--ink-mute);
+    line-height: 1.5;
+  }
+  .session-note.hidden { display: none; }
+
+  .sent-badge {
+    display: none;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--green);
+    background: var(--green-bg);
+    border: 1px solid #1E4A2A;
+    border-radius: 5px;
+    padding: 2px 7px;
+  }
+  .session-card.is-sent .sent-badge { display: inline-block; }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-mute);
+    display: none;
+  }
+  .empty-state.visible { display: block; }
+  .empty-state .big-emoji { font-size: 48px; margin-bottom: 16px; }
+  .empty-state p { font-size: 15px; line-height: 1.6; }
+
+  /* ── Loading ── */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--ink-mute);
+    font-size: 14px;
+  }
+
+  /* ── Error toast ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #2A1616;
+    border: 1px solid #4A2020;
+    color: #F08080;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 13px;
+    z-index: 100;
+    transition: transform 0.3s ease;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── Refresh btn ── */
+  .btn-refresh {
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink-mute);
+    font-size: 12px;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .btn-refresh:hover { color: var(--ink); border-color: var(--ink-soft); }
+
+  @media (max-width: 600px) {
+    .wake-form { flex-direction: column; align-items: flex-start; }
+    .time-input-wrap input[type="time"] { width: 100%; }
+    .btn-set { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <span class="dot"></span>
+    Samuel OS
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <button class="btn-refresh" onclick="loadSchedule()">↻ Refresh</button>
+    <span class="date-badge" id="dateBadge">—</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- Wake time input -->
+  <div class="wake-card">
+    <h2>Wake-up time</h2>
+    <div class="wake-form">
+      <span class="time-input-wrap">
+        <input type="time" id="wakeInput" value="10:00">
+      </span>
+      <button class="btn-set" id="setBtn" onclick="setSchedule()">Set my schedule</button>
+    </div>
+    <div class="wake-meta" id="wakeMeta"></div>
+  </div>
+
+  <!-- Status pills -->
+  <div class="status-bar" id="statusBar" style="display:none">
+    <div class="status-pill"><span class="dot dot-sent"></span> Sent</div>
+    <div class="status-pill next-session" id="nextPill" style="display:none">⏰ <span id="nextPillText"></span></div>
+    <div class="status-pill"><span class="dot dot-pending"></span> Pending</div>
+  </div>
+
+  <!-- Section label -->
+  <div class="section-label" id="scheduleLabel" style="display:none">Today's sessions</div>
+
+  <!-- Sessions list -->
+  <div class="sessions" id="sessionList">
+    <div class="loading">Loading…</div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" id="emptyState">
+    <div class="big-emoji">🌅</div>
+    <p>Set your wake-up time above<br>to generate today's supplement schedule.</p>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const TZ = 'Asia/Kuala_Lumpur'
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+
+  function nowInTZ() {
+    return new Date(new Date().toLocaleString('en-US', { timeZone: TZ }))
+  }
+
+  function fmtTime(isoOrDate) {
+    const d = typeof isoOrDate === 'string' ? new Date(isoOrDate) : isoOrDate
+    return d.toLocaleTimeString('en-US', {
+      hour: 'numeric', minute: '2-digit', hour12: true, timeZone: TZ
+    })
+  }
+
+  function fmtDate(d) {
+    return d.toLocaleDateString('en-US', {
+      weekday: 'long', month: 'long', day: 'numeric', timeZone: TZ
+    })
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast')
+    t.textContent = msg
+    t.classList.add('show')
+    setTimeout(() => t.classList.remove('show'), 3500)
+  }
+
+  // ── Set schedule ─────────────────────────────────────────────────────────
+
+  async function setSchedule() {
+    const input = document.getElementById('wakeInput').value // "HH:MM"
+    if (!input) { showToast('Please pick a wake-up time first'); return }
+
+    const btn = document.getElementById('setBtn')
+    btn.disabled = true
+    btn.textContent = 'Setting…'
+
+    try {
+      const res = await fetch('/api/wake-up', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source: 'web', time: input }),
+      })
+      const data = await res.json()
+      if (!data.ok) throw new Error(data.error || 'Unknown error')
+      renderSchedule(data.schedule, data.wakeTime)
+    } catch (err) {
+      showToast('Error: ' + err.message)
+    } finally {
+      btn.disabled = false
+      btn.textContent = 'Set my schedule'
+    }
+  }
+
+  // ── Load existing schedule ────────────────────────────────────────────────
+
+  async function loadSchedule() {
+    try {
+      const res = await fetch('/api/dashboard')
+      const data = await res.json()
+
+      if (data.hasSchedule) {
+        renderSchedule(data.schedule)
+        // Pre-fill wake time input from existing schedule
+        if (data.schedule[0]?.wake_time) {
+          const wt = new Date(data.schedule[0].wake_time)
+          const h = wt.getHours().toString().padStart(2, '0')
+          const m = wt.getMinutes().toString().padStart(2, '0')
+          document.getElementById('wakeInput').value = `${h}:${m}`
+        }
+      } else {
+        showEmpty()
+      }
+    } catch (err) {
+      showEmpty()
+    }
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  function showEmpty() {
+    document.getElementById('sessionList').innerHTML = ''
+    document.getElementById('emptyState').classList.add('visible')
+    document.getElementById('statusBar').style.display = 'none'
+    document.getElementById('scheduleLabel').style.display = 'none'
+  }
+
+  function renderSchedule(schedule, wakeTimeIso) {
+    document.getElementById('emptyState').classList.remove('visible')
+    document.getElementById('statusBar').style.display = 'flex'
+    document.getElementById('scheduleLabel').style.display = 'block'
+
+    const now = nowInTZ()
+    let nextFound = false
+
+    // Update wake meta
+    const wt = wakeTimeIso ? new Date(wakeTimeIso) : (schedule[0]?.wake_time ? new Date(schedule[0].wake_time) : null)
+    const meta = document.getElementById('wakeMeta')
+    if (wt) {
+      const bedtime = new Date(wt.getTime() + 840 * 60000)
+      meta.innerHTML = `Schedule active · Wake <strong>${fmtTime(wt)}</strong> · Sleep <strong>${fmtTime(bedtime)}</strong>`
+      meta.classList.add('visible')
+    }
+
+    const list = document.getElementById('sessionList')
+    list.innerHTML = ''
+
+    schedule.forEach((s) => {
+      const sessionTime = new Date(s.scheduled_time)
+      const isSent = s.sent
+      const isNext = !isSent && !nextFound && sessionTime > now
+      if (isNext) nextFound = true
+
+      const supplements = s.supplements || []
+      const card = document.createElement('div')
+      card.className = 'session-card' +
+        (isSent ? ' is-sent' : '') +
+        (isNext ? ' is-next' : '')
+
+      const hasSups = supplements.length > 0
+
+      card.innerHTML = `
+        <div class="session-header">
+          <span class="session-emoji">${s.supplements?.[0] ? getEmoji(s.session_number) : getEmoji(s.session_number)}</span>
+          <span class="session-name">${s.session_name}</span>
+          <span class="sent-badge">✓ done</span>
+          <span class="session-time">${fmtTime(s.scheduled_time)}</span>
+        </div>
+        <div class="session-tags">
+          ${hasSups ? supplements.map(sup => `<span class="tag">${sup.name}</span>`).join('') : ''}
+          ${s.fasted ? '<span class="tag tag-fasted">fasted</span>' : ''}
+        </div>
+        ${s.reminder_note ? `<div class="session-note">${s.reminder_note}</div>` : ''}
+      `
+      list.appendChild(card)
+    })
+
+    // Update next pill
+    const nextSession = schedule.find(s => !s.sent && new Date(s.scheduled_time) > now)
+    const nextPill = document.getElementById('nextPill')
+    if (nextSession) {
+      document.getElementById('nextPillText').textContent =
+        `Next: ${nextSession.session_name} at ${fmtTime(nextSession.scheduled_time)}`
+      nextPill.style.display = 'flex'
+    } else {
+      nextPill.style.display = 'none'
+    }
+  }
+
+  const EMOJIS = { 1: '🌅', 2: '☕', 3: '🥗', 4: '🏋️', 5: '🥩', 6: '🥤', 7: '🌙' }
+  function getEmoji(n) { return EMOJIS[n] || '💊' }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+
+  document.getElementById('dateBadge').textContent = fmtDate(nowInTZ())
+
+  // Allow Enter key on time input
+  document.getElementById('wakeInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') setSchedule()
+  })
+
+  loadSchedule()
+</script>
+</body>
+</html>

@@ -140,40 +140,48 @@ export default async function handler(req) {
 
   let text = ''
   let isDiscordInteraction = false
+  let isWebRequest = false
 
   const sig = req.headers.get('x-signature-ed25519')
+  const contentType = req.headers.get('content-type') || ''
 
   if (sig) {
-    // Discord Interactions endpoint
+    // ── Discord Interactions ──────────────────────────────────────────────
     const valid = await verifyDiscordRequest(req.clone())
     if (!valid) return new Response('Unauthorized', { status: 401 })
 
     const body = await req.json()
-
-    // Discord PING (required during setup)
     if (body.type === 1) {
       return new Response(JSON.stringify({ type: 1 }), {
         headers: { 'Content-Type': 'application/json' },
       })
     }
-
-    // Slash command: /woke [time]
     const timeOption = body.data?.options?.find((o) => o.name === 'time')
     text = timeOption?.value || body.data?.options?.[0]?.value || 'now'
     isDiscordInteraction = true
-  } else {
-    // Telegram webhook
+  } else if (contentType.includes('application/json')) {
     const body = await req.json()
+    if (body.source === 'web') {
+      // ── Web dashboard POST ──────────────────────────────────────────────
+      text = body.time || 'now'
+      isWebRequest = true
+    } else {
+      // ── Telegram webhook ────────────────────────────────────────────────
+      text = body?.message?.text || ''
+    }
+  } else {
+    const body = await req.json().catch(() => ({}))
     text = body?.message?.text || ''
   }
 
-  // Must contain a wake-up trigger word or time
-  const triggers = ['gm', 'good morning', 'woke', 'wake', 'morning', 'up']
-  const hasTrigger = triggers.some((t) => text.toLowerCase().includes(t))
-  const hasTime = /\b\d{1,2}[:.]?\d{0,2}\s*(am|pm)?\b/i.test(text)
-
-  if (!hasTrigger && !hasTime && !isDiscordInteraction) {
-    return new Response('OK', { status: 200 }) // Ignore unrelated Telegram messages
+  // For Telegram: ignore unrelated messages
+  if (!isWebRequest && !isDiscordInteraction) {
+    const triggers = ['gm', 'good morning', 'woke', 'wake', 'morning', 'up']
+    const hasTrigger = triggers.some((t) => text.toLowerCase().includes(t))
+    const hasTime = /\b\d{1,2}[:.]?\d{0,2}\s*(am|pm)?\b/i.test(text)
+    if (!hasTrigger && !hasTime) {
+      return new Response('OK', { status: 200 })
+    }
   }
 
   try {
@@ -181,24 +189,35 @@ export default async function handler(req) {
     const schedule = await buildAndSaveSchedule(wakeTime)
     const message = buildMessage(wakeTime, schedule)
 
-    // Always fire to Telegram
-    await sendTelegram(message)
+    if (isWebRequest) {
+      // Return schedule data as JSON for the dashboard to render
+      return new Response(
+        JSON.stringify({ ok: true, schedule, wakeTime: wakeTime.toISOString() }),
+        { headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Fire to both channels for Discord/Telegram sources
+    await Promise.all([sendTelegram(message), sendDiscordMessage(message)])
 
     if (isDiscordInteraction) {
-      // Reply directly to Discord slash command interaction
       return new Response(
         JSON.stringify({ type: 4, data: { content: message } }),
         { headers: { 'Content-Type': 'application/json' } }
       )
-    } else {
-      // Telegram was the source; also send to Discord webhook
-      await sendDiscordMessage(message)
-      return new Response('OK', { status: 200 })
     }
+
+    return new Response('OK', { status: 200 })
   } catch (err) {
     console.error('wake-up error:', err)
     const errMsg = `❌ Error building schedule: ${err.message}`
-    await sendTelegram(errMsg).catch(() => {})
+    if (isWebRequest) {
+      return new Response(JSON.stringify({ ok: false, error: errMsg }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+    await Promise.all([sendTelegram(errMsg), sendDiscordMessage(errMsg)]).catch(() => {})
     if (isDiscordInteraction) {
       return new Response(
         JSON.stringify({ type: 4, data: { content: errMsg } }),
