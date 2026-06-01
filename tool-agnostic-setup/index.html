@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tool-Agnostic Coding Agent Setup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1B1E26;
+    --line: #262932;
+    --ink: #F2F3F5;
+    --ink-soft: #B4B7C1;
+    --ink-mute: #767986;
+    --claude: #E08A6A;
+    --claude-bg: #2A1C16;
+    --codex: #2BC79A;
+    --codex-bg: #11271F;
+    --shared: #8B93FF;
+    --shared-bg: #1A1B30;
+    --code-bg: #06070A;
+    --code-ink: #DCDEE3;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* TOP BAR */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar .brand-mark {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 600;
+  }
+  .topbar .logo-placeholder {
+    height: 36px;
+    width: 120px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-mute);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  /* HERO */
+  header.hero { padding: 8px 0 56px; text-align: left; }
+  .hero .eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--codex);
+    margin-bottom: 18px;
+    font-weight: 600;
+  }
+  .hero h1 {
+    font-size: 46px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 18px;
+  }
+  .hero p.sub {
+    font-size: 18px;
+    color: var(--ink-soft);
+    max-width: 660px;
+  }
+
+  /* SECTIONS */
+  section { margin-bottom: 72px; }
+  h2 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  h2 .num {
+    flex: 0 0 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    text-align: center;
+    line-height: 30px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .section-sub {
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+    max-width: 720px;
+  }
+
+  /* EXPLAINER */
+  .explainer {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 26px 30px;
+  }
+  .explainer p { color: var(--ink-soft); margin-bottom: 12px; }
+  .explainer p:last-child { margin-bottom: 0; }
+  .explainer strong { color: var(--ink); }
+  .explainer code { color: var(--codex); background: var(--codex-bg); padding: 2px 7px; border-radius: 4px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+
+  .visual-callout {
+    margin-top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px;
+  }
+  .img-placeholder {
+    width: 100%;
+    aspect-ratio: 16/7;
+    background: var(--surface-2);
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-mute);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+  .visual-callout figcaption {
+    margin-top: 10px;
+    text-align: center;
+    color: var(--ink-mute);
+    font-size: 13px;
+  }
+
+  /* TOOL CARDS */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 760px) { .tool-grid { grid-template-columns: 1fr; } }
+
+  .tool-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px;
+  }
+  .tool-card.claude { border-top: 3px solid var(--claude); }
+  .tool-card.codex { border-top: 3px solid var(--codex); }
+
+  .tool-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  .tool-card.claude .tool-tag { background: var(--claude-bg); color: var(--claude); }
+  .tool-card.codex .tool-tag { background: var(--codex-bg); color: var(--codex); }
+
+  .tool-card h3 { font-size: 20px; margin-bottom: 6px; }
+  .tool-card .who { font-size: 14px; color: var(--ink-mute); margin-bottom: 18px; }
+
+  .file-row {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-top: 1px dashed var(--line);
+  }
+  .file-row:first-of-type { border-top: 1px solid var(--line); margin-top: 6px; }
+  .file-row .label {
+    flex: 0 0 120px;
+    font-size: 11px;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 3px;
+    font-weight: 600;
+  }
+  .file-row .val { flex: 1; }
+  .file-row code {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .file-row .note {
+    display: block;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 6px;
+  }
+
+  /* FILE TREE */
+  .tree {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    color: var(--code-ink);
+    padding: 22px 24px;
+    border-radius: 10px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.75;
+    overflow-x: auto;
+    margin-top: 4px;
+  }
+  .tree .c-claude { color: #F5A488; }
+  .tree .c-codex { color: #3FD5A8; }
+  .tree .c-shared { color: #A5ACFF; }
+  .tree .c-dim { color: #6A6E7C; }
+  .tree .comment { color: #6A6E7C; font-style: italic; }
+
+  .tree-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  @media (max-width: 900px) { .tree-grid { grid-template-columns: 1fr; } }
+  .tree-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .tree-card.claude { border-top: 3px solid var(--claude); }
+  .tree-card.codex { border-top: 3px solid var(--codex); }
+  .tree-card h3 { font-size: 16px; margin-bottom: 10px; color: var(--ink); }
+  .tree-card pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    color: var(--code-ink);
+    padding: 15px 16px;
+    border-radius: 8px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    overflow-x: auto;
+  }
+
+  .legend {
+    display: flex;
+    gap: 22px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .legend span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .legend .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+  }
+  .dot.dot-claude { background: var(--claude); }
+  .dot.dot-codex { background: var(--codex); }
+  .dot.dot-shared { background: var(--shared); }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  thead th {
+    background: var(--surface-2);
+    text-align: left;
+    padding: 14px 18px;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-mute);
+    border-bottom: 1px solid var(--line);
+  }
+  tbody td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody td code {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  td.col-tool { font-weight: 600; color: var(--ink); }
+
+  /* GOTCHAS */
+  .gotcha-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 760px) { .gotcha-grid { grid-template-columns: 1fr; } }
+  .gotcha {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--codex);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+  .gotcha h4 { font-size: 15px; margin-bottom: 6px; color: var(--ink); }
+  .gotcha p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; }
+  .gotcha code { background: var(--surface-2); border: 1px solid var(--line); padding: 1px 6px; border-radius: 4px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; color: var(--ink); }
+
+  /* SOLUTION */
+  .solution {
+    background: var(--shared-bg);
+    border: 1px solid #2D2F50;
+    border-radius: 14px;
+    padding: 30px;
+  }
+  .solution h3 { font-size: 18px; color: var(--shared); margin-bottom: 6px; }
+  .solution > p { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 22px; }
+  .layers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 760px) { .layers { grid-template-columns: 1fr; } }
+  .layer {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px;
+    border-top: 3px solid var(--shared);
+  }
+  .layer .num {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    border-radius: 50%;
+    background: var(--shared);
+    color: var(--bg);
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .layer h4 { font-size: 14.5px; margin-bottom: 4px; }
+  .layer p { font-size: 13px; color: var(--ink-soft); line-height: 1.55; }
+  .layer code { background: var(--code-bg); border: 1px solid var(--line); padding: 1px 6px; border-radius: 3px; font-size: 12px; color: var(--ink); font-family: "SF Mono", Menlo, Consolas, monospace; }
+
+  /* STEPS */
+  .steps { display: grid; gap: 14px; }
+  .step {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px;
+    align-items: start;
+  }
+  .step .stepnum {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .step h4 { font-size: 16px; margin-bottom: 6px; color: var(--ink); }
+  .step p { color: var(--ink-soft); font-size: 14px; margin-bottom: 10px; }
+  .step p code { background: var(--surface-2); border: 1px solid var(--line); padding: 1px 6px; border-radius: 3px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; color: var(--ink); }
+  .step pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    color: var(--code-ink);
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+    overflow-x: auto;
+    margin-top: 6px;
+  }
+
+  .prompt-box {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    color: var(--code-ink);
+    padding: 20px 22px;
+    border-radius: 10px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.8px;
+    line-height: 1.65;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--codex);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-top: 18px;
+  }
+  .callout p { color: var(--ink-soft); font-size: 14.5px; }
+  .callout p + p { margin-top: 10px; }
+  .callout strong { color: var(--ink); }
+  .callout code { background: var(--surface-2); border: 1px solid var(--line); padding: 1px 6px; border-radius: 4px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; color: var(--ink); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 28px 0 0;
+    text-align: center;
+    color: var(--ink-mute);
+    font-size: 12.5px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <span class="brand-mark">Beginner Guide</span>
+    <div class="logo-placeholder">AI Solopreneur</div>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <span class="eyebrow">Tool-Agnostic Setup</span>
+    <h1>One Project.<br>Claude Code and Codex.</h1>
+    <p class="sub">A plain-English guide to setting up your project so Claude Code and Codex can both work from the same context. The same pattern can support other coding agents too.</p>
+  </header>
+
+  <!-- 1. PROBLEM -->
+  <section>
+    <h2><span class="num">1</span>The Problem in 30 Seconds</h2>
+    <p class="section-sub">Every AI coding agent needs instructions, reusable workflows, and tool settings. Each tool names those files differently.</p>
+
+    <div class="explainer">
+      <p><strong>Claude Code</strong> looks for <code>CLAUDE.md</code> and <code>.claude/</code>.</p>
+      <p><strong>Codex</strong> looks for <code>AGENTS.md</code>, <code>.codex/</code>, and <code>.agents/skills/</code>.</p>
+      <p><strong>The fix:</strong> give each tool the files it expects, but keep your real project knowledge in shared folders like <strong>docs/</strong>, <strong>references/</strong>, and <strong>templates/</strong>.</p>
+    </div>
+
+    <figure class="visual-callout">
+      <div class="img-placeholder">Diagram: Claude Code + Codex → shared project files</div>
+      <figcaption>Both tools can use the same project knowledge. They just need different adapter files.</figcaption>
+    </figure>
+  </section>
+
+  <!-- 2. TOOL CARDS -->
+  <section>
+    <h2><span class="num">2</span>How Each Tool Organizes a Project</h2>
+    <p class="section-sub">Same idea, different file names and formats. Here's what each tool expects.</p>
+
+    <div class="tool-grid">
+
+      <div class="tool-card claude">
+        <span class="tool-tag">Claude Code</span>
+        <h3>Anthropic's coding agent</h3>
+        <p class="who">One folder holds settings, agents, and skills.</p>
+
+        <div class="file-row">
+          <div class="label">Instructions</div>
+          <div class="val">
+            <code>CLAUDE.md</code>
+            <span class="note">Sits at the project root. Loads automatically.</span>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="label">Config folder</div>
+          <div class="val">
+            <code>.claude/</code>
+            <span class="note">Holds skills, agents, rules, and settings.</span>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="label">Skills</div>
+          <div class="val">
+            <code>.claude/skills/&lt;name&gt;/SKILL.md</code>
+            <span class="note">Slash commands you can build yourself.</span>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="label">Sub-agents</div>
+          <div class="val">
+            <code>.claude/agents/&lt;name&gt;.md</code>
+            <span class="note">Markdown with a small header on top.</span>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="label">Settings</div>
+          <div class="val">
+            <code>.claude/settings.json</code>
+            <span class="note">Hooks, permissions, env vars.</span>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="label">Global config</div>
+          <div class="val">
+            <code>~/.claude/</code>
+            <span class="note">Same structure, but applies to every project on your machine.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-card codex">
+        <span class="tool-tag">Codex</span>
+        <h3>OpenAI's coding agent</h3>
+        <p class="who">Config and agents live in .codex. Skills live in .agents.</p>
+
+        <div class="file-row">
+          <div class="label">Instructions</div>
+          <div class="val">
+            <code>AGENTS.md</code>
+            <span class="note">Sits at the project root. Loads automatically.</span>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="label">Temp override</div>
+          <div class="val">
+            <code>AGENTS.override.md</code>
+            <span class="note">Quick way to override AGENTS.md without editing it.</span>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="label">Config folder</div>
+          <div class="val">
+            <code>.codex/</code>
+            <span class="note">Holds config and agent definitions.</span>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="label">Skills folder</div>
+          <div class="val">
+            <code>.agents/skills/&lt;name&gt;/SKILL.md</code>
+            <span class="note">Codex scans from your current directory up to the repo root.</span>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="label">Sub-agents</div>
+          <div class="val">
+            <code>.codex/agents/&lt;name&gt;.toml</code>
+            <span class="note">TOML format, not markdown.</span>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="label">Settings</div>
+          <div class="val">
+            <code>.codex/config.toml</code>
+            <span class="note">Sandbox, MCP servers, env vars, profiles.</span>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="label">Global config</div>
+          <div class="val">
+            <code>~/.codex/</code> and <code>~/.agents/skills/</code>
+            <span class="note">Global config/agents live in ~/.codex. Global skills live in ~/.agents/skills.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="callout">
+      <p><strong>Global vs project:</strong> both tools support both. Global files live in your home folder and apply everywhere. Project files live inside one repo.</p>
+      <p><code>~/.claude/</code> mirrors <code>.claude/</code>. Codex splits global files: <code>~/.codex/</code> for config and agents, <code>~/.agents/skills/</code> for skills.</p>
+    </div>
+  </section>
+
+  <!-- 3. FILE TREE -->
+  <section>
+    <h2><span class="num">3</span>What It Looks Like in Your Folder</h2>
+    <p class="section-sub">Claude keeps everything in one folder. Codex splits config and skills into two folders.</p>
+
+    <div class="tree-grid">
+      <div class="tree-card claude">
+        <h3>Claude Code</h3>
+        <pre>your-project/
+  CLAUDE.md
+  .claude/
+    settings.json
+    agents/
+      researcher.md
+    skills/
+      youtube-video/
+        SKILL.md</pre>
+      </div>
+
+      <div class="tree-card codex">
+        <h3>Codex</h3>
+        <pre>your-project/
+  AGENTS.md
+  .codex/
+    config.toml
+    agents/
+      researcher.toml
+  .agents/
+    skills/
+      youtube-video/
+        SKILL.md</pre>
+      </div>
+    </div>
+
+    <div class="tree" aria-label="Combined tool-agnostic folder structure">
+<span class="c-dim">your-project/</span>
+  <span class="c-claude">CLAUDE.md</span>                <span class="comment"># Claude instructions</span>
+  <span class="c-codex">AGENTS.md</span>                <span class="comment"># Codex instructions</span>
+  <span class="c-shared">README.md</span>                <span class="comment"># Human overview</span>
+
+  <span class="c-claude">.claude/</span>                 <span class="comment"># Claude settings, agents, skills</span>
+    <span class="c-claude">settings.json</span>
+    <span class="c-claude">agents/my-agent.md</span>
+    <span class="c-claude">skills/my-skill/SKILL.md</span>
+
+  <span class="c-codex">.codex/</span>                  <span class="comment"># Codex settings and agents</span>
+    <span class="c-codex">config.toml</span>
+    <span class="c-codex">agents/my-agent.toml</span>
+
+  <span class="c-codex">.agents/</span>                 <span class="comment"># Codex skills</span>
+    <span class="c-codex">skills/my-skill/SKILL.md</span>
+
+  <span class="c-shared">references/</span>              <span class="comment"># Shared knowledge any agent can read</span>
+    <span class="c-shared">project-context.md</span>
+    </div>
+
+    <div class="legend">
+      <span><span class="dot dot-claude"></span>Claude Code files</span>
+      <span><span class="dot dot-codex"></span>Codex files</span>
+      <span><span class="dot dot-shared"></span>Shared (any tool)</span>
+    </div>
+  </section>
+
+  <!-- 4. CHEAT SHEET -->
+  <section>
+    <h2><span class="num">4</span>The Cheat Sheet</h2>
+    <p class="section-sub">When you forget where something lives, this table has the answer.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>What you need</th>
+            <th>Claude Code</th>
+            <th>Codex</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-tool">Project instructions</td>
+            <td><code>CLAUDE.md</code></td>
+            <td><code>AGENTS.md</code></td>
+          </tr>
+          <tr>
+            <td class="col-tool">Project config folder</td>
+            <td><code>.claude/</code></td>
+            <td><code>.codex/</code></td>
+          </tr>
+          <tr>
+            <td class="col-tool">Where skills live</td>
+            <td><code>.claude/skills/&lt;name&gt;/SKILL.md</code></td>
+            <td><code>.agents/skills/&lt;name&gt;/SKILL.md</code></td>
+          </tr>
+          <tr>
+            <td class="col-tool">Where sub-agents live</td>
+            <td><code>.claude/agents/&lt;name&gt;.md</code></td>
+            <td><code>.codex/agents/&lt;name&gt;.toml</code></td>
+          </tr>
+          <tr>
+            <td class="col-tool">Agent file format</td>
+            <td>Markdown + YAML header</td>
+            <td>TOML</td>
+          </tr>
+          <tr>
+            <td class="col-tool">Hooks / permissions / env</td>
+            <td><code>.claude/settings.json</code></td>
+            <td><code>.codex/config.toml</code></td>
+          </tr>
+          <tr>
+            <td class="col-tool">Personal / temp override</td>
+            <td><code>CLAUDE.local.md</code></td>
+            <td><code>AGENTS.override.md</code></td>
+          </tr>
+          <tr>
+            <td class="col-tool">Global config</td>
+            <td><code>~/.claude/</code></td>
+            <td><code>~/.codex/</code> + <code>~/.agents/skills/</code></td>
+          </tr>
+          <tr>
+            <td class="col-tool">User-wide instructions</td>
+            <td><code>~/.claude/CLAUDE.md</code></td>
+            <td><code>~/.codex/AGENTS.md</code></td>
+          </tr>
+          <tr>
+            <td class="col-tool">Scoped subfolder instructions</td>
+            <td>Nested <code>CLAUDE.md</code></td>
+            <td>Nested <code>AGENTS.md</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 5. GOTCHAS -->
+  <section>
+    <h2><span class="num">5</span>5 Things That Trip Up Beginners</h2>
+    <p class="section-sub">Worth reading before you start. These are the differences you can't paper over.</p>
+
+    <div class="gotcha-grid">
+      <div class="gotcha">
+        <h4>1. Both tools have skills, in different folders.</h4>
+        <p>Claude reads from <code>.claude/skills/</code>. Codex reads from <code>.agents/skills/</code>. Same basic <code>SKILL.md</code> shape, but Claude-specific tool names or hooks may need small edits for Codex.</p>
+      </div>
+      <div class="gotcha">
+        <h4>2. Different formats for agents.</h4>
+        <p>A Claude agent is a <code>.md</code> file with a small YAML header. A Codex agent is a <code>.toml</code> file. The instructions inside are the same idea, just wrapped differently.</p>
+      </div>
+      <div class="gotcha">
+        <h4>3. Settings files are not interchangeable.</h4>
+        <p>You can't copy <code>.claude/settings.json</code> into <code>.codex/config.toml</code>. They're different formats and configure different things. Keep them separate.</p>
+      </div>
+      <div class="gotcha">
+        <h4>4. Codex reads nested instructions.</h4>
+        <p>Both tools support a CLAUDE.md or AGENTS.md inside a subfolder for scoped instructions. Codex chains them from the repo root down to your current directory. The closer file wins.</p>
+      </div>
+      <div class="gotcha">
+        <h4>5. Sub-agents work differently.</h4>
+        <p>Claude agents are markdown files. Codex agents are TOML files. The role prompt can be similar, but the wrapper and execution model are different.</p>
+      </div>
+      <div class="gotcha">
+        <h4>Bonus: keep shared context out of tool folders.</h4>
+        <p>Put reusable knowledge in <code>docs/</code>, <code>references/</code>, and <code>templates/</code>. Then both tools can read the same source instead of drifting apart.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. SOLUTION -->
+  <section>
+    <h2><span class="num">6</span>The Tool-Agnostic Setup</h2>
+    <p class="section-sub">Split your project into three layers. Shared knowledge in one place, workflows in another, tool-specific config in their own folders.</p>
+
+    <div class="solution">
+      <h3>The Three-Layer Rule</h3>
+      <p>Separate content this way and you never write the same thing twice.</p>
+
+      <div class="layers">
+        <div class="layer">
+          <div class="num">1</div>
+          <h4>Shared Knowledge</h4>
+          <p>Lives in <code>references/</code>, <code>docs/</code>, <code>templates/</code>. Any agent reads it. Don't duplicate.</p>
+        </div>
+        <div class="layer">
+          <div class="num">2</div>
+          <h4>Workflows (Skills)</h4>
+          <p>Same basic <code>SKILL.md</code> shape in two folders: <code>.claude/skills/</code> for Claude, <code>.agents/skills/</code> for Codex. Sync the files, then adapt tool-specific details if needed.</p>
+        </div>
+        <div class="layer">
+          <div class="num">3</div>
+          <h4>Tool-Specific Config</h4>
+          <p>Stays in <code>.claude/</code> and <code>.codex/</code>. These don't overlap. Don't try to merge them.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. CONVERSION PROMPT -->
+  <section>
+    <h2><span class="num">7</span>The Fastest Way to Convert a Claude Project</h2>
+    <p class="section-sub">Open the Claude-built project in Codex and paste this prompt. Codex can create the adapter files for you.</p>
+
+    <div class="prompt-box">I built this project in Claude Code and want it to also work well in Codex.
+
+Please inspect the project and create a Codex adapter setup.
+
+Do these things:
+
+1. Create AGENTS.md at the project root.
+   - Use CLAUDE.md as the source of project knowledge.
+   - Do not duplicate long sections unnecessarily.
+   - Explain that AGENTS.md is the Codex-facing adapter.
+   - Include a clear project map.
+
+2. Create .codex/config.toml.
+   - Start with a minimal safe config.
+   - Do not add secrets.
+
+3. Create .agents/skills/.
+   - Copy important Claude skills from .claude/skills/ into .agents/skills/.
+   - Keep each SKILL.md and supporting files together.
+   - Do not put skills in .codex/skills/.
+
+4. Create .codex/agents/ for any important Claude agents.
+   - Claude agents are .md files in .claude/agents/.
+   - Codex agents are .toml files in .codex/agents/.
+   - Convert the agent instructions into developer_instructions.
+
+5. Update .gitignore if needed.
+   - Keep local overrides and secrets out of git.
+
+Before editing, show me the files you plan to create or change.</div>
+
+    <div class="callout">
+      <p><strong>The whole conversion idea:</strong> do not rebuild the project. Add a Codex layer beside the Claude layer.</p>
+    </div>
+  </section>
+
+  <!-- 8. MAINTENANCE -->
+  <section>
+    <h2><span class="num">8</span>How to Maintain It</h2>
+    <p class="section-sub">The setup only works if both tools stay in sync. These are the habits that matter.</p>
+
+    <div class="explainer">
+      <p><strong>When you update project instructions:</strong> keep <code>CLAUDE.md</code> and <code>AGENTS.md</code> aligned. Do not maintain two full copies. Pick one as the source of truth and make the other an adapter.</p>
+      <p><strong>When you create a Claude skill:</strong> also copy it to <code>.agents/skills/</code> if Codex should use it.</p>
+      <p><strong>When you create a Claude agent:</strong> also create a matching <code>.codex/agents/&lt;name&gt;.toml</code> if Codex should spawn it.</p>
+      <p><strong>When you add shared knowledge:</strong> put it in <code>docs/</code>, <code>references/</code>, or <code>templates/</code> so every tool can read the same source.</p>
+    </div>
+  </section>
+
+  <footer>
+    Tool-Agnostic Coding Agent Setup &middot; AI Solopreneur
+  </footer>
+
+</div>
+</body>
+</html>
