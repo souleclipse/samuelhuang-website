@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "crons": [
+    { "path": "/api/remind", "schedule": "*/5 * * * *" }
+  ],
   "redirects": [
     { "source": "/tool-agnostic-setup", "destination": "/guide/tool-agnostic-setup", "permanent": true }
   ]

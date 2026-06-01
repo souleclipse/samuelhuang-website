@@ -1,0 +1,110 @@
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)
+
+function fmt(isoString) {
+  return new Date(isoString).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: process.env.TZ || 'Asia/Kuala_Lumpur',
+  })
+}
+
+function buildPing(row) {
+  const lines = [
+    `${row.supplements?.[0] ? '⏰' : '🔔'} **${row.session_name}** — ${fmt(row.scheduled_time)}`,
+  ]
+
+  if (row.supplements?.length) {
+    lines.push(row.supplements.map((s) => `• ${s.name}`).join('\n'))
+  }
+
+  // Show notes only for first supplement (the most important one)
+  const firstNote = row.supplements?.[0]?.notes
+  if (firstNote) lines.push(`_${firstNote}_`)
+
+  return lines.join('\n')
+}
+
+async function sendTelegram(text) {
+  if (!process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) return
+  await fetch(
+    `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: process.env.TELEGRAM_CHAT_ID,
+        text,
+        parse_mode: 'Markdown',
+      }),
+    }
+  )
+}
+
+async function sendDiscordWebhook(content) {
+  if (!process.env.DISCORD_WEBHOOK_URL) return
+  await fetch(process.env.DISCORD_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content }),
+  })
+}
+
+export default async function handler(req) {
+  // Vercel Cron sends GET; also allow POST for manual testing
+  if (req.method !== 'GET' && req.method !== 'POST') {
+    return new Response('Method not allowed', { status: 405 })
+  }
+
+  const now = new Date().toISOString()
+  const today = now.split('T')[0]
+
+  // Find sessions due now that haven't been sent yet
+  const { data: due, error } = await supabase
+    .from('samuelh_today_schedule')
+    .select('*')
+    .eq('date', today)
+    .eq('sent', false)
+    .lte('scheduled_time', now)
+    .order('scheduled_time')
+
+  if (error) {
+    console.error('Supabase query error:', error)
+    return new Response('DB error', { status: 500 })
+  }
+
+  if (!due || due.length === 0) {
+    return new Response(JSON.stringify({ sent: 0 }), {
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  const sent = []
+
+  for (const row of due) {
+    const message = buildPing(row)
+
+    await Promise.all([sendTelegram(message), sendDiscordWebhook(message)])
+
+    // Mark as sent
+    await supabase
+      .from('samuelh_today_schedule')
+      .update({ sent: true })
+      .eq('id', row.id)
+
+    sent.push(row.session_name)
+  }
+
+  console.log(`Sent ${sent.length} reminder(s):`, sent.join(', '))
+
+  return new Response(JSON.stringify({ sent: sent.length, sessions: sent }), {
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
+
+export const config = { runtime: 'edge' }
