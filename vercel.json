@@ -1,4 +1,7 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/tool-agnostic-setup", "destination": "/guide/tool-agnostic-setup", "permanent": true }
+  ]
 }
