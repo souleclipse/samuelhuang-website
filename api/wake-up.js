@@ -6,38 +6,31 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
-// ── Time parsing ────────────────────────────────────────────────────────────
+// ── Time parsing ─────────────────────────────────────────────────────────────
 
 function parseWakeTime(text) {
-  const lower = text.toLowerCase().replace(/[.,!?]/g, '')
-
-  // Patterns: "10:30am", "10:30", "1030", "10am", "10 am"
+  const lower = (text || '').toLowerCase().replace(/[.,!?]/g, '')
   const match = lower.match(/\b(\d{1,2})[:.]?(\d{2})?\s*(am|pm)?\b/)
-  if (!match) return new Date() // fallback to now
-
+  if (!match) return new Date()
   let h = parseInt(match[1])
   const m = parseInt(match[2] || '0')
   const ampm = match[3]
-
   if (ampm === 'pm' && h < 12) h += 12
   else if (ampm === 'am' && h === 12) h = 0
-  else if (!ampm && h >= 1 && h <= 6) h += 12 // ambiguous hour 1–6 → assume PM
-
+  else if (!ampm && h >= 1 && h <= 6) h += 12
   const t = new Date()
   t.setHours(h, m, 0, 0)
   return t
 }
 
-function fmt(date) {
+function fmtTime(date) {
   return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: process.env.TZ || 'Asia/Kuala_Lumpur',
+    hour: 'numeric', minute: '2-digit', hour12: true,
+    timeZone: 'Asia/Kuala_Lumpur',
   })
 }
 
-// ── Schedule logic ──────────────────────────────────────────────────────────
+// ── Schedule logic ────────────────────────────────────────────────────────────
 
 async function buildAndSaveSchedule(wakeTime) {
   const { data: sessions, error } = await supabase
@@ -45,12 +38,9 @@ async function buildAndSaveSchedule(wakeTime) {
     .select('*')
     .eq('active', true)
     .order('session_number')
-
-  if (error) throw new Error(`Supabase read failed: ${error.message}`)
+  if (error) throw new Error(`Supabase read: ${error.message}`)
 
   const today = new Date().toISOString().split('T')[0]
-
-  // Wipe today's old schedule (idempotent re-runs)
   await supabase.from('samuelh_today_schedule').delete().eq('date', today)
 
   const rows = sessions.map((s) => ({
@@ -64,49 +54,32 @@ async function buildAndSaveSchedule(wakeTime) {
     sent: false,
   }))
 
-  const { error: insertError } = await supabase.from('samuelh_today_schedule').insert(rows)
-  if (insertError) throw new Error(`Supabase insert failed: ${insertError.message}`)
+  const { error: ie } = await supabase.from('samuelh_today_schedule').insert(rows)
+  if (ie) throw new Error(`Supabase insert: ${ie.message}`)
 
   return sessions.map((s, i) => ({ ...s, scheduledTime: new Date(rows[i].scheduled_time) }))
 }
 
-// ── Message formatting ──────────────────────────────────────────────────────
-
 function buildMessage(wakeTime, schedule) {
-  const lines = [`📋 **Schedule locked — wake: ${fmt(wakeTime)}**\n`]
-
+  const lines = [`📋 **Schedule locked — wake: ${fmtTime(wakeTime)}**\n`]
   for (const s of schedule) {
-    const time = fmt(s.scheduledTime)
     const tag = s.fasted ? ' _(fasted)_' : ''
-    lines.push(`${s.emoji} **${time}** — ${s.session_name}${tag}`)
-
-    if (s.supplements?.length) {
-      lines.push(`   ${s.supplements.map((x) => x.name).join(' · ')}`)
-    }
-    if (s.reminder_note) {
-      lines.push(`   ↳ _${s.reminder_note}_`)
-    }
+    lines.push(`${s.emoji} **${fmtTime(s.scheduledTime)}** — ${s.session_name}${tag}`)
+    if (s.supplements?.length) lines.push(`   ${s.supplements.map((x) => x.name).join(' · ')}`)
+    if (s.reminder_note) lines.push(`   ↳ _${s.reminder_note}_`)
   }
-
   return lines.join('\n')
 }
 
-// ── Outbound senders ────────────────────────────────────────────────────────
+// ── Outbound ──────────────────────────────────────────────────────────────────
 
 async function sendTelegram(text) {
   if (!process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) return
-  await fetch(
-    `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: process.env.TELEGRAM_CHAT_ID,
-        text,
-        parse_mode: 'Markdown',
-      }),
-    }
-  )
+  await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: process.env.TELEGRAM_CHAT_ID, text, parse_mode: 'Markdown' }),
+  })
 }
 
 async function sendDiscordMessage(content) {
@@ -121,67 +94,43 @@ async function sendDiscordMessage(content) {
   })
 }
 
-// ── Discord signature verification ─────────────────────────────────────────
+// ── Main handler ──────────────────────────────────────────────────────────────
 
-async function verifyDiscordRequest(req) {
-  const sig = req.headers.get('x-signature-ed25519')
-  const ts = req.headers.get('x-signature-timestamp')
-  if (!sig || !ts || !process.env.DISCORD_APP_PUBLIC_KEY) return false
-  const body = await req.text()
-  return verifyKey(body, sig, ts, process.env.DISCORD_APP_PUBLIC_KEY)
-}
-
-// ── Main handler ────────────────────────────────────────────────────────────
-
-export default async function handler(req) {
-  if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 })
-  }
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).send('Method not allowed')
 
   let text = ''
   let isDiscordInteraction = false
   let isWebRequest = false
 
-  const sig = req.headers.get('x-signature-ed25519')
-  const contentType = req.headers.get('content-type') || ''
+  const sig = req.headers['x-signature-ed25519']
 
   if (sig) {
-    // ── Discord Interactions ──────────────────────────────────────────────
-    const valid = await verifyDiscordRequest(req.clone())
-    if (!valid) return new Response('Unauthorized', { status: 401 })
+    // Discord Interactions — verify signature
+    const ts = req.headers['x-signature-timestamp'] || ''
+    const rawBody = JSON.stringify(req.body)
+    const valid = await verifyKey(rawBody, sig, ts, process.env.DISCORD_APP_PUBLIC_KEY || '')
+    if (!valid) return res.status(401).send('Unauthorized')
 
-    const body = await req.json()
-    if (body.type === 1) {
-      return new Response(JSON.stringify({ type: 1 }), {
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
+    const body = req.body
+    if (body.type === 1) return res.json({ type: 1 }) // PING
+
     const timeOption = body.data?.options?.find((o) => o.name === 'time')
     text = timeOption?.value || body.data?.options?.[0]?.value || 'now'
     isDiscordInteraction = true
-  } else if (contentType.includes('application/json')) {
-    const body = await req.json()
-    if (body.source === 'web') {
-      // ── Web dashboard POST ──────────────────────────────────────────────
-      text = body.time || 'now'
-      isWebRequest = true
-    } else {
-      // ── Telegram webhook ────────────────────────────────────────────────
-      text = body?.message?.text || ''
-    }
-  } else {
-    const body = await req.json().catch(() => ({}))
-    text = body?.message?.text || ''
-  }
-
-  // For Telegram: ignore unrelated messages
-  if (!isWebRequest && !isDiscordInteraction) {
-    const triggers = ['gm', 'good morning', 'woke', 'wake', 'morning', 'up']
+  } else if (req.body?.source === 'web') {
+    // Web dashboard POST
+    text = req.body.time || 'now'
+    isWebRequest = true
+  } else if (req.body?.message?.text) {
+    // Telegram webhook
+    text = req.body.message.text
+    const triggers = ['gm', 'good morning', 'woke', 'wake', 'morning']
     const hasTrigger = triggers.some((t) => text.toLowerCase().includes(t))
     const hasTime = /\b\d{1,2}[:.]?\d{0,2}\s*(am|pm)?\b/i.test(text)
-    if (!hasTrigger && !hasTime) {
-      return new Response('OK', { status: 200 })
-    }
+    if (!hasTrigger && !hasTime) return res.status(200).send('OK')
+  } else {
+    return res.status(200).send('OK')
   }
 
   try {
@@ -190,41 +139,22 @@ export default async function handler(req) {
     const message = buildMessage(wakeTime, schedule)
 
     if (isWebRequest) {
-      // Return schedule data as JSON for the dashboard to render
-      return new Response(
-        JSON.stringify({ ok: true, schedule, wakeTime: wakeTime.toISOString() }),
-        { headers: { 'Content-Type': 'application/json' } }
-      )
+      return res.status(200).json({ ok: true, schedule, wakeTime: wakeTime.toISOString() })
     }
 
-    // Fire to both channels for Discord/Telegram sources
     await Promise.all([sendTelegram(message), sendDiscordMessage(message)])
 
     if (isDiscordInteraction) {
-      return new Response(
-        JSON.stringify({ type: 4, data: { content: message } }),
-        { headers: { 'Content-Type': 'application/json' } }
-      )
+      return res.json({ type: 4, data: { content: message } })
     }
 
-    return new Response('OK', { status: 200 })
+    res.status(200).send('OK')
   } catch (err) {
     console.error('wake-up error:', err)
-    const errMsg = `❌ Error building schedule: ${err.message}`
-    if (isWebRequest) {
-      return new Response(JSON.stringify({ ok: false, error: errMsg }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
+    const errMsg = `❌ Error: ${err.message}`
+    if (isWebRequest) return res.status(500).json({ ok: false, error: errMsg })
     await Promise.all([sendTelegram(errMsg), sendDiscordMessage(errMsg)]).catch(() => {})
-    if (isDiscordInteraction) {
-      return new Response(
-        JSON.stringify({ type: 4, data: { content: errMsg } }),
-        { headers: { 'Content-Type': 'application/json' } }
-      )
-    }
-    return new Response('Error', { status: 500 })
+    if (isDiscordInteraction) return res.json({ type: 4, data: { content: errMsg } })
+    res.status(500).send('Error')
   }
 }
-

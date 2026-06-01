@@ -5,8 +5,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
-export default async function handler(req) {
-  if (req.method !== 'GET') return new Response('Method not allowed', { status: 405 })
+export default async function handler(req, res) {
+  if (req.method !== 'GET') return res.status(405).send('Method not allowed')
 
   const today = new Date().toISOString().split('T')[0]
 
@@ -18,19 +18,15 @@ export default async function handler(req) {
       .order('session_number'),
     supabase
       .from('samuelh_sessions')
-      .select('session_number, session_name, delay_minutes, emoji, fasted, supplements, reminder_note')
+      .select('session_number,session_name,delay_minutes,emoji,fasted,supplements,reminder_note')
       .eq('active', true)
       .order('session_number'),
   ])
 
-  return new Response(
-    JSON.stringify({
-      today,
-      schedule: scheduleRes.data || [],
-      sessions: sessionsRes.data || [],
-      hasSchedule: (scheduleRes.data || []).length > 0,
-    }),
-    { headers: { 'Content-Type': 'application/json' } }
-  )
+  res.status(200).json({
+    today,
+    schedule: scheduleRes.data || [],
+    sessions: sessionsRes.data || [],
+    hasSchedule: (scheduleRes.data || []).length > 0,
+  })
 }
-
