@@ -109,11 +109,14 @@ async function sendTelegram(text) {
   )
 }
 
-async function sendDiscordWebhook(content) {
-  if (!process.env.DISCORD_WEBHOOK_URL) return
-  await fetch(process.env.DISCORD_WEBHOOK_URL, {
+async function sendDiscordMessage(content) {
+  if (!process.env.DISCORD_BOT_TOKEN || !process.env.DISCORD_CHANNEL_ID) return
+  await fetch(`https://discord.com/api/v10/channels/${process.env.DISCORD_CHANNEL_ID}/messages`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
+    },
     body: JSON.stringify({ content }),
   })
 }
@@ -189,7 +192,7 @@ export default async function handler(req) {
       )
     } else {
       // Telegram was the source; also send to Discord webhook
-      await sendDiscordWebhook(message)
+      await sendDiscordMessage(message)
       return new Response('OK', { status: 200 })
     }
   } catch (err) {

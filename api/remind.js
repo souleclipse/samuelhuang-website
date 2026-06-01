@@ -46,11 +46,14 @@ async function sendTelegram(text) {
   )
 }
 
-async function sendDiscordWebhook(content) {
-  if (!process.env.DISCORD_WEBHOOK_URL) return
-  await fetch(process.env.DISCORD_WEBHOOK_URL, {
+async function sendDiscordMessage(content) {
+  if (!process.env.DISCORD_BOT_TOKEN || !process.env.DISCORD_CHANNEL_ID) return
+  await fetch(`https://discord.com/api/v10/channels/${process.env.DISCORD_CHANNEL_ID}/messages`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
+    },
     body: JSON.stringify({ content }),
   })
 }
@@ -89,7 +92,7 @@ export default async function handler(req) {
   for (const row of due) {
     const message = buildPing(row)
 
-    await Promise.all([sendTelegram(message), sendDiscordWebhook(message)])
+    await Promise.all([sendTelegram(message), sendDiscordMessage(message)])
 
     // Mark as sent
     await supabase
