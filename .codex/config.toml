@@ -1,0 +1,12 @@
+# Codex project config
+# Reference: https://docs.codex.ai/configuration
+
+[sandbox]
+# network = "none"   # uncomment to restrict network access
+
+[env]
+# Add non-secret environment keys here.
+# Secrets belong in .env, never here.
+
+[model]
+# default = "o4-mini"
