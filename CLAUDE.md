@@ -43,6 +43,8 @@ When creating or converting any webpage, prompt page, guide, dashboard, or stati
 
 Whenever you create, update, or publish a page, always send me a clickable review link with the full URL visible as the link text, for example: `[https://samuelhuang.org/example](https://samuelhuang.org/example)`. Do not wrap review links in backticks or code blocks. Include the production `samuelhuang.org` URL when that is the intended route, and also mention any local preview URL only when production deployment is blocked or not yet updated.
 
+Do not present a production `samuelhuang.org` link as ready until it has actually been deployed and verified with an HTTP 200 check. If the page only exists locally, say so clearly and provide the local preview separately. After pushing a page change, poll the production URL and confirm it returns 200 before telling me to review it.
+
 ## The Self-Improvement Loop
 
 Every failure is a chance to make the system stronger:
