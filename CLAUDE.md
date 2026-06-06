@@ -38,6 +38,11 @@ When you hit an error:
 **3. Keep workflows current**
 Workflows should evolve as you learn. When you find better methods, discover constraints, or encounter recurring issues, update the workflow. That said, don't create or overwrite workflows without asking unless I explicitly tell you to. These are your instructions and need to be preserved and refined, not tossed after one use.
 
+**4. Publish pages to Samuelhuang by default**
+When creating or converting any webpage, prompt page, guide, dashboard, or static artifact for this project, add it under `site/` so it is available on `samuelhuang.org` by default. Create a clean route, link it from the site homepage or an appropriate index/navigation page, and do not ask whether it should be added to the Samuelhuang domain unless I explicitly say it is local-only, private, or disposable. If deployment access is blocked, make the site changes locally and report the deployment blocker.
+
+Whenever you create, update, or publish a page, always send me a clickable review link with the full URL visible as the link text, for example: `[https://samuelhuang.org/example](https://samuelhuang.org/example)`. Do not wrap review links in backticks or code blocks. Include the production `samuelhuang.org` URL when that is the intended route, and also mention any local preview URL only when production deployment is blocked or not yet updated.
+
 ## The Self-Improvement Loop
 
 Every failure is a chance to make the system stronger:

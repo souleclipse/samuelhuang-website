@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Agent Bootstrap Prompt</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1C2028;
+    --line: #2A2E38;
+    --ink: #F2F3F5;
+    --ink-soft: #B8BBC5;
+    --ink-mute: #777C89;
+    --green: #2BC79A;
+    --green-soft: #153027;
+    --amber: #F0B35E;
+    --amber-soft: #312414;
+    --red: #E06C75;
+    --code: #07080C;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(11, 12, 16, 0.94);
+    backdrop-filter: blur(14px);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 750;
+  }
+  .brand-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+  .nav-link {
+    color: var(--ink-mute);
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .nav-link:hover { color: var(--ink); }
+
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 42px 24px 88px;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px;
+    align-items: end;
+    padding: 22px 0 32px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  h1 {
+    max-width: 760px;
+    font-size: clamp(32px, 6vw, 64px);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+  }
+  .hero-copy {
+    max-width: 700px;
+    margin-top: 18px;
+    color: var(--ink-soft);
+    font-size: 17px;
+    line-height: 1.65;
+  }
+  .meta {
+    display: grid;
+    gap: 8px;
+    justify-items: end;
+    color: var(--ink-mute);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .meta strong { color: var(--ink); font-size: 13px; }
+
+  .section-nav {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 22px 0 6px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+    padding: 0 13px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink-soft);
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .chip:hover { color: var(--ink); border-color: var(--green); }
+
+  .prompt-section {
+    margin-top: 22px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .num {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--green-soft);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 750;
+    flex: 0 0 auto;
+  }
+  h2 {
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .copy-btn {
+    border: 1px solid var(--line);
+    background: var(--code);
+    color: var(--ink-soft);
+    border-radius: 7px;
+    padding: 8px 12px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .copy-btn:hover { color: var(--ink); border-color: var(--green); }
+  .copy-btn.copied {
+    color: var(--green);
+    background: var(--green-soft);
+    border-color: #1C5A48;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--ink-soft);
+    background: var(--code);
+    padding: 20px;
+    font: 13.5px/1.72 "SF Mono", Menlo, Consolas, monospace;
+  }
+  .full pre { color: var(--ink); }
+  .source {
+    margin-top: 24px;
+    color: var(--ink-mute);
+    font-size: 12px;
+    text-align: center;
+  }
+  .source strong { color: var(--ink-soft); }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translate(-50%, 90px);
+    border: 1px solid #1C5A48;
+    border-radius: 8px;
+    background: var(--green-soft);
+    color: var(--green);
+    padding: 10px 14px;
+    font-size: 13px;
+    transition: transform 0.22s ease;
+    z-index: 30;
+  }
+  .toast.visible { transform: translate(-50%, 0); }
+
+  @media (max-width: 760px) {
+    .topbar { padding: 16px 20px; }
+    .wrap { padding: 30px 18px 70px; }
+    .hero { grid-template-columns: 1fr; align-items: start; }
+    .meta { justify-items: start; }
+    .section-head { align-items: flex-start; flex-direction: column; }
+    .copy-btn { width: 100%; }
+    h2 { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="brand-dot"></span>Samuel Huang</div>
+    <a class="nav-link" href="/">Home</a>
+  </div>
+
+  <main class="wrap">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">OCR Extract</div>
+        <h1>Hermes Agent Bootstrap Prompt</h1>
+        <p class="hero-copy">A one-paste setup prompt for first-run Hermes onboarding. Each area below can be copied independently.</p>
+      </div>
+      <div class="meta">
+        <strong>3 parts</strong>
+        <span>~10 minutes</span>
+        <span>PDF source · 2 pages</span>
+      </div>
+    </header>
+
+    <nav class="section-nav" aria-label="Prompt sections">
+      <a class="chip" href="#full">Full prompt</a>
+      <a class="chip" href="#intro">Start</a>
+      <a class="chip" href="#part-1">Part 1</a>
+      <a class="chip" href="#part-2">Part 2</a>
+      <a class="chip" href="#part-3">Part 3</a>
+    </nav>
+
+    <section class="prompt-section full" id="full">
+      <div class="section-head">
+        <div class="section-title"><span class="num">All</span><h2>Full Bootstrap Prompt</h2></div>
+        <button class="copy-btn" data-copy="full-text">Copy Full Prompt</button>
+      </div>
+      <pre id="full-text">Hey Hermes, you just got installed on my machine. Help me set you up properly.
+
+Quick heads up before we start: my answers in Part 1 become long-term context that gets sent to your upstream LLM provider on every future call. I will keep them useful but skip secrets, salary, health info, and anything under NDA.
+
+We will do this in three parts. One question at a time, wait for my answer before moving on, never batch.
+
+PART 1: GET TO KNOW ME
+Ask me 6 short questions to build a profile:
+
+1. Name and what I do (role, who I work with)
+2. The biggest project on my plate right now
+3. My top 3 goals for the next 6 months
+4. Preferred communication style (terse / detailed / casual / professional)
+5. Time zone and typical working hours
+6. Daily tools I use that you should know about
+
+After all 6 answers, draft a summary of what you learned and show it to me first. Wait for me to confirm or edit before writing anything to disk. Once I confirm, save to USER.md (or your equivalent) and show me the file path plus what was written.
+
+PART 2: DAILY QUESTIONS
+Each morning, ask me 3 questions you pick to help you get to know me better. You choose the questions yourself - they should vary day to day, build on what you already know, and dig into gaps you have not filled yet (interests, work rhythm, things I am stuck on, what I am proud of, what I am avoiding).
+
+Save my answers to memory after each session so the next day's questions can build on them.
+
+Ask me which platform (whichever messaging surface you are connected to: Telegram, Discord, Slack, Email, CLI) and what time. Before scheduling the cron, send me a test message NOW on that platform so we verify the connection works. If delivery fails, surface the error and do NOT write the cron. If it works, save the cron and show me the expression plus the file you wrote it to.
+
+PART 3: 3 THINGS YOU CAN DO FOR ME
+Based on what you know about me (Part 1 plus any Part 2 sessions), suggest 3 specific automations or proactive behaviours you can run for me. Pick things that fit my profile, not generic agent demos. For each, give me:
+
+What you would do (one sentence, plain English)
+How often (one-off / daily / weekly / monthly)
+What you need from me to start (API key, folder access, account login)
+Risk level (read-only / writes to my files / writes to external services / sends messages on my behalf) plus one sentence on what could go wrong
+
+Wait for me to pick which ones I want. Set them up one at a time, confirming each is live before moving to the next.</pre>
+    </section>
+
+    <section class="prompt-section" id="intro">
+      <div class="section-head">
+        <div class="section-title"><span class="num">0</span><h2>Opening Setup</h2></div>
+        <button class="copy-btn" data-copy="intro-text">Copy Section</button>
+      </div>
+      <pre id="intro-text">Hey Hermes, you just got installed on my machine. Help me set you up properly.
+
+Quick heads up before we start: my answers in Part 1 become long-term context that gets sent to your upstream LLM provider on every future call. I will keep them useful but skip secrets, salary, health info, and anything under NDA.
+
+We will do this in three parts. One question at a time, wait for my answer before moving on, never batch.</pre>
+    </section>
+
+    <section class="prompt-section" id="part-1">
+      <div class="section-head">
+        <div class="section-title"><span class="num">1</span><h2>Get To Know Me</h2></div>
+        <button class="copy-btn" data-copy="part-1-text">Copy Section</button>
+      </div>
+      <pre id="part-1-text">PART 1: GET TO KNOW ME
+Ask me 6 short questions to build a profile:
+
+1. Name and what I do (role, who I work with)
+2. The biggest project on my plate right now
+3. My top 3 goals for the next 6 months
+4. Preferred communication style (terse / detailed / casual / professional)
+5. Time zone and typical working hours
+6. Daily tools I use that you should know about
+
+After all 6 answers, draft a summary of what you learned and show it to me first. Wait for me to confirm or edit before writing anything to disk. Once I confirm, save to USER.md (or your equivalent) and show me the file path plus what was written.</pre>
+    </section>
+
+    <section class="prompt-section" id="part-2">
+      <div class="section-head">
+        <div class="section-title"><span class="num">2</span><h2>Daily Questions</h2></div>
+        <button class="copy-btn" data-copy="part-2-text">Copy Section</button>
+      </div>
+      <pre id="part-2-text">PART 2: DAILY QUESTIONS
+Each morning, ask me 3 questions you pick to help you get to know me better. You choose the questions yourself - they should vary day to day, build on what you already know, and dig into gaps you have not filled yet (interests, work rhythm, things I am stuck on, what I am proud of, what I am avoiding).
+
+Save my answers to memory after each session so the next day's questions can build on them.
+
+Ask me which platform (whichever messaging surface you are connected to: Telegram, Discord, Slack, Email, CLI) and what time. Before scheduling the cron, send me a test message NOW on that platform so we verify the connection works. If delivery fails, surface the error and do NOT write the cron. If it works, save the cron and show me the expression plus the file you wrote it to.</pre>
+    </section>
+
+    <section class="prompt-section" id="part-3">
+      <div class="section-head">
+        <div class="section-title"><span class="num">3</span><h2>3 Things You Can Do For Me</h2></div>
+        <button class="copy-btn" data-copy="part-3-text">Copy Section</button>
+      </div>
+      <pre id="part-3-text">PART 3: 3 THINGS YOU CAN DO FOR ME
+Based on what you know about me (Part 1 plus any Part 2 sessions), suggest 3 specific automations or proactive behaviours you can run for me. Pick things that fit my profile, not generic agent demos. For each, give me:
+
+What you would do (one sentence, plain English)
+How often (one-off / daily / weekly / monthly)
+What you need from me to start (API key, folder access, account login)
+Risk level (read-only / writes to my files / writes to external services / sends messages on my behalf) plus one sentence on what could go wrong
+
+Wait for me to pick which ones I want. Set them up one at a time, confirming each is live before moving to the next.</pre>
+    </section>
+
+    <p class="source">Source: <strong>C-0249-hermes-agent</strong> · RoboNuggets · 2026-05-27</p>
+  </main>
+
+  <div class="toast" id="toast">Copied</div>
+
+<script>
+  const toast = document.getElementById('toast')
+  let toastTimer
+
+  function showCopied(button) {
+    document.querySelectorAll('.copy-btn').forEach((btn) => btn.classList.remove('copied'))
+    button.classList.add('copied')
+    const original = button.textContent
+    button.textContent = 'Copied'
+    toast.classList.add('visible')
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => {
+      button.classList.remove('copied')
+      button.textContent = original
+      toast.classList.remove('visible')
+    }, 1400)
+  }
+
+  async function copySection(button) {
+    const target = document.getElementById(button.dataset.copy)
+    if (!target) return
+    const text = target.innerText.trim()
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text)
+        showCopied(button)
+        return
+      } catch {}
+    }
+    const fallback = document.createElement('textarea')
+    fallback.value = text
+    fallback.setAttribute('readonly', '')
+    fallback.style.position = 'fixed'
+    fallback.style.left = '-9999px'
+    document.body.appendChild(fallback)
+    fallback.select()
+    document.execCommand('copy')
+    fallback.remove()
+    showCopied(button)
+  }
+
+  document.querySelectorAll('.copy-btn').forEach((button) => {
+    button.addEventListener('click', () => copySection(button))
+  })
+</script>
+</body>
+</html>
