@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samuelhuang Page Glossary</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1B1F27;
+    --line: #2A2E38;
+    --ink: #F2F3F5;
+    --ink-soft: #B8BBC5;
+    --ink-mute: #777C89;
+    --green: #2BC79A;
+    --green-bg: #11271F;
+    --amber: #F0B35E;
+    --amber-bg: #2C2214;
+    --blue: #8FB7FF;
+    --blue-bg: #142033;
+    --code-bg: #07080C;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 750;
+  }
+  .brand-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+  .home-link {
+    color: var(--ink-mute);
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .home-link:hover { color: var(--ink); }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 46px 24px 88px;
+  }
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px;
+    align-items: end;
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-size: clamp(34px, 6vw, 62px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .hero p {
+    color: var(--ink-soft);
+    font-size: 17px;
+    line-height: 1.6;
+    max-width: 680px;
+    margin-top: 18px;
+  }
+  .count {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 14px 16px;
+    text-align: right;
+    min-width: 132px;
+  }
+  .count strong {
+    display: block;
+    color: var(--ink);
+    font-size: 24px;
+    line-height: 1;
+  }
+  .count span {
+    color: var(--ink-mute);
+    font-size: 12px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 28px;
+  }
+  .page-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .page-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 17px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .page-title {
+    min-width: 0;
+  }
+  h2 {
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 8px;
+    border: 1px solid #1C5A48;
+    border-radius: 999px;
+    background: var(--green-bg);
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .tag.guide { background: var(--blue-bg); color: var(--blue); border-color: #274A78; }
+  .tag.tool { background: var(--amber-bg); color: var(--amber); border-color: #5A3C18; }
+  .copy-btn {
+    align-self: flex-start;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--code-bg);
+    color: var(--ink-soft);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 750;
+    padding: 8px 10px;
+    white-space: nowrap;
+  }
+  .copy-btn:hover { color: var(--ink); border-color: var(--green); }
+  .copy-btn.copied {
+    color: var(--green);
+    background: var(--green-bg);
+    border-color: #1C5A48;
+  }
+  .page-body {
+    padding: 18px;
+  }
+  .page-body p {
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.62;
+    margin-bottom: 16px;
+  }
+  .url {
+    display: block;
+    color: var(--green);
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 10px 11px;
+    font: 12.5px/1.5 "SF Mono", Menlo, Consolas, monospace;
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .url:hover { border-color: var(--green); }
+  .notes {
+    margin-top: 26px;
+    color: var(--ink-mute);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translate(-50%, 90px);
+    border: 1px solid #1C5A48;
+    border-radius: 8px;
+    background: var(--green-bg);
+    color: var(--green);
+    padding: 10px 14px;
+    font-size: 13px;
+    transition: transform 0.22s ease;
+    z-index: 30;
+  }
+  .toast.visible { transform: translate(-50%, 0); }
+
+  @media (max-width: 760px) {
+    .topbar { padding: 16px 20px; }
+    .wrap { padding: 32px 18px 72px; }
+    .hero { grid-template-columns: 1fr; }
+    .count { text-align: left; }
+    .grid { grid-template-columns: 1fr; }
+    .page-head { flex-direction: column; }
+    .copy-btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="brand-dot"></span>Samuel Huang</div>
+    <a class="home-link" href="/">Home</a>
+  </div>
+
+  <main class="wrap">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">Site Glossary</div>
+        <h1>Pages Built Together</h1>
+        <p>A reference index for the Samuelhuang pages created in this project. Each entry has the production URL ready to open or copy.</p>
+      </div>
+      <div class="count">
+        <strong>4</strong>
+        <span>active routes</span>
+      </div>
+    </header>
+
+    <section class="grid" aria-label="Page glossary">
+      <article class="page-card">
+        <div class="page-head">
+          <div class="page-title">
+            <h2>Home</h2>
+            <span class="tag">Index</span>
+          </div>
+          <button class="copy-btn" data-url="https://samuelhuang.org/">Copy URL</button>
+        </div>
+        <div class="page-body">
+          <p>The root page for Samuelhuang links, including the guide, Hermes prompt, and this glossary.</p>
+          <a class="url" href="https://samuelhuang.org/">https://samuelhuang.org/</a>
+        </div>
+      </article>
+
+      <article class="page-card">
+        <div class="page-head">
+          <div class="page-title">
+            <h2>Tool-Agnostic Coding Agent Setup</h2>
+            <span class="tag guide">Guide</span>
+          </div>
+          <button class="copy-btn" data-url="https://samuelhuang.org/guide/tool-agnostic-setup">Copy URL</button>
+        </div>
+        <div class="page-body">
+          <p>A Claude Code and Codex setup guide with copy-ready conversion prompts for creating matching adapter files.</p>
+          <a class="url" href="https://samuelhuang.org/guide/tool-agnostic-setup">https://samuelhuang.org/guide/tool-agnostic-setup</a>
+        </div>
+      </article>
+
+      <article class="page-card">
+        <div class="page-head">
+          <div class="page-title">
+            <h2>Hermes Agent Bootstrap Prompt</h2>
+            <span class="tag tool">Prompt</span>
+          </div>
+          <button class="copy-btn" data-url="https://samuelhuang.org/hermes-bootstrap-prompt">Copy URL</button>
+        </div>
+        <div class="page-body">
+          <p>An OCR-converted Hermes first-run prompt split into copyable sections for setup, daily questions, and automations.</p>
+          <a class="url" href="https://samuelhuang.org/hermes-bootstrap-prompt">https://samuelhuang.org/hermes-bootstrap-prompt</a>
+        </div>
+      </article>
+
+      <article class="page-card">
+        <div class="page-head">
+          <div class="page-title">
+            <h2>Samuel OS Dashboard</h2>
+            <span class="tag">Dashboard</span>
+          </div>
+          <button class="copy-btn" data-url="https://samuelhuang.org/dashboard">Copy URL</button>
+        </div>
+        <div class="page-body">
+          <p>The supplement schedule dashboard for wake-time based sessions, reminder state, and Samuel OS daily timing.</p>
+          <a class="url" href="https://samuelhuang.org/dashboard">https://samuelhuang.org/dashboard</a>
+        </div>
+      </article>
+    </section>
+
+    <p class="notes">Legacy route: https://samuelhuang.org/tool-agnostic-setup redirects to the guide route above.</p>
+  </main>
+
+  <div class="toast" id="toast">Copied</div>
+
+<script>
+  const toast = document.getElementById('toast')
+  let toastTimer
+
+  function showCopied(button) {
+    const original = button.dataset.originalText || button.textContent
+    button.dataset.originalText = original
+    document.querySelectorAll('.copy-btn').forEach((btn) => btn.classList.remove('copied'))
+    button.classList.add('copied')
+    button.textContent = 'Copied'
+    toast.classList.add('visible')
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => {
+      button.classList.remove('copied')
+      button.textContent = original
+      toast.classList.remove('visible')
+    }, 1400)
+  }
+
+  async function writeClipboard(text) {
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text)
+        return
+      } catch {}
+    }
+    const fallback = document.createElement('textarea')
+    fallback.value = text
+    fallback.setAttribute('readonly', '')
+    fallback.style.position = 'fixed'
+    fallback.style.left = '-9999px'
+    document.body.appendChild(fallback)
+    fallback.select()
+    document.execCommand('copy')
+    fallback.remove()
+  }
+
+  document.querySelectorAll('.copy-btn').forEach((button) => {
+    button.addEventListener('click', async () => {
+      await writeClipboard(button.dataset.url)
+      showCopied(button)
+    })
+  })
+</script>
+</body>
+</html>

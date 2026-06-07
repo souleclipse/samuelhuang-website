@@ -450,6 +450,42 @@
     overflow-x: auto;
     white-space: pre-wrap;
   }
+  .prompt-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+  .copy-btn {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 12px;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .copy-btn:hover { color: var(--ink); border-color: var(--codex); }
+  .copy-btn.copied { color: var(--codex); background: var(--codex-bg); border-color: #1C5A48; }
+  .copy-btn.copy-claude.copied { color: var(--claude); background: var(--claude-bg); border-color: #5A3428; }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translate(-50%, 90px);
+    border: 1px solid #1C5A48;
+    border-radius: 8px;
+    background: var(--codex-bg);
+    color: var(--codex);
+    padding: 10px 14px;
+    font-size: 13px;
+    transition: transform 0.22s ease;
+    z-index: 50;
+  }
+  .toast.visible { transform: translate(-50%, 0); }
 
   .callout {
     background: var(--surface);
@@ -758,7 +794,10 @@
       <!-- TAB: Claude → Codex -->
       <div class="tab-panel active" id="tab-to-codex" role="tabpanel">
         <p style="font-size:14px;color:var(--ink-mute);margin-bottom:16px;">Open your Claude Code project in Codex and paste this prompt.</p>
-        <div class="prompt-box">I built this project in Claude Code and want it to also work well in Codex.
+        <div class="prompt-toolbar">
+          <button class="copy-btn" data-copy="prompt-to-codex">Copy Claude → Codex Prompt</button>
+        </div>
+        <div class="prompt-box" id="prompt-to-codex">I built this project in Claude Code and want it to also work well in Codex.
 
 Please inspect the project and create a Codex adapter setup.
 
@@ -798,7 +837,10 @@ Before editing, show me the files you plan to create or change.</div>
       <!-- TAB: Codex → Claude -->
       <div class="tab-panel" id="tab-to-claude" role="tabpanel">
         <p style="font-size:14px;color:var(--ink-mute);margin-bottom:16px;">Open your Codex project in Claude Code and paste this prompt.</p>
-        <div class="prompt-box">I built this project in Codex and want it to also work well in Claude Code.
+        <div class="prompt-toolbar">
+          <button class="copy-btn copy-claude" data-copy="prompt-to-claude">Copy Codex → Claude Prompt</button>
+        </div>
+        <div class="prompt-box" id="prompt-to-claude">I built this project in Codex and want it to also work well in Claude Code.
 
 Please inspect the project and create a Claude Code adapter setup.
 
@@ -862,7 +904,54 @@ Before editing, show me the files you plan to create or change.</div>
 
 </div>
 
+<div class="toast" id="toast">Copied</div>
+
 <script>
+  const toast = document.getElementById('toast');
+  let toastTimer;
+
+  function showCopied(button) {
+    const original = button.dataset.originalText || button.textContent;
+    button.dataset.originalText = original;
+    document.querySelectorAll('.copy-btn').forEach(b => b.classList.remove('copied'));
+    button.classList.add('copied');
+    button.textContent = 'Copied';
+    toast.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      button.classList.remove('copied');
+      button.textContent = original;
+      toast.classList.remove('visible');
+    }, 1400);
+  }
+
+  async function writeClipboard(text) {
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return;
+      } catch {}
+    }
+    const fallback = document.createElement('textarea');
+    fallback.value = text;
+    fallback.setAttribute('readonly', '');
+    fallback.style.position = 'fixed';
+    fallback.style.left = '-9999px';
+    document.body.appendChild(fallback);
+    fallback.select();
+    document.execCommand('copy');
+    fallback.remove();
+  }
+
+  document.querySelectorAll('.copy-btn').forEach(button => {
+    button.addEventListener('click', async () => {
+      const target = document.getElementById(button.dataset.copy);
+      if (!target) return;
+      await writeClipboard(target.innerText.trim());
+      showCopied(button);
+    });
+  });
+
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.tab;
