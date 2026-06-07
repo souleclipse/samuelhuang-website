@@ -329,10 +329,124 @@
   }
   .btn-refresh:hover { color: var(--ink); border-color: var(--ink-soft); }
 
+  .time-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  .live-clock {
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .time-zone {
+    font-size: 11px;
+    color: var(--ink-mute);
+  }
+
+  .btn-now {
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 650;
+    cursor: pointer;
+    font-family: inherit;
+    transition: color 0.15s, border-color 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn-now:hover { color: var(--ink); border-color: var(--green); }
+  .btn-now:active { transform: scale(0.97); }
+
+  .auth-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 32px;
+    display: none;
+  }
+  .auth-card.visible { display: block; }
+  .auth-card h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    margin-bottom: 18px;
+  }
+  .pin-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .pin-form input {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--ink);
+    font-size: 18px;
+    font-weight: 600;
+    font-family: inherit;
+    padding: 12px 14px;
+    outline: none;
+    min-width: 180px;
+  }
+  .pin-form input:focus { border-color: var(--green); }
+  .pin-error {
+    margin-top: 12px;
+    display: none;
+    color: #F08080;
+    font-size: 13px;
+  }
+  .pin-error.visible { display: block; }
+  .app-shell.locked { display: none; }
+
+  .session-card.is-due { border-color: var(--orange); }
+  .session-card.is-due::before { background: var(--orange); }
+  .session-card.is-due .session-time { color: var(--orange); }
+  .session-subline {
+    padding-left: 32px;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+  }
+  .session-card.is-next .session-subline { color: var(--yellow); }
+  .session-card.is-due .session-subline { color: var(--orange); }
+  .session-card.is-sent .session-subline { color: var(--green); }
+  .session-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+  }
+  .btn-taken {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink-soft);
+    font-size: 12px;
+    font-weight: 650;
+    padding: 7px 10px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-taken:hover { color: var(--ink); border-color: var(--green); }
+  .session-card.is-sent .btn-taken { color: var(--green); border-color: var(--sent-border); background: transparent; }
+
   @media (max-width: 600px) {
     .wake-form { flex-direction: column; align-items: flex-start; }
     .time-input-wrap input[type="time"] { width: 100%; }
     .btn-set { width: 100%; text-align: center; }
+    .btn-now { width: 100%; }
+    .pin-form input, .pin-form .btn-set { width: 100%; }
+    .topbar { align-items: flex-start; gap: 16px; }
   }
 </style>
 </head>
@@ -343,71 +457,110 @@
     <span class="dot"></span>
     Samuel OS
   </div>
-  <div style="display:flex;gap:10px;align-items:center;">
-    <button class="btn-refresh" onclick="loadSchedule()">↻ Refresh</button>
-    <span class="date-badge" id="dateBadge">—</span>
+  <div style="display:flex;gap:14px;align-items:center;">
+    <button class="btn-refresh" onclick="loadSchedule()">Refresh</button>
+    <div class="time-stack">
+      <div class="live-clock" id="liveClock">--:--</div>
+      <div class="date-badge" id="dateBadge">--</div>
+      <div class="time-zone" id="timeZoneLabel">Asia/Bangkok</div>
+    </div>
   </div>
 </div>
 
 <div class="wrap">
-
-  <!-- Wake time input -->
-  <div class="wake-card">
-    <h2>Wake-up time</h2>
-    <div class="wake-form">
-      <span class="time-input-wrap">
-        <input type="time" id="wakeInput" value="10:00">
-      </span>
-      <button class="btn-set" id="setBtn" onclick="setSchedule()">Set my schedule</button>
+  <div class="auth-card" id="authCard">
+    <h2>Samuel OS PIN</h2>
+    <div class="pin-form">
+      <input id="pinInput" type="password" inputmode="numeric" autocomplete="current-password">
+      <button class="btn-set" id="unlockBtn" onclick="unlockDashboard()">Unlock</button>
     </div>
-    <div class="wake-meta" id="wakeMeta"></div>
+    <div class="pin-error" id="pinError">PIN required.</div>
   </div>
 
-  <!-- Status pills -->
-  <div class="status-bar" id="statusBar" style="display:none">
-    <div class="status-pill"><span class="dot dot-sent"></span> Sent</div>
-    <div class="status-pill next-session" id="nextPill" style="display:none">⏰ <span id="nextPillText"></span></div>
-    <div class="status-pill"><span class="dot dot-pending"></span> Pending</div>
+  <div class="app-shell locked" id="appShell">
+    <div class="wake-card">
+      <h2>Wake-up time</h2>
+      <div class="wake-form">
+        <span class="time-input-wrap">
+          <input type="time" id="wakeInput">
+        </span>
+        <button class="btn-now" onclick="setWakeToNow()">Use now</button>
+        <button class="btn-set" id="setBtn" onclick="setSchedule()">Set schedule</button>
+      </div>
+      <div class="wake-meta" id="wakeMeta"></div>
+    </div>
+
+    <div class="status-bar" id="statusBar" style="display:none">
+      <div class="status-pill"><span class="dot dot-sent"></span> Sent</div>
+      <div class="status-pill next-session" id="nextPill" style="display:none">⏰ <span id="nextPillText"></span></div>
+      <div class="status-pill"><span class="dot dot-pending"></span> Pending</div>
+    </div>
+
+    <div class="section-label" id="scheduleLabel" style="display:none">Today's sessions</div>
+
+    <div class="sessions" id="sessionList">
+      <div class="loading">Loading…</div>
+    </div>
+
+    <div class="empty-state" id="emptyState">
+      <div class="big-emoji">🌅</div>
+      <p>Set your wake-up time above<br>to generate today's supplement schedule.</p>
+    </div>
   </div>
-
-  <!-- Section label -->
-  <div class="section-label" id="scheduleLabel" style="display:none">Today's sessions</div>
-
-  <!-- Sessions list -->
-  <div class="sessions" id="sessionList">
-    <div class="loading">Loading…</div>
-  </div>
-
-  <!-- Empty state -->
-  <div class="empty-state" id="emptyState">
-    <div class="big-emoji">🌅</div>
-    <p>Set your wake-up time above<br>to generate today's supplement schedule.</p>
-  </div>
-
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  const TZ = 'Asia/Kuala_Lumpur'
+  const TZ = 'Asia/Bangkok'
+  const PIN_KEY = 'samuel-os-pin'
+  const EMOJIS = { 1: '🌅', 2: '☕', 3: '🥗', 4: '🏋️', 5: '🥩', 6: '🥤', 7: '🌙' }
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
+  let latestSchedule = []
+  let latestSessions = []
 
-  function nowInTZ() {
-    return new Date(new Date().toLocaleString('en-US', { timeZone: TZ }))
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    }[ch]))
   }
 
   function fmtTime(isoOrDate) {
     const d = typeof isoOrDate === 'string' ? new Date(isoOrDate) : isoOrDate
     return d.toLocaleTimeString('en-US', {
-      hour: 'numeric', minute: '2-digit', hour12: true, timeZone: TZ
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: TZ,
     })
   }
 
-  function fmtDate(d) {
-    return d.toLocaleDateString('en-US', {
-      weekday: 'long', month: 'long', day: 'numeric', timeZone: TZ
+  function fmtDate(date) {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      timeZone: TZ,
     })
+  }
+
+  function timeInputValue(date) {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: TZ,
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    }).formatToParts(date)
+    const vals = Object.fromEntries(parts.filter((p) => p.type !== 'literal').map((p) => [p.type, p.value]))
+    return `${vals.hour}:${vals.minute}`
+  }
+
+  function setWakeToNow() {
+    document.getElementById('wakeInput').value = timeInputValue(new Date())
   }
 
   function showToast(msg) {
@@ -417,75 +570,165 @@
     setTimeout(() => t.classList.remove('show'), 3500)
   }
 
-  // ── Set schedule ─────────────────────────────────────────────────────────
+  function formatDuration(ms) {
+    const totalMinutes = Math.max(0, Math.round(Math.abs(ms) / 60000))
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
+    if (hours === 0) return `${minutes}m`
+    if (minutes === 0) return `${hours}h`
+    return `${hours}h ${minutes}m`
+  }
+
+  function relativeLabel(session) {
+    if (session.taken_at) return `Taken ${fmtTime(session.taken_at)}`
+    if (session.sent) return 'Sent'
+    const diff = new Date(session.scheduled_time).getTime() - Date.now()
+    return diff >= 0 ? `In ${formatDuration(diff)}` : `Due ${formatDuration(diff)} ago`
+  }
+
+  function getEmoji(session) {
+    return session.emoji || EMOJIS[session.session_number] || '💊'
+  }
+
+  function getPin() {
+    return localStorage.getItem(PIN_KEY) || ''
+  }
+
+  function apiFetch(url, options = {}) {
+    const headers = new Headers(options.headers || {})
+    const pin = getPin()
+    if (pin) headers.set('x-samuel-os-pin', pin)
+    return fetch(url, { ...options, headers })
+  }
+
+  function showApp() {
+    document.getElementById('authCard').classList.remove('visible')
+    document.getElementById('appShell').classList.remove('locked')
+  }
+
+  function showAuth(message = 'PIN required.') {
+    document.getElementById('appShell').classList.add('locked')
+    document.getElementById('authCard').classList.add('visible')
+    const err = document.getElementById('pinError')
+    err.textContent = message
+    err.classList.add('visible')
+    document.getElementById('pinInput').focus()
+  }
+
+  async function unlockDashboard() {
+    const pin = document.getElementById('pinInput').value.trim()
+    localStorage.setItem(PIN_KEY, pin)
+    await loadSchedule()
+  }
+
+  function normalizeSchedule(schedule = [], sessions = latestSessions) {
+    const sessionByNumber = new Map((sessions || []).map((s) => [String(s.session_number), s]))
+    return (schedule || []).map((row) => {
+      const base = sessionByNumber.get(String(row.session_number)) || {}
+      const scheduledTime = row.scheduled_time || row.scheduledTime
+      return {
+        ...base,
+        ...row,
+        scheduled_time: scheduledTime,
+        wake_time: row.wake_time || row.wakeTime,
+      }
+    }).filter((row) => row.scheduled_time)
+  }
 
   async function setSchedule() {
-    const input = document.getElementById('wakeInput').value // "HH:MM"
-    if (!input) { showToast('Please pick a wake-up time first'); return }
+    const input = document.getElementById('wakeInput').value
+    if (!input) { showToast('Pick a wake-up time first'); return }
 
     const btn = document.getElementById('setBtn')
     btn.disabled = true
-    btn.textContent = 'Setting…'
+    btn.textContent = 'Setting...'
 
     try {
-      const res = await fetch('/api/wake-up', {
+      const res = await apiFetch('/api/wake-up', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ source: 'web', time: input }),
+        body: JSON.stringify({ source: 'web', time: input, timeZone: TZ }),
       })
+      if (res.status === 401) {
+        localStorage.removeItem(PIN_KEY)
+        showAuth('Enter your Samuel OS PIN.')
+        return
+      }
       const data = await res.json()
       if (!data.ok) throw new Error(data.error || 'Unknown error')
-      renderSchedule(data.schedule, data.wakeTime)
+      showApp()
+      renderSchedule(normalizeSchedule(data.schedule), data.wakeTime)
     } catch (err) {
       showToast('Error: ' + err.message)
     } finally {
       btn.disabled = false
-      btn.textContent = 'Set my schedule'
+      btn.textContent = 'Set schedule'
     }
   }
 
-  // ── Load existing schedule ────────────────────────────────────────────────
-
   async function loadSchedule() {
     try {
-      const res = await fetch('/api/dashboard')
+      const res = await apiFetch('/api/dashboard')
+      if (res.status === 401) {
+        localStorage.removeItem(PIN_KEY)
+        showAuth('Enter your Samuel OS PIN.')
+        return
+      }
       const data = await res.json()
+      latestSessions = data.sessions || []
+      showApp()
 
-      if (data.hasSchedule) {
-        renderSchedule(data.schedule)
-        // Pre-fill wake time input from existing schedule
-        if (data.schedule[0]?.wake_time) {
-          const wt = new Date(data.schedule[0].wake_time)
-          const h = wt.getHours().toString().padStart(2, '0')
-          const m = wt.getMinutes().toString().padStart(2, '0')
-          document.getElementById('wakeInput').value = `${h}:${m}`
-        }
+      const schedule = normalizeSchedule(data.schedule, latestSessions)
+      if (schedule.length) {
+        renderSchedule(schedule)
+        if (schedule[0]?.wake_time) document.getElementById('wakeInput').value = timeInputValue(new Date(schedule[0].wake_time))
       } else {
+        setWakeToNow()
         showEmpty()
       }
     } catch (err) {
+      showToast('Could not load Samuel OS')
+      setWakeToNow()
       showEmpty()
     }
   }
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  async function markTaken(id, taken) {
+    try {
+      const res = await apiFetch('/api/taken', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, taken }),
+      })
+      if (res.status === 401) {
+        localStorage.removeItem(PIN_KEY)
+        showAuth('Enter your Samuel OS PIN.')
+        return
+      }
+      const data = await res.json()
+      if (!data.ok) throw new Error(data.error || 'Could not update')
+      await loadSchedule()
+    } catch (err) {
+      showToast('Error: ' + err.message)
+    }
+  }
 
   function showEmpty() {
+    latestSchedule = []
     document.getElementById('sessionList').innerHTML = ''
     document.getElementById('emptyState').classList.add('visible')
     document.getElementById('statusBar').style.display = 'none'
     document.getElementById('scheduleLabel').style.display = 'none'
+    document.getElementById('wakeMeta').classList.remove('visible')
   }
 
   function renderSchedule(schedule, wakeTimeIso) {
+    if (!schedule?.length) { showEmpty(); return }
+    latestSchedule = schedule
     document.getElementById('emptyState').classList.remove('visible')
     document.getElementById('statusBar').style.display = 'flex'
     document.getElementById('scheduleLabel').style.display = 'block'
 
-    const now = nowInTZ()
-    let nextFound = false
-
-    // Update wake meta
     const wt = wakeTimeIso ? new Date(wakeTimeIso) : (schedule[0]?.wake_time ? new Date(schedule[0].wake_time) : null)
     const meta = document.getElementById('wakeMeta')
     if (wt) {
@@ -497,38 +740,49 @@
     const list = document.getElementById('sessionList')
     list.innerHTML = ''
 
-    schedule.forEach((s) => {
-      const sessionTime = new Date(s.scheduled_time)
-      const isSent = s.sent
+    let nextFound = false
+    const now = Date.now()
+
+    schedule.forEach((session, index) => {
+      const sessionTime = new Date(session.scheduled_time).getTime()
+      const isSent = Boolean(session.sent)
       const isNext = !isSent && !nextFound && sessionTime > now
+      const isDue = !isSent && !isNext && sessionTime <= now
       if (isNext) nextFound = true
 
-      const supplements = s.supplements || []
+      const supplements = session.supplements || []
       const card = document.createElement('div')
       card.className = 'session-card' +
         (isSent ? ' is-sent' : '') +
-        (isNext ? ' is-next' : '')
-
-      const hasSups = supplements.length > 0
+        (isNext ? ' is-next' : '') +
+        (isDue ? ' is-due' : '')
 
       card.innerHTML = `
         <div class="session-header">
-          <span class="session-emoji">${s.supplements?.[0] ? getEmoji(s.session_number) : getEmoji(s.session_number)}</span>
-          <span class="session-name">${s.session_name}</span>
-          <span class="sent-badge">✓ done</span>
-          <span class="session-time">${fmtTime(s.scheduled_time)}</span>
+          <span class="session-emoji">${escapeHtml(getEmoji(session))}</span>
+          <span class="session-name">${escapeHtml(session.session_name)}</span>
+          <span class="sent-badge">done</span>
+          <span class="session-time">${fmtTime(session.scheduled_time)}</span>
         </div>
+        <div class="session-subline relative-time" data-index="${index}">${escapeHtml(relativeLabel(session))}</div>
         <div class="session-tags">
-          ${hasSups ? supplements.map(sup => `<span class="tag">${sup.name}</span>`).join('') : ''}
-          ${s.fasted ? '<span class="tag tag-fasted">fasted</span>' : ''}
+          ${supplements.map((sup) => `<span class="tag">${escapeHtml(sup.name)}</span>`).join('')}
+          ${session.fasted ? '<span class="tag tag-fasted">fasted</span>' : ''}
         </div>
-        ${s.reminder_note ? `<div class="session-note">${s.reminder_note}</div>` : ''}
+        ${session.reminder_note ? `<div class="session-note">${escapeHtml(session.reminder_note)}</div>` : ''}
+        ${session.id ? `<div class="session-actions"><button class="btn-taken" type="button">${isSent ? 'Undo' : 'Taken now'}</button></div>` : ''}
       `
+
+      const action = card.querySelector('.btn-taken')
+      if (action) action.addEventListener('click', () => markTaken(session.id, !isSent))
       list.appendChild(card)
     })
 
-    // Update next pill
-    const nextSession = schedule.find(s => !s.sent && new Date(s.scheduled_time) > now)
+    updateNextPill()
+  }
+
+  function updateNextPill() {
+    const nextSession = latestSchedule.find((s) => !s.sent && new Date(s.scheduled_time).getTime() > Date.now())
     const nextPill = document.getElementById('nextPill')
     if (nextSession) {
       document.getElementById('nextPillText').textContent =
@@ -539,18 +793,32 @@
     }
   }
 
-  const EMOJIS = { 1: '🌅', 2: '☕', 3: '🥗', 4: '🏋️', 5: '🥩', 6: '🥤', 7: '🌙' }
-  function getEmoji(n) { return EMOJIS[n] || '💊' }
+  function updateRelativeTimes() {
+    document.querySelectorAll('.relative-time').forEach((el) => {
+      const session = latestSchedule[Number(el.dataset.index)]
+      if (session) el.textContent = relativeLabel(session)
+    })
+    updateNextPill()
+  }
 
-  // ── Init ──────────────────────────────────────────────────────────────────
+  function tickClock() {
+    const now = new Date()
+    document.getElementById('liveClock').textContent = fmtTime(now)
+    document.getElementById('dateBadge').textContent = fmtDate(now)
+    document.getElementById('timeZoneLabel').textContent = TZ
+    updateRelativeTimes()
+  }
 
-  document.getElementById('dateBadge').textContent = fmtDate(nowInTZ())
-
-  // Allow Enter key on time input
   document.getElementById('wakeInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') setSchedule()
   })
+  document.getElementById('pinInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') unlockDashboard()
+  })
 
+  setWakeToNow()
+  tickClock()
+  setInterval(tickClock, 30000)
   loadSchedule()
 </script>
 </body>

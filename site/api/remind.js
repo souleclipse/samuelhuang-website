@@ -5,10 +5,28 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+const TIME_ZONE = process.env.APP_TIME_ZONE || 'Asia/Bangkok'
+
+function datePartsInTimeZone(date, timeZone) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date)
+
+  return Object.fromEntries(parts.filter((p) => p.type !== 'literal').map((p) => [p.type, p.value]))
+}
+
+function dateKeyInTimeZone(date, timeZone) {
+  const p = datePartsInTimeZone(date, timeZone)
+  return `${p.year}-${p.month}-${p.day}`
+}
+
 function fmtTime(iso) {
   return new Date(iso).toLocaleTimeString('en-US', {
     hour: 'numeric', minute: '2-digit', hour12: true,
-    timeZone: 'Asia/Kuala_Lumpur',
+    timeZone: TIME_ZONE,
   })
 }
 
@@ -45,7 +63,7 @@ async function sendDiscordMessage(content) {
 
 export default async function handler(req, res) {
   const now = new Date().toISOString()
-  const today = now.split('T')[0]
+  const today = dateKeyInTimeZone(new Date(), TIME_ZONE)
 
   const { data: due, error } = await supabase
     .from('samuelh_today_schedule')

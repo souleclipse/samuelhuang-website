@@ -6,33 +6,105 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+const DEFAULT_TIME_ZONE = process.env.APP_TIME_ZONE || 'Asia/Bangkok'
+
 // ── Time parsing ─────────────────────────────────────────────────────────────
 
-function parseWakeTime(text) {
+function isValidTimeZone(timeZone) {
+  try {
+    Intl.DateTimeFormat('en-US', { timeZone }).format()
+    return true
+  } catch {
+    return false
+  }
+}
+
+function getRequestTimeZone(req) {
+  const requested = req.body?.timeZone || req.headers['x-time-zone']
+  return requested && isValidTimeZone(requested) ? requested : DEFAULT_TIME_ZONE
+}
+
+function getPin(req) {
+  return req.headers['x-samuel-os-pin'] || req.headers['x-dashboard-pin'] || req.body?.pin || ''
+}
+
+function requireDashboardPin(req, res) {
+  const expected = process.env.SAMUEL_OS_PIN || process.env.DASHBOARD_PIN || ''
+  if (!expected) return true
+  if (getPin(req) === expected) return true
+  res.status(401).json({ error: 'PIN required' })
+  return false
+}
+
+function datePartsInTimeZone(date, timeZone) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date)
+
+  return Object.fromEntries(parts.filter((p) => p.type !== 'literal').map((p) => [p.type, p.value]))
+}
+
+function dateKeyInTimeZone(date, timeZone) {
+  const p = datePartsInTimeZone(date, timeZone)
+  return `${p.year}-${p.month}-${p.day}`
+}
+
+function zonedTimeToUtc({ year, month, day, hour, minute }, timeZone) {
+  const utcGuess = new Date(Date.UTC(year, month - 1, day, hour, minute, 0))
+  const p = datePartsInTimeZone(utcGuess, timeZone)
+  const asUtc = Date.UTC(
+    Number(p.year),
+    Number(p.month) - 1,
+    Number(p.day),
+    Number(p.hour),
+    Number(p.minute),
+    Number(p.second || 0)
+  )
+  const offset = asUtc - utcGuess.getTime()
+  return new Date(utcGuess.getTime() - offset)
+}
+
+function parseWakeTime(text, timeZone) {
   const lower = (text || '').toLowerCase().replace(/[.,!?]/g, '')
+  if (!lower || lower === 'now' || lower.includes('right now')) return new Date()
+
   const match = lower.match(/\b(\d{1,2})[:.]?(\d{2})?\s*(am|pm)?\b/)
   if (!match) return new Date()
+
   let h = parseInt(match[1])
   const m = parseInt(match[2] || '0')
   const ampm = match[3]
   if (ampm === 'pm' && h < 12) h += 12
   else if (ampm === 'am' && h === 12) h = 0
-  else if (!ampm && h >= 1 && h <= 6) h += 12
-  const t = new Date()
-  t.setHours(h, m, 0, 0)
-  return t
+  else if (!ampm && !match[2] && h >= 1 && h <= 6) h += 12
+
+  const today = datePartsInTimeZone(new Date(), timeZone)
+  return zonedTimeToUtc({
+    year: Number(today.year),
+    month: Number(today.month),
+    day: Number(today.day),
+    hour: h,
+    minute: m,
+  }, timeZone)
 }
 
-function fmtTime(date) {
+function fmtTime(date, timeZone) {
   return date.toLocaleTimeString('en-US', {
     hour: 'numeric', minute: '2-digit', hour12: true,
-    timeZone: 'Asia/Kuala_Lumpur',
+    timeZone,
   })
 }
 
 // ── Schedule logic ────────────────────────────────────────────────────────────
 
-async function buildAndSaveSchedule(wakeTime) {
+async function buildAndSaveSchedule(wakeTime, timeZone) {
   const { data: sessions, error } = await supabase
     .from('samuelh_sessions')
     .select('*')
@@ -40,7 +112,7 @@ async function buildAndSaveSchedule(wakeTime) {
     .order('session_number')
   if (error) throw new Error(`Supabase read: ${error.message}`)
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = dateKeyInTimeZone(new Date(), timeZone)
   await supabase.from('samuelh_today_schedule').delete().eq('date', today)
 
   const rows = sessions.map((s) => ({
@@ -54,17 +126,25 @@ async function buildAndSaveSchedule(wakeTime) {
     sent: false,
   }))
 
-  const { error: ie } = await supabase.from('samuelh_today_schedule').insert(rows)
+  const { data: inserted, error: ie } = await supabase
+    .from('samuelh_today_schedule')
+    .insert(rows)
+    .select('*')
   if (ie) throw new Error(`Supabase insert: ${ie.message}`)
 
-  return sessions.map((s, i) => ({ ...s, scheduledTime: new Date(rows[i].scheduled_time) }))
+  return rows.map((row, i) => ({
+    ...sessions[i],
+    ...row,
+    ...(inserted?.[i] || {}),
+    scheduledTime: new Date(row.scheduled_time),
+  }))
 }
 
-function buildMessage(wakeTime, schedule) {
-  const lines = [`📋 **Schedule locked — wake: ${fmtTime(wakeTime)}**\n`]
+function buildMessage(wakeTime, schedule, timeZone) {
+  const lines = [`📋 **Schedule locked — wake: ${fmtTime(wakeTime, timeZone)}**\n`]
   for (const s of schedule) {
     const tag = s.fasted ? ' _(fasted)_' : ''
-    lines.push(`${s.emoji} **${fmtTime(s.scheduledTime)}** — ${s.session_name}${tag}`)
+    lines.push(`${s.emoji} **${fmtTime(new Date(s.scheduled_time), timeZone)}** — ${s.session_name}${tag}`)
     if (s.supplements?.length) lines.push(`   ${s.supplements.map((x) => x.name).join(' · ')}`)
     if (s.reminder_note) lines.push(`   ↳ _${s.reminder_note}_`)
   }
@@ -102,6 +182,7 @@ export default async function handler(req, res) {
   let text = ''
   let isDiscordInteraction = false
   let isWebRequest = false
+  const timeZone = getRequestTimeZone(req)
 
   const sig = req.headers['x-signature-ed25519']
 
@@ -120,6 +201,7 @@ export default async function handler(req, res) {
     isDiscordInteraction = true
   } else if (req.body?.source === 'web') {
     // Web dashboard POST
+    if (!requireDashboardPin(req, res)) return
     text = req.body.time || 'now'
     isWebRequest = true
   } else if (req.body?.message?.text) {
@@ -134,12 +216,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const wakeTime = parseWakeTime(text)
-    const schedule = await buildAndSaveSchedule(wakeTime)
-    const message = buildMessage(wakeTime, schedule)
+    const wakeTime = parseWakeTime(text, timeZone)
+    const schedule = await buildAndSaveSchedule(wakeTime, timeZone)
+    const message = buildMessage(wakeTime, schedule, timeZone)
 
     if (isWebRequest) {
-      return res.status(200).json({ ok: true, schedule, wakeTime: wakeTime.toISOString() })
+      return res.status(200).json({ ok: true, schedule, wakeTime: wakeTime.toISOString(), timeZone })
     }
 
     await Promise.all([sendTelegram(message), sendDiscordMessage(message)])
