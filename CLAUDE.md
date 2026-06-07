@@ -45,6 +45,8 @@ Whenever you create, update, or publish a page, always send me a clickable revie
 
 Do not present a production `samuelhuang.org` link as ready until it has actually been deployed and verified with an HTTP 200 check. If the page only exists locally, say so clearly and provide the local preview separately. After pushing a page change, poll the production URL and confirm it returns 200 before telling me to review it.
 
+Default to live production review, not local review. Do not send me `localhost`, `127.0.0.1`, or `file://` links for normal page work. Push the page live, verify the production URL, and send the clickable `https://samuelhuang.org/...` link in chat. Only mention a local URL if live deployment is blocked and the blocker has been clearly reported.
+
 ## The Self-Improvement Loop
 
 Every failure is a chance to make the system stronger:
