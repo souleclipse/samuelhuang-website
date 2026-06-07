@@ -513,7 +513,7 @@
         <span class="time-input-wrap">
           <input type="time" id="wakeInput">
         </span>
-        <button class="btn-now" onclick="setWakeToNow()">Use now</button>
+        <button class="btn-now" id="nowBtn" onclick="setScheduleFromNow()">Wake up now</button>
         <button class="btn-set" id="setBtn" onclick="setSchedule()">Set schedule</button>
       </div>
       <div class="wake-meta" id="wakeMeta"></div>
@@ -568,6 +568,16 @@
     })
   }
 
+  function fmtClock(date) {
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+      timeZone: TZ,
+    })
+  }
+
   function fmtDate(date) {
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
@@ -590,6 +600,11 @@
 
   function setWakeToNow() {
     document.getElementById('wakeInput').value = timeInputValue(new Date())
+  }
+
+  async function setScheduleFromNow() {
+    setWakeToNow()
+    await setSchedule({ sourceButtonId: 'nowBtn', loadingText: 'Setting now...', doneText: 'Wake up now' })
   }
 
   function showToast(msg) {
@@ -664,13 +679,14 @@
     }).filter((row) => row.scheduled_time)
   }
 
-  async function setSchedule() {
+  async function setSchedule(options = {}) {
     const input = document.getElementById('wakeInput').value
     if (!input) { showToast('Pick a wake-up time first'); return }
 
-    const btn = document.getElementById('setBtn')
+    const btn = document.getElementById(options.sourceButtonId || 'setBtn')
+    const doneText = options.doneText || 'Set schedule'
     btn.disabled = true
-    btn.textContent = 'Setting...'
+    btn.textContent = options.loadingText || 'Setting...'
 
     try {
       const res = await apiFetch('/api/wake-up', {
@@ -691,7 +707,7 @@
       showToast('Error: ' + err.message)
     } finally {
       btn.disabled = false
-      btn.textContent = 'Set schedule'
+      btn.textContent = doneText
     }
   }
 
@@ -839,7 +855,7 @@
 
   function tickClock() {
     const now = new Date()
-    document.getElementById('liveClock').textContent = fmtTime(now)
+    document.getElementById('liveClock').textContent = fmtClock(now)
     document.getElementById('dateBadge').textContent = fmtDate(now)
     document.getElementById('timeZoneLabel').textContent = TZ
     updateRelativeTimes()
@@ -854,7 +870,7 @@
 
   setWakeToNow()
   tickClock()
-  setInterval(tickClock, 30000)
+  setInterval(tickClock, 1000)
   loadSchedule()
 </script>
 </body>
