@@ -254,6 +254,34 @@
   .session-card.is-sent .tag { border-color: var(--sent-border); background: transparent; }
   .tag.tag-fasted { color: var(--orange); background: var(--orange-bg); border-color: #3D2218; }
 
+  .supplement-list {
+    margin: 12px 0 0 32px;
+    display: grid;
+    gap: 8px;
+  }
+  .supplement-item {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface-2);
+    padding: 9px 10px;
+  }
+  .supplement-name {
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.35;
+  }
+  .supplement-note {
+    color: var(--ink-mute);
+    font-size: 12px;
+    line-height: 1.45;
+    margin-top: 4px;
+  }
+  .session-card.is-sent .supplement-item {
+    background: transparent;
+    border-color: var(--sent-border);
+  }
+
   .session-note {
     padding-left: 32px;
     margin-top: 8px;
@@ -447,6 +475,7 @@
     .btn-now { width: 100%; }
     .pin-form input, .pin-form .btn-set { width: 100%; }
     .topbar { align-items: flex-start; gap: 16px; }
+    .supplement-list { margin-left: 0; }
   }
 </style>
 </head>
@@ -751,6 +780,12 @@
       if (isNext) nextFound = true
 
       const supplements = session.supplements || []
+      const supplementDetails = supplements.map((sup) => `
+        <div class="supplement-item">
+          <div class="supplement-name">${escapeHtml(sup.name)}</div>
+          ${sup.notes ? `<div class="supplement-note">${escapeHtml(sup.notes)}</div>` : ''}
+        </div>
+      `).join('')
       const card = document.createElement('div')
       card.className = 'session-card' +
         (isSent ? ' is-sent' : '') +
@@ -769,6 +804,7 @@
           ${supplements.map((sup) => `<span class="tag">${escapeHtml(sup.name)}</span>`).join('')}
           ${session.fasted ? '<span class="tag tag-fasted">fasted</span>' : ''}
         </div>
+        ${supplementDetails ? `<div class="supplement-list">${supplementDetails}</div>` : ''}
         ${session.reminder_note ? `<div class="session-note">${escapeHtml(session.reminder_note)}</div>` : ''}
         ${session.id ? `<div class="session-actions"><button class="btn-taken" type="button">${isSent ? 'Undo' : 'Taken now'}</button></div>` : ''}
       `
