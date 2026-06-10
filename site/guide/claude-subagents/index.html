@@ -463,6 +463,7 @@
     color: var(--bg);
   }
   .chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(224,138,106,0.5); }
+  .chat-fab.hidden { opacity: 0; pointer-events: none; transform: scale(0.8); }
   .chat-fab svg { width: 22px; height: 22px; }
 
   .chat-sidebar {
@@ -1466,8 +1467,8 @@ You are a [role]. When invoked: [steps]. Return: [format]. Do not: [constraints]
   let chatHistory = [];
   let chatBusy    = false;
 
-  function openChat()  { chatSidebar.classList.add('open');    chatInput.focus(); }
-  function closeChat() { chatSidebar.classList.remove('open'); }
+  function openChat()  { chatSidebar.classList.add('open'); chatFab.classList.add('hidden'); chatInput.focus(); }
+  function closeChat() { chatSidebar.classList.remove('open'); chatFab.classList.remove('hidden'); }
 
   chatFab.addEventListener('click',   openChat);
   chatClose.addEventListener('click', closeChat);
