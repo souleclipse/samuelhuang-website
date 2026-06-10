@@ -1,21 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
+import { requireDashboardAuth } from './_dashboard-auth.js'
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
-
-function getPin(req) {
-  return req.headers['x-samuel-os-pin'] || req.headers['x-dashboard-pin'] || req.body?.pin || ''
-}
-
-function requireDashboardPin(req, res) {
-  const expected = process.env.SAMUEL_OS_PIN || process.env.DASHBOARD_PIN || ''
-  if (!expected) return true
-  if (getPin(req) === expected) return true
-  res.status(401).json({ error: 'PIN required' })
-  return false
-}
 
 async function updateScheduleRow(id, values) {
   return supabase
@@ -28,7 +17,7 @@ async function updateScheduleRow(id, values) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).send('Method not allowed')
-  if (!requireDashboardPin(req, res)) return
+  if (!requireDashboardAuth(req, res)) return
 
   const { id, taken = true } = req.body || {}
   if (!id) return res.status(400).json({ error: 'Missing schedule row id' })

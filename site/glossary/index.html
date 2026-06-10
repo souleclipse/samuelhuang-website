@@ -140,6 +140,11 @@
     letter-spacing: -0.01em;
     margin-bottom: 6px;
   }
+  h2 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  h2 a:hover { color: var(--green); }
   .tag {
     display: inline-flex;
     align-items: center;
@@ -175,6 +180,30 @@
     background: var(--green-bg);
     border-color: #1C5A48;
   }
+  .page-actions {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .open-link {
+    align-self: flex-start;
+    border: 1px solid #1C5A48;
+    border-radius: 7px;
+    background: var(--green-bg);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1;
+    padding: 10px 11px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .open-link:hover {
+    color: var(--ink);
+    border-color: var(--green);
+    text-decoration: none;
+  }
   .page-body {
     padding: 18px;
   }
@@ -202,6 +231,7 @@
     font-size: 12px;
     line-height: 1.6;
   }
+  .notes a { color: var(--green); }
   .toast {
     position: fixed;
     left: 50%;
@@ -225,7 +255,12 @@
     .count { text-align: left; }
     .grid { grid-template-columns: 1fr; }
     .page-head { flex-direction: column; }
-    .copy-btn { width: 100%; }
+    .page-actions { width: 100%; }
+    .copy-btn,
+    .open-link {
+      width: 100%;
+      text-align: center;
+    }
   }
 </style>
 </head>
@@ -243,7 +278,7 @@
         <p>A reference index for the Samuelhuang pages created in this project. Each entry has the production URL ready to open or copy.</p>
       </div>
       <div class="count">
-        <strong>4</strong>
+        <strong>9</strong>
         <span>active routes</span>
       </div>
     </header>
@@ -252,10 +287,13 @@
       <article class="page-card">
         <div class="page-head">
           <div class="page-title">
-            <h2>Home</h2>
+            <h2><a href="https://samuelhuang.org/">Home</a></h2>
             <span class="tag">Index</span>
           </div>
-          <button class="copy-btn" data-url="https://samuelhuang.org/">Copy URL</button>
+          <div class="page-actions">
+            <a class="open-link" href="https://samuelhuang.org/">Open page</a>
+            <button class="copy-btn" data-url="https://samuelhuang.org/">Copy URL</button>
+          </div>
         </div>
         <div class="page-body">
           <p>The root page for Samuelhuang links, including the guide, Hermes prompt, and this glossary.</p>
@@ -266,10 +304,47 @@
       <article class="page-card">
         <div class="page-head">
           <div class="page-title">
-            <h2>Tool-Agnostic Coding Agent Setup</h2>
+            <h2><a href="https://samuelhuang.org/guide/claude-subagents">Build Claude Subagents Better Than 99% of People</a></h2>
             <span class="tag guide">Guide</span>
           </div>
-          <button class="copy-btn" data-url="https://samuelhuang.org/guide/tool-agnostic-setup">Copy URL</button>
+          <div class="page-actions">
+            <a class="open-link" href="https://samuelhuang.org/guide/claude-subagents">Open page</a>
+            <button class="copy-btn" data-url="https://samuelhuang.org/guide/claude-subagents">Copy URL</button>
+          </div>
+        </div>
+        <div class="page-body">
+          <p>The complete Claude Code subagents guide: what they are, the mental model, when to use one, six copy-ready agent templates, orchestration patterns, and a cheat sheet. Includes a hand-drawn slide deck.</p>
+          <a class="url" href="https://samuelhuang.org/guide/claude-subagents">https://samuelhuang.org/guide/claude-subagents</a>
+        </div>
+      </article>
+
+      <article class="page-card">
+        <div class="page-head">
+          <div class="page-title">
+            <h2><a href="https://samuelhuang.org/guide/claude-subagents/slides">Claude Subagents — Slide Deck</a></h2>
+            <span class="tag guide">Guide</span>
+          </div>
+          <div class="page-actions">
+            <a class="open-link" href="https://samuelhuang.org/guide/claude-subagents/slides">Open page</a>
+            <button class="copy-btn" data-url="https://samuelhuang.org/guide/claude-subagents/slides">Copy URL</button>
+          </div>
+        </div>
+        <div class="page-body">
+          <p>The hand-drawn slide deck companion to the subagents guide. Use the ← → arrow keys to navigate.</p>
+          <a class="url" href="https://samuelhuang.org/guide/claude-subagents/slides">https://samuelhuang.org/guide/claude-subagents/slides</a>
+        </div>
+      </article>
+
+      <article class="page-card">
+        <div class="page-head">
+          <div class="page-title">
+            <h2><a href="https://samuelhuang.org/guide/tool-agnostic-setup">Tool-Agnostic Coding Agent Setup</a></h2>
+            <span class="tag guide">Guide</span>
+          </div>
+          <div class="page-actions">
+            <a class="open-link" href="https://samuelhuang.org/guide/tool-agnostic-setup">Open page</a>
+            <button class="copy-btn" data-url="https://samuelhuang.org/guide/tool-agnostic-setup">Copy URL</button>
+          </div>
         </div>
         <div class="page-body">
           <p>A Claude Code and Codex setup guide with copy-ready conversion prompts for creating matching adapter files.</p>
@@ -280,10 +355,13 @@
       <article class="page-card">
         <div class="page-head">
           <div class="page-title">
-            <h2>Hermes Agent Bootstrap Prompt</h2>
+            <h2><a href="https://samuelhuang.org/hermes-bootstrap-prompt">Hermes Agent Bootstrap Prompt</a></h2>
             <span class="tag tool">Prompt</span>
           </div>
-          <button class="copy-btn" data-url="https://samuelhuang.org/hermes-bootstrap-prompt">Copy URL</button>
+          <div class="page-actions">
+            <a class="open-link" href="https://samuelhuang.org/hermes-bootstrap-prompt">Open page</a>
+            <button class="copy-btn" data-url="https://samuelhuang.org/hermes-bootstrap-prompt">Copy URL</button>
+          </div>
         </div>
         <div class="page-body">
           <p>An OCR-converted Hermes first-run prompt split into copyable sections for setup, daily questions, and automations.</p>
@@ -294,19 +372,73 @@
       <article class="page-card">
         <div class="page-head">
           <div class="page-title">
-            <h2>Samuel OS Dashboard</h2>
+            <h2><a href="https://samuelhuang.org/guide/every-claude-feature-ranked">Every Claude Feature Ranked</a></h2>
+            <span class="tag guide">Guide</span>
+          </div>
+          <div class="page-actions">
+            <a class="open-link" href="https://samuelhuang.org/guide/every-claude-feature-ranked">Open page</a>
+            <button class="copy-btn" data-url="https://samuelhuang.org/guide/every-claude-feature-ranked">Copy URL</button>
+          </div>
+        </div>
+        <div class="page-body">
+          <p>A consolidated Claude feature ranking guide with the source pack, tier board, S-tier countdown, Top 50 details, and ranks 51-137 appendix.</p>
+          <a class="url" href="https://samuelhuang.org/guide/every-claude-feature-ranked">https://samuelhuang.org/guide/every-claude-feature-ranked</a>
+        </div>
+      </article>
+
+      <article class="page-card">
+        <div class="page-head">
+          <div class="page-title">
+            <h2><a href="https://samuelhuang.org/guide/skill-store-map">Skill Store Map</a></h2>
+            <span class="tag guide">Guide</span>
+          </div>
+          <div class="page-actions">
+            <a class="open-link" href="https://samuelhuang.org/guide/skill-store-map">Open page</a>
+            <button class="copy-btn" data-url="https://samuelhuang.org/guide/skill-store-map">Copy URL</button>
+          </div>
+        </div>
+        <div class="page-body">
+          <p>A side-by-side map of installed cloud, technical, agent, and workflow skills with plain-English summaries for each one.</p>
+          <a class="url" href="https://samuelhuang.org/guide/skill-store-map">https://samuelhuang.org/guide/skill-store-map</a>
+        </div>
+      </article>
+
+      <article class="page-card">
+        <div class="page-head">
+          <div class="page-title">
+            <h2><a href="https://samuelhuang.org/dashboard">Samuel OS Dashboard</a></h2>
             <span class="tag">Dashboard</span>
           </div>
-          <button class="copy-btn" data-url="https://samuelhuang.org/dashboard">Copy URL</button>
+          <div class="page-actions">
+            <a class="open-link" href="https://samuelhuang.org/dashboard">Open page</a>
+            <button class="copy-btn" data-url="https://samuelhuang.org/dashboard">Copy URL</button>
+          </div>
         </div>
         <div class="page-body">
           <p>The supplement schedule dashboard for wake-time based sessions, reminder state, and Samuel OS daily timing.</p>
           <a class="url" href="https://samuelhuang.org/dashboard">https://samuelhuang.org/dashboard</a>
         </div>
       </article>
+
+      <article class="page-card">
+        <div class="page-head">
+          <div class="page-title">
+            <h2><a href="https://samuelhuang.org/bookmark">Bookmarks</a></h2>
+            <span class="tag">Bookmarks</span>
+          </div>
+          <div class="page-actions">
+            <a class="open-link" href="https://samuelhuang.org/bookmark">Open page</a>
+            <button class="copy-btn" data-url="https://samuelhuang.org/bookmark">Copy URL</button>
+          </div>
+        </div>
+        <div class="page-body">
+          <p>A self-hosted bookmark manager with collections, search, favorites, and an OpenRouter-powered "paste a URL → auto-sorted" flow with a reviewable sort history.</p>
+          <a class="url" href="https://samuelhuang.org/bookmark">https://samuelhuang.org/bookmark</a>
+        </div>
+      </article>
     </section>
 
-    <p class="notes">Legacy route: https://samuelhuang.org/tool-agnostic-setup redirects to the guide route above.</p>
+    <p class="notes">Legacy route: <a href="https://samuelhuang.org/tool-agnostic-setup">https://samuelhuang.org/tool-agnostic-setup</a> redirects to the guide route above.</p>
   </main>
 
   <div class="toast" id="toast">Copied</div>

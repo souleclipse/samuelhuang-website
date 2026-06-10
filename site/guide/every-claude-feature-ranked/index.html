@@ -1,0 +1,3448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Every Claude Feature Ranked</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1B1F27;
+    --line: #2A2E38;
+    --ink: #F2F3F5;
+    --ink-soft: #B8BBC5;
+    --ink-mute: #777C89;
+    --green: #2BC79A;
+    --green-bg: #11271F;
+    --amber: #F0B35E;
+    --amber-bg: #2C2214;
+    --blue: #8FB7FF;
+    --blue-bg: #142033;
+    --red: #E06C75;
+    --red-bg: #2D171C;
+    --purple: #A6A0FF;
+    --purple-bg: #1D1B35;
+    --code-bg: #07080C;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--green); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(11, 12, 16, 0.94);
+    backdrop-filter: blur(14px);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 750;
+  }
+  .brand-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+  .nav-link {
+    color: var(--ink-mute);
+    font-size: 13px;
+  }
+  .nav-link:hover { color: var(--ink); }
+
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 42px 24px 88px;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px;
+    align-items: end;
+    padding: 22px 0 34px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  h1 {
+    max-width: 820px;
+    font-size: 58px;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+  .hero-copy {
+    max-width: 740px;
+    margin-top: 18px;
+    color: var(--ink-soft);
+    font-size: 17px;
+    line-height: 1.65;
+  }
+  .meta {
+    display: grid;
+    gap: 8px;
+    justify-items: end;
+    color: var(--ink-mute);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .meta strong { color: var(--ink); font-size: 13px; }
+
+  .section-nav {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 22px 0 8px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 7px 13px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+  .chip:hover { color: var(--ink); border-color: var(--green); text-decoration: none; }
+
+  section.block {
+    margin-top: 42px;
+  }
+  .section-head {
+    display: grid;
+    gap: 8px;
+    max-width: 820px;
+    margin-bottom: 18px;
+  }
+  .section-kicker {
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  h2 {
+    font-size: 28px;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+  .section-head p {
+    color: var(--ink-soft);
+    font-size: 15px;
+  }
+
+  .stat-grid,
+  .source-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .stat,
+  .source-card,
+  .method-card,
+  .feature-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+  .stat {
+    padding: 18px;
+  }
+  .stat strong {
+    display: block;
+    color: var(--ink);
+    font-size: 28px;
+    line-height: 1;
+    margin-bottom: 7px;
+  }
+  .stat span {
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .stat p {
+    margin-top: 8px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .source-card {
+    display: grid;
+    gap: 10px;
+    padding: 18px;
+  }
+  .source-type {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 128px;
+    height: 34px;
+    border: 1px solid #1C5A48;
+    border-radius: 999px;
+    background: var(--green-bg);
+    color: var(--green);
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .source-card h3 { font-size: 17px; line-height: 1.25; }
+  .source-card p { color: var(--ink-soft); font-size: 14px; }
+  .source-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    min-height: 34px;
+    color: var(--green);
+    background: var(--green-bg);
+    border: 1px solid #1C5A48;
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .source-link:hover {
+    color: var(--ink);
+    border-color: var(--green);
+    text-decoration: none;
+  }
+  .source-link:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+  }
+
+  .method-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+    gap: 14px;
+  }
+  .method-card {
+    padding: 20px;
+  }
+  .method-card h3 {
+    font-size: 17px;
+    margin-bottom: 10px;
+  }
+  .method-card p,
+  .method-card li {
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .method-card ul {
+    display: grid;
+    gap: 8px;
+    list-style: none;
+  }
+  .weights {
+    display: grid;
+    gap: 8px;
+  }
+  .weight {
+    display: grid;
+    grid-template-columns: 80px 1fr 44px;
+    gap: 10px;
+    align-items: center;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+  .weight i {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .weight i::before {
+    content: "";
+    display: block;
+    width: var(--w);
+    height: 100%;
+    background: var(--green);
+  }
+  .category-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .category-cloud span {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  .tier-board {
+    display: grid;
+    gap: 12px;
+  }
+  .tier-row {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 12px;
+    align-items: stretch;
+  }
+  .tier-label {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 14px;
+  }
+  .tier-label > span {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    color: var(--bg);
+    font-size: 24px;
+    font-weight: 800;
+    flex: 0 0 auto;
+  }
+  .tier-label h3 { font-size: 16px; line-height: 1.2; }
+  .tier-label p {
+    color: var(--ink-mute);
+    font-size: 12px;
+    line-height: 1.45;
+    margin-top: 4px;
+  }
+  .tier-items {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    list-style: none;
+  }
+  .tier-items li {
+    min-width: 0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 11px 12px;
+  }
+  .tier-items li.is-hot {
+    border-color: #1C5A48;
+    background: var(--green-bg);
+  }
+  .tier-items strong {
+    display: block;
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.35;
+  }
+  .tier-items span {
+    display: block;
+    color: var(--ink-soft);
+    font-size: 12px;
+    line-height: 1.45;
+    margin-top: 4px;
+  }
+  .tier-S .tier-label > span { background: var(--amber); }
+  .tier-A .tier-label > span { background: var(--green); }
+  .tier-B .tier-label > span { background: var(--blue); }
+  .tier-C .tier-label > span { background: var(--purple); }
+  .tier-D .tier-label > span { background: var(--ink-mute); }
+
+  .feature-list {
+    display: grid;
+    gap: 14px;
+  }
+  .feature-card {
+    overflow: hidden;
+  }
+  .feature-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: start;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .rank-line {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 7px;
+  }
+  .rank-line span,
+  .rank-line strong {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .rank-line span {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid #1C5A48;
+  }
+  .rank-line strong {
+    background: var(--blue-bg);
+    color: var(--blue);
+    border: 1px solid #274A78;
+  }
+  .feature-card h3 {
+    font-size: 20px;
+    line-height: 1.25;
+  }
+  .score-badge {
+    display: grid;
+    place-items: center;
+    min-width: 64px;
+    height: 44px;
+    border: 1px solid #1C5A48;
+    border-radius: 8px;
+    background: var(--green-bg);
+    color: var(--green);
+    font-size: 18px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .feature-copy {
+    display: grid;
+    gap: 10px;
+    padding: 16px 18px;
+  }
+  .feature-copy p {
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .feature-copy strong { color: var(--ink); }
+  .scores {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    padding: 0 18px 16px;
+  }
+  .score-pill {
+    position: relative;
+    min-height: 46px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--code-bg);
+    padding: 8px;
+    overflow: hidden;
+  }
+  .score-pill span,
+  .score-pill b {
+    position: relative;
+    z-index: 2;
+    display: block;
+  }
+  .score-pill span {
+    color: var(--ink-mute);
+    font-size: 11px;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .score-pill b {
+    color: var(--ink);
+    font-size: 14px;
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .score-pill i {
+    position: absolute;
+    inset: auto 0 0;
+    display: block;
+    width: var(--w);
+    height: 3px;
+    background: var(--green);
+  }
+  .source-row {
+    border-top: 1px solid var(--line);
+    padding: 12px 18px;
+    color: var(--ink-mute);
+    font-size: 12px;
+    word-break: break-word;
+  }
+
+  .table-wrap {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    overflow: auto;
+  }
+  table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  thead th {
+    position: sticky;
+    top: 0;
+    background: var(--surface-2);
+    color: var(--ink-mute);
+    text-align: left;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-soft);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody td:first-child,
+  tbody td:nth-child(3) {
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+
+  .note {
+    border: 1px solid #274A78;
+    border-left: 3px solid var(--blue);
+    border-radius: 8px;
+    background: var(--blue-bg);
+    padding: 16px 18px;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .note strong { color: var(--ink); }
+
+  footer {
+    margin-top: 42px;
+    border-top: 1px solid var(--line);
+    padding-top: 24px;
+    color: var(--ink-mute);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  @media (max-width: 960px) {
+    .hero,
+    .method-grid,
+    .tier-row {
+      grid-template-columns: 1fr;
+    }
+    .meta {
+      justify-items: start;
+    }
+    .tier-items {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .scores {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .topbar { padding: 16px 20px; }
+    .wrap { padding: 30px 18px 72px; }
+    h1 { font-size: 38px; }
+    h2 { font-size: 24px; }
+    .stat-grid,
+    .source-grid,
+    .tier-items {
+      grid-template-columns: 1fr;
+    }
+    .feature-head {
+      grid-template-columns: 1fr;
+    }
+    .score-badge {
+      width: 64px;
+    }
+    .scores {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="brand-dot"></span>Samuel Huang</div>
+    <a class="nav-link" href="/">Home</a>
+  </div>
+
+  <main class="wrap">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">Claude Feature Guide</div>
+        <h1>Every Claude Feature Ranked</h1>
+        <p class="hero-copy">A consolidated guide from the video resource pack: the creator tier board, the S-tier countdown, the full data-ranked Top 50, and the complete ranks 51-137 appendix.</p>
+      </div>
+      <div class="meta">
+        <strong>Built from local source files</strong>
+        <span>137 verified Claude Code features</span>
+        <span>50 detailed rankings</span>
+        <span>Video: https://youtu.be/vfWTyEreOEc</span>
+      </div>
+    </header>
+
+    <nav class="section-nav" aria-label="Guide sections">
+      <a class="chip" href="#sources">Sources</a>
+      <a class="chip" href="#methodology">Methodology</a>
+      <a class="chip" href="#tiers">Tier board</a>
+      <a class="chip" href="#top-50">Top 50</a>
+      <a class="chip" href="#appendix">Ranks 51-137</a>
+    </nav>
+
+    <section class="block" aria-label="Summary">
+      <div class="stat-grid">
+        
+      <div class="stat">
+        <strong>229</strong>
+        <span>Raw features discovered</span>
+        <p>Ten parallel research agents gathered candidates from official docs and changelog sources.</p>
+      </div>
+        
+      <div class="stat">
+        <strong>142</strong>
+        <span>Distinct after dedupe</span>
+        <p>Near-duplicates were merged before verification.</p>
+      </div>
+        
+      <div class="stat">
+        <strong>137</strong>
+        <span>Confirmed features</span>
+        <p>Five candidates were rejected as unverifiable or not Claude Code features.</p>
+      </div>
+      </div>
+    </section>
+
+    <section class="block" id="sources">
+      <div class="section-head">
+        <div class="section-kicker">Source Pack</div>
+        <h2>What This Guide Contains</h2>
+        <p>The downloaded deck is used only as a content source. This page uses the existing Samuelhuang guide design instead of the deck's hand-drawn slide styling.</p>
+      </div>
+      <div class="source-grid">
+        
+      <article class="source-card">
+        <div class="source-type">HTML deck</div>
+        <h3>Tier List Deck</h3>
+        <p>The broad Claude ecosystem tier board, plus the S-tier countdown used in the video.</p>
+        
+      </article>
+        
+      <article class="source-card">
+        <div class="source-type">Markdown data</div>
+        <h3>Top 50 Claude Code Features - Ranked</h3>
+        <p>The companion ranking: 137 verified Claude Code features with scores, sources, and appendix rows.</p>
+        
+      </article>
+        
+      <article class="source-card">
+        <div class="source-type">Video</div>
+        <h3>I Tested Every Claude Code Feature, These 12 Are the Best</h3>
+        <p>The source video referenced by the resource pack.</p>
+        <a class="source-link" href="https://youtu.be/vfWTyEreOEc" aria-label="Open the source video">Watch video</a>
+      </article>
+      </div>
+    </section>
+
+    <section class="block" id="methodology">
+      <div class="section-head">
+        <div class="section-kicker">Methodology</div>
+        <h2>How The Data Ranking Was Scored</h2>
+        <p>The Markdown companion ranks for daily practical power. It is a separate data lens from the deck's personal tier board.</p>
+      </div>
+      <div class="method-grid">
+        <div class="method-card">
+          <h3>Ranking process</h3>
+          <ul>
+            <li>Discovery: 229 raw features across 10 categories, researched from official Claude Code docs and the official GitHub changelog.</li>
+            <li>Verification: deduped to 142 distinct features, then confirmed 137 genuine Claude Code features.</li>
+            <li>Judging: each feature scored 0-10 across five dimensions by a three-judge panel: daily power user, team lead, and strict skeptic.</li>
+            <li>Dimensions: Impact, Breadth, Ease, Novelty, and Wow.</li>
+          </ul>
+          <div class="category-cloud" aria-label="Categories"><span>Agent SDK</span><span>Automation &amp; Hooks</span><span>CI/CD</span><span>Code Quality</span><span>Context Management</span><span>Cost &amp; Monitoring</span><span>IDE Integrations</span><span>Integrations</span><span>Memory</span><span>Model Capabilities</span><span>Non-Interactive Mode</span><span>Parallel Work</span><span>Permissions &amp; Security</span><span>Plugins</span><span>Project Setup</span><span>Research</span><span>Session Management</span><span>Skills</span><span>Sub-Agents</span><span>Surfaces &amp; Access</span><span>Workflow Control</span></div>
+        </div>
+        <div class="method-card">
+          <h3>Composite weights</h3>
+          <div class="weights">
+            <div class="weight"><span>Impact</span><i style="--w:35%"></i><b>35%</b></div>
+            <div class="weight"><span>Breadth</span><i style="--w:30%"></i><b>30%</b></div>
+            <div class="weight"><span>Ease</span><i style="--w:15%"></i><b>15%</b></div>
+            <div class="weight"><span>Novelty</span><i style="--w:10%"></i><b>10%</b></div>
+            <div class="weight"><span>Wow</span><i style="--w:10%"></i><b>10%</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="tiers">
+      <div class="section-head">
+        <div class="section-kicker">Video Tier Board</div>
+        <h2>The Deck's Claude Ecosystem Ranking</h2>
+        <p>The board below preserves the deck's broader Claude ecosystem list. Hot cards were called out in the original deck data.</p>
+      </div>
+      <div class="note"><strong>Top 12 in order:</strong> 1. Skills / 2. Status line / 3. Routines / 4. Remote control / 5. /loop / 6. Sub-agents / 7. /rewind / 8. Agent teams / 9. Auto memory / 10. /insights / 11. ultra plan / 12. /goal</div>
+      <div style="height: 16px"></div>
+      <div class="tier-board">
+        
+      <section class="tier-row tier-S" aria-label="S tier">
+        <div class="tier-label">
+          <span>S</span>
+          <div>
+            <h3>The top 12</h3>
+            <p>The features the deck says changed day-to-day work.</p>
+          </div>
+        </div>
+        <ul class="tier-items"><li><strong>#1 Skills</strong><span>Reusable /skills folders that teach Claude your own workflows.</span></li><li><strong>#2 Status Line</strong><span>A scriptable live status bar: context, effort, anything you script in.</span></li><li><strong>#3 Routines</strong><span>Cloud agents that run on a schedule with your laptop closed.</span></li><li><strong>#4 Remote Control</strong><span>Drive your local Claude Code session from your phone or the web.</span></li><li><strong>#5 /loop</strong><span>Repeat a prompt on an interval until a condition is met.</span></li><li><strong>#6 Subagents</strong><span>Spin off background agents, each in its own context window.</span></li><li><strong>#7 /rewind</strong><span>Roll back code and conversation to any earlier checkpoint.</span></li><li><strong>#8 Agent Teams</strong><span>A named team of agents that run in parallel and message each other.</span></li><li><strong>#9 Auto Memory</strong><span>Remembers your preferences and patterns per repo, on its own.</span></li><li><strong>#10 /insights</strong><span>A local report on your last 30 days: patterns and friction points.</span></li><li><strong>#11 Ultraplan</strong><span>Offload planning to the cloud, review and comment in the browser.</span></li><li><strong>#12 /goal</strong><span>Set a finish line and Claude keeps working until it is met.</span></li></ul>
+      </section>
+      <section class="tier-row tier-A" aria-label="A tier">
+        <div class="tier-label">
+          <span>A</span>
+          <div>
+            <h3>Honorable mentions</h3>
+            <p>Strong Claude ecosystem features that sit just below S.</p>
+          </div>
+        </div>
+        <ul class="tier-items"><li class="is-hot"><strong>Google Workspace CLI</strong><span>Runs Gmail, Drive, Docs, Sheets from the terminal. Proof Claude can drive any CLI.</span></li><li class="is-hot"><strong>Dispatch</strong><span>Start a task on your phone, Claude runs it on your desktop, sends the result.</span></li><li class="is-hot"><strong>Claude Desktop App</strong><span>The Mac and Windows home base for chat, Cowork, and connectors.</span></li><li class="is-hot"><strong>Claude Design</strong><span>Describe it and Claude builds polished designs, slides, and one-pagers.</span></li><li class=""><strong>Plugins &amp; Marketplace</strong><span>Install bundles of skills, agents, and hooks from a marketplace.</span></li><li class=""><strong>Workspace Connectors</strong><span>Connect Gmail, Calendar, Drive so Claude works with your Google data.</span></li><li class=""><strong>File Creation &amp; Editing</strong><span>Builds Excel, Word, PowerPoint, and PDF files you can download.</span></li><li class=""><strong>Ultracode</strong><span>Top effort tier: max reasoning plus auto multi-agent workflows.</span></li><li class=""><strong>Effort Levels</strong><span>Dial reasoning depth from low to max with /effort.</span></li><li class=""><strong>Channels</strong><span>Pipe Telegram, Discord, or iMessage into a live session, two-way.</span></li><li class=""><strong>Hooks</strong><span>Run your own commands automatically on session events.</span></li><li class=""><strong>Auto Mode</strong><span>Auto-approves safe actions, blocks risky ones, no constant prompts.</span></li><li class=""><strong>/background</strong><span>Push a session to the background and reattach later.</span></li><li class=""><strong>Agent View</strong><span>One dashboard of every background agent and its status.</span></li><li class=""><strong>Plan Mode</strong><span>Claude researches and proposes a plan before touching anything.</span></li><li class=""><strong>/btw</strong><span>Ask a quick side question without derailing the main task.</span></li><li class=""><strong>/usage</strong><span>Token and cost breakdown for your session.</span></li><li class=""><strong>/context</strong><span>See exactly what is filling your context window.</span></li><li class=""><strong>Prompt Caching</strong><span>Reuses repeated context so big sessions cost less and respond faster.</span></li></ul>
+      </section>
+      <section class="tier-row tier-B" aria-label="B tier">
+        <div class="tier-label">
+          <span>B</span>
+          <div>
+            <h3>Genuinely useful</h3>
+            <p>Good features that are not the personal top tier.</p>
+          </div>
+        </div>
+        <ul class="tier-items"><li class="is-hot"><strong>Dynamic Workflows</strong><span>Claude writes a script that runs up to 1,000 agents for huge jobs.</span></li><li class="is-hot"><strong>Git Worktrees</strong><span>Run agents in isolated copies of your repo so they never collide.</span></li><li class="is-hot"><strong>Ultrareview</strong><span>A fleet of cloud agents verifies every bug before reporting it.</span></li><li class=""><strong>/deep-research</strong><span>Fans out web searches and returns one cited report.</span></li><li class=""><strong>Claude in Chrome</strong><span>A side panel that clicks, fills forms, and acts across your tabs.</span></li><li class=""><strong>Artifact Apps</strong><span>Build shareable apps powered by live Claude, no code.</span></li><li class=""><strong>Computer Use</strong><span>Claude points and clicks to run any app when there is no connector.</span></li><li class=""><strong>Advanced Research</strong><span>Chains searches across the web and your apps into a cited report.</span></li><li class=""><strong>Projects</strong><span>Workspaces that keep chats, files, and instructions together.</span></li><li class=""><strong>Mobile Push</strong><span>Phone alert when a long task finishes or needs you.</span></li><li class=""><strong>/recap</strong><span>A quick recap of where you left off when you return.</span></li><li class=""><strong>Interactive Charts</strong><span>Claude draws charts and diagrams right in the chat.</span></li><li class=""><strong>Artifacts</strong><span>Outputs render in a side panel you can edit live.</span></li><li class=""><strong>Cross-Device Convo</strong><span>Start on phone, continue on desktop in one thread.</span></li><li class=""><strong>Browser Recording</strong><span>Record a browser task once, Claude repeats it on demand.</span></li><li class=""><strong>Memory</strong><span>Carries relevant context from past chats into new ones.</span></li><li class=""><strong>Connectors Directory</strong><span>Browse and add vetted connectors.</span></li><li class=""><strong>Claude for M365</strong><span>Native Claude inside Word, Excel, PowerPoint, and Outlook.</span></li></ul>
+      </section>
+      <section class="tier-row tier-C" aria-label="C tier">
+        <div class="tier-label">
+          <span>C</span>
+          <div>
+            <h3>Useful, but lower for this workflow</h3>
+            <p>Cowork, web, and interaction features that matter less to this ranking lens.</p>
+          </div>
+        </div>
+        <ul class="tier-items"><li class="is-hot"><strong>Voice Mode</strong><span>Full spoken conversations, hands-free.</span></li><li class="is-hot"><strong>Cowork</strong><span>Anthropic&#39;s no-terminal agent desktop for knowledge work.</span></li><li class="is-hot"><strong>Interactive Connectors</strong><span>Add and manage MCP connectors right inside the CLI.</span></li><li class=""><strong>Citations</strong><span>Grounds answers in your documents with exact citations. API.</span></li><li class=""><strong>Chat Search</strong><span>Search across all your past conversations.</span></li><li class=""><strong>Claude in Slack</strong><span>Mention @Claude in Slack and it does the task, posts back.</span></li><li class=""><strong>Local File Access</strong><span>Connect a folder so Claude reads and organizes your files.</span></li><li class=""><strong>Cowork Plugins</strong><span>Bundles of skills and connectors for Cowork.</span></li><li class=""><strong>Cowork Projects</strong><span>Group Cowork tasks into a persistent workspace.</span></li><li class=""><strong>Incognito Chats</strong><span>A chat that is not saved, remembered, or trained on.</span></li><li class=""><strong>/teleport</strong><span>Pull a Claude web session down into your terminal.</span></li></ul>
+      </section>
+      <section class="tier-row tier-D" aria-label="D tier">
+        <div class="tier-label">
+          <span>D</span>
+          <div>
+            <h3>Table stakes and plumbing</h3>
+            <p>Important basics that are real and useful, but rarely favorite features.</p>
+          </div>
+        </div>
+        <ul class="tier-items"><li class="is-hot"><strong>Memory Files (CLAUDE.md)</strong><span>A file Claude reads every session to know your project.</span></li><li class="is-hot"><strong>Context Lifecycle</strong><span>/clear, /compact, /resume to manage the conversation.</span></li><li class="is-hot"><strong>Web Search</strong><span>Claude searches the web and cites its sources.</span></li><li class=""><strong>Permissions</strong><span>Control what Claude can do without asking.</span></li><li class=""><strong>Fast Mode</strong><span>Opus with faster output, toggle with /fast.</span></li><li class=""><strong>File Uploads</strong><span>Drop in images, PDFs, and docs.</span></li><li class=""><strong>Output Styles</strong><span>Change how Claude formats its answers.</span></li><li class=""><strong>Headless Mode</strong><span>Run Claude as a one-shot command in scripts.</span></li><li class=""><strong>Sandboxed Bash</strong><span>Run shell commands safely in a sandbox.</span></li><li class=""><strong>Transcript Viewer</strong><span>Scroll back through the whole session (Ctrl+O).</span></li><li class=""><strong>History Search</strong><span>Search your past prompts (Ctrl+R).</span></li><li class=""><strong>Shell Mode</strong><span>Run a raw shell command with the ! prefix.</span></li><li class=""><strong>Voice Dictation</strong><span>Talk instead of type with /voice.</span></li><li class=""><strong>Custom Themes</strong><span>Change the CLI color theme.</span></li><li class=""><strong>IDE Extension</strong><span>Claude Code inside VS Code and JetBrains.</span></li><li class=""><strong>Mobile Apps</strong><span>Claude on iOS and Android.</span></li><li class=""><strong>Code Review</strong><span>Claude reviews your git diff with /code-review.</span></li></ul>
+      </section>
+      </div>
+    </section>
+
+    <section class="block" id="top-50">
+      <div class="section-head">
+        <div class="section-kicker">Data Ranking</div>
+        <h2>The Top 50 Claude Code Features</h2>
+        <p>Each entry keeps the feature description, practical value, score breakdown, category, composite score, and official source URL from the Markdown companion.</p>
+      </div>
+      <div class="feature-list">
+        
+      <article class="feature-card" id="rank-1">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#1</span><strong>Workflow Control</strong></div>
+            <h3>/plan (Plan Mode)</h3>
+          </div>
+          <div class="score-badge">8.03</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Switches Claude to read-only plan mode: it maps the codebase and writes a plan but makes zero edits until you approve.</p>
+          <p><strong>Why it matters:</strong> Catch a bad direction before Claude writes a hundred lines of wrong code.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>8.5</b>
+            <i style="--w:85%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>8.2</b>
+            <i style="--w:82%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.5</b>
+            <i style="--w:85%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.3</b>
+            <i style="--w:63%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>7.0</b>
+            <i style="--w:70%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-2">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#2</span><strong>Workflow Control</strong></div>
+            <h3>/rewind (Checkpointing)</h3>
+          </div>
+          <div class="score-badge">7.99</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Claude auto-snapshots all file edits before each prompt; run /rewind or press Esc twice on an empty prompt to restore code, conversation, or both from any prior checkpoint.</p>
+          <p><strong>Why it matters:</strong> Fearless experimentation: every prompt is a save point you can roll back to.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>8.2</b>
+            <i style="--w:82%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>7.7</b>
+            <i style="--w:77%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.8</b>
+            <i style="--w:88%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>7.3</b>
+            <i style="--w:73%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>7.7</b>
+            <i style="--w:77%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/checkpointing">https://code.claude.com/docs/en/checkpointing</a></div>
+      </article>
+      <article class="feature-card" id="rank-3">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#3</span><strong>Context Management</strong></div>
+            <h3>@-File Mentions</h3>
+          </div>
+          <div class="score-badge">7.58</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Type @ followed by a file or directory path in your prompt to trigger autocomplete and inject its contents directly into the prompt.</p>
+          <p><strong>Why it matters:</strong> Gives Claude exactly the context it needs without waiting for it to discover files on its own.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.7</b>
+            <i style="--w:77%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>8.8</b>
+            <i style="--w:88%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>9.3</b>
+            <i style="--w:93%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>4.2</b>
+            <i style="--w:42%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>4.3</b>
+            <i style="--w:43%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/interactive-mode">https://code.claude.com/docs/en/interactive-mode</a></div>
+      </article>
+      <article class="feature-card" id="rank-4">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#4</span><strong>Memory</strong></div>
+            <h3>CLAUDE.md Memory Hierarchy</h3>
+          </div>
+          <div class="score-badge">7.47</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> CLAUDE.md loads from four scopes every session: managed policy, user (~/.claude), project (./CLAUDE.md or .claude/CLAUDE.md), and local (CLAUDE.local.md), all concatenated in order.</p>
+          <p><strong>Why it matters:</strong> You can layer org-wide rules, personal preferences, and project conventions without conflicts.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>8.3</b>
+            <i style="--w:83%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>8.3</b>
+            <i style="--w:83%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>5.5</b>
+            <i style="--w:55%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>4.3</b>
+            <i style="--w:43%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/memory">https://code.claude.com/docs/en/memory</a></div>
+      </article>
+      <article class="feature-card" id="rank-5">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#5</span><strong>Context Management</strong></div>
+            <h3>Auto-Compaction</h3>
+          </div>
+          <div class="score-badge">7.45</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> When a session nears its context limit, Claude Code automatically summarizes history and re-injects CLAUDE.md so the session keeps running without you doing anything.</p>
+          <p><strong>Why it matters:</strong> Long tasks don&#39;t die at the context wall; they continue automatically.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.0</b>
+            <i style="--w:70%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>8.5</b>
+            <i style="--w:85%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>10.0</b>
+            <i style="--w:100%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>4.8</b>
+            <i style="--w:48%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>4.7</b>
+            <i style="--w:47%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/costs">https://code.claude.com/docs/en/costs</a></div>
+      </article>
+      <article class="feature-card" id="rank-6">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#6</span><strong>Skills</strong></div>
+            <h3>Skills (SKILL.md Custom Commands)</h3>
+          </div>
+          <div class="score-badge">7.35</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Markdown instruction files in .claude/skills/&lt;name&gt;/ that Claude loads on demand when invoked or relevant, following the open Agent Skills standard.</p>
+          <p><strong>Why it matters:</strong> Package repeatable workflows as reusable commands without bloating the always-on system prompt.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>8.5</b>
+            <i style="--w:85%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>7.3</b>
+            <i style="--w:73%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/skills">https://code.claude.com/docs/en/skills</a></div>
+      </article>
+      <article class="feature-card" id="rank-7">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#7</span><strong>Workflow Control</strong></div>
+            <h3>ESC to Interrupt</h3>
+          </div>
+          <div class="score-badge">7.34</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Press Esc during any response or tool call to stop Claude mid-turn while preserving work it has already completed.</p>
+          <p><strong>Why it matters:</strong> Redirect immediately when Claude heads the wrong direction without losing what it already did right.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>8.8</b>
+            <i style="--w:88%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>10.0</b>
+            <i style="--w:100%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>3.2</b>
+            <i style="--w:32%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>3.7</b>
+            <i style="--w:37%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/interactive-mode">https://code.claude.com/docs/en/interactive-mode</a></div>
+      </article>
+      <article class="feature-card" id="rank-8">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#8</span><strong>Workflow Control</strong></div>
+            <h3>Shift+Tab Permission Mode Cycling</h3>
+          </div>
+          <div class="score-badge">7.28</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Press Shift+Tab to cycle permission modes (default, acceptEdits, plan, and any extras you have enabled such as auto or bypassPermissions) without restarting the session.</p>
+          <p><strong>Why it matters:</strong> Switch from careful mode to auto-accept mid-session when you trust the direction Claude is heading.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.3</b>
+            <i style="--w:73%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>7.7</b>
+            <i style="--w:77%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>9.0</b>
+            <i style="--w:90%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>5.7</b>
+            <i style="--w:57%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>5.0</b>
+            <i style="--w:50%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/interactive-mode">https://code.claude.com/docs/en/interactive-mode</a></div>
+      </article>
+      <article class="feature-card" id="rank-9">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#9</span><strong>Sub-Agents</strong></div>
+            <h3>Built-in Subagents (Explore, Plan, General-purpose)</h3>
+          </div>
+          <div class="score-badge">7.23</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Three pre-configured subagents ship by default: Explore (read-only Haiku for search), Plan (read-only, used in plan mode), and General-purpose (all tools, for complex multi-step tasks).</p>
+          <p><strong>Why it matters:</strong> Out of the box, Claude already routes search and planning to cost-optimized workers.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>9.3</b>
+            <i style="--w:93%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.2</b>
+            <i style="--w:62%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>5.5</b>
+            <i style="--w:55%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/sub-agents">https://code.claude.com/docs/en/sub-agents</a></div>
+      </article>
+      <article class="feature-card" id="rank-10">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#10</span><strong>Code Quality</strong></div>
+            <h3>/code-review</h3>
+          </div>
+          <div class="score-badge">7.20</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Bundled skill that reviews the current diff for correctness bugs and cleanups at a selectable effort level, with --fix to auto-apply findings and --comment to post inline GitHub PR comments.</p>
+          <p><strong>Why it matters:</strong> Automated code review on every diff with one command, with findings applied or posted without leaving the terminal.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.7</b>
+            <i style="--w:77%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.8</b>
+            <i style="--w:68%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.3</b>
+            <i style="--w:83%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>5.7</b>
+            <i style="--w:57%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-11">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#11</span><strong>Context Management</strong></div>
+            <h3>/clear</h3>
+          </div>
+          <div class="score-badge">7.10</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Starts a new conversation with empty context while keeping the previous one available to return to via /resume.</p>
+          <p><strong>Why it matters:</strong> Clean slate for a new task without losing the thread of earlier work.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.7</b>
+            <i style="--w:67%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>9.0</b>
+            <i style="--w:90%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>10.0</b>
+            <i style="--w:100%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>2.8</b>
+            <i style="--w:28%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>2.8</b>
+            <i style="--w:28%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-12">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#12</span><strong>Permissions &amp; Security</strong></div>
+            <h3>Permission Modes (default / acceptEdits / plan / auto / dontAsk / bypassPermissions)</h3>
+          </div>
+          <div class="score-badge">7.10</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Six modes (default, acceptEdits, plan, auto, dontAsk, bypassPermissions) control how aggressively Claude acts without prompting, from asking before every tool call to skipping all checks.</p>
+          <p><strong>Why it matters:</strong> Lets you dial autonomy precisely - high trust for personal machines, tight controls for shared or sensitive repos.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>7.8</b>
+            <i style="--w:78%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>5.2</b>
+            <i style="--w:52%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>4.8</b>
+            <i style="--w:48%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/settings">https://code.claude.com/docs/en/settings</a></div>
+      </article>
+      <article class="feature-card" id="rank-13">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#13</span><strong>Workflow Control</strong></div>
+            <h3>opusplan Model Alias</h3>
+          </div>
+          <div class="score-badge">6.99</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Set your model to opusplan and Claude uses Opus during plan mode for reasoning, then automatically switches to Sonnet for execution.</p>
+          <p><strong>Why it matters:</strong> Best-of-both-worlds: heavy reasoning where it matters, efficient generation where it doesn&#39;t.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.3</b>
+            <i style="--w:73%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.2</b>
+            <i style="--w:62%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>7.8</b>
+            <i style="--w:78%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/model-config">https://code.claude.com/docs/en/model-config</a></div>
+      </article>
+      <article class="feature-card" id="rank-14">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#14</span><strong>Memory</strong></div>
+            <h3>Auto Memory (MEMORY.md)</h3>
+          </div>
+          <div class="score-badge">6.94</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Claude automatically writes build commands, debugging insights, and preferences it discovers into ~/.claude/projects/&lt;repo&gt;/memory/MEMORY.md; the first 200 lines load into every session automatically.</p>
+          <p><strong>Why it matters:</strong> Claude gets smarter about your project over time without you manually updating CLAUDE.md.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.8</b>
+            <i style="--w:68%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.7</b>
+            <i style="--w:87%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>5.8</b>
+            <i style="--w:58%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/memory">https://code.claude.com/docs/en/memory</a></div>
+      </article>
+      <article class="feature-card" id="rank-15">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#15</span><strong>Workflow Control</strong></div>
+            <h3>ultrathink Keyword</h3>
+          </div>
+          <div class="score-badge">6.92</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Include ultrathink anywhere in a prompt to trigger deeper reasoning on that single turn without changing your session effort setting. No other keyword phrases (think hard, think more) are recognized.</p>
+          <p><strong>Why it matters:</strong> One-off deep reasoning on demand without touching your effort configuration.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.8</b>
+            <i style="--w:68%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>9.3</b>
+            <i style="--w:93%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.2</b>
+            <i style="--w:62%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>5.8</b>
+            <i style="--w:58%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/model-config">https://code.claude.com/docs/en/model-config</a></div>
+      </article>
+      <article class="feature-card" id="rank-16">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#16</span><strong>Project Setup</strong></div>
+            <h3>/init</h3>
+          </div>
+          <div class="score-badge">6.91</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Generates a starter CLAUDE.md by analyzing your codebase; set CLAUDE_CODE_NEW_INIT=1 to enable an interactive multi-phase flow that also walks through skills, hooks, and memory files.</p>
+          <p><strong>Why it matters:</strong> Cuts setup time for new repos to seconds instead of writing CLAUDE.md from scratch.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.8</b>
+            <i style="--w:68%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>9.0</b>
+            <i style="--w:90%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>4.3</b>
+            <i style="--w:43%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>4.8</b>
+            <i style="--w:48%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-17">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#17</span><strong>Context Management</strong></div>
+            <h3>/compact</h3>
+          </div>
+          <div class="score-badge">6.91</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Summarizes the current conversation to free context, with an optional focus instruction (e.g. /compact focus on code samples) to shape what gets preserved.</p>
+          <p><strong>Why it matters:</strong> Extends long sessions without losing the plot on what matters.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.8</b>
+            <i style="--w:68%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>7.7</b>
+            <i style="--w:77%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>9.0</b>
+            <i style="--w:90%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>4.7</b>
+            <i style="--w:47%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>4.0</b>
+            <i style="--w:40%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-18">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#18</span><strong>Workflow Control</strong></div>
+            <h3>Task List (TodoWrite / Ctrl+T)</h3>
+          </div>
+          <div class="score-badge">6.91</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> For multi-step work Claude maintains a task list in the terminal status area showing pending, in-progress, and completed items; toggle visibility with Ctrl+T.</p>
+          <p><strong>Why it matters:</strong> Track where Claude is in a long task at a glance without reading the transcript.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.3</b>
+            <i style="--w:63%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>7.8</b>
+            <i style="--w:78%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>9.2</b>
+            <i style="--w:92%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>4.5</b>
+            <i style="--w:45%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>5.2</b>
+            <i style="--w:52%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/interactive-mode">https://code.claude.com/docs/en/interactive-mode</a></div>
+      </article>
+      <article class="feature-card" id="rank-19">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#19</span><strong>Integrations</strong></div>
+            <h3>MCP Tool Search (Deferred Loading)</h3>
+          </div>
+          <div class="score-badge">6.91</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Enabled by default: only tool names load at session start and Claude fetches full schemas on demand via a ToolSearch call, so large MCP server collections barely affect context.</p>
+          <p><strong>Why it matters:</strong> Lets you connect many MCP servers without burning context window space on tools Claude never uses.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.0</b>
+            <i style="--w:70%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.0</b>
+            <i style="--w:60%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>9.2</b>
+            <i style="--w:92%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>7.3</b>
+            <i style="--w:73%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>5.5</b>
+            <i style="--w:55%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/mcp">https://code.claude.com/docs/en/mcp</a></div>
+      </article>
+      <article class="feature-card" id="rank-20">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#20</span><strong>Sub-Agents</strong></div>
+            <h3>Custom Subagents (.claude/agents/)</h3>
+          </div>
+          <div class="score-badge">6.84</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Define reusable specialist agents as markdown files with YAML frontmatter in .claude/agents/ or ~/.claude/agents/ that Claude auto-delegates to based on their description field.</p>
+          <p><strong>Why it matters:</strong> Build a stable of purpose-built workers (researcher, code-reviewer, etc.) that activate automatically when relevant.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.7</b>
+            <i style="--w:77%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.3</b>
+            <i style="--w:63%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.3</b>
+            <i style="--w:63%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/sub-agents">https://code.claude.com/docs/en/sub-agents</a></div>
+      </article>
+      <article class="feature-card" id="rank-21">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#21</span><strong>Context Management</strong></div>
+            <h3>/context</h3>
+          </div>
+          <div class="score-badge">6.82</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Visualizes context window usage as a colored grid and surfaces optimization suggestions for memory bloat and capacity warnings.</p>
+          <p><strong>Why it matters:</strong> You can see exactly what is eating your context before it becomes a problem.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.3</b>
+            <i style="--w:63%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>9.2</b>
+            <i style="--w:92%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>6.3</b>
+            <i style="--w:63%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-22">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#22</span><strong>IDE Integrations</strong></div>
+            <h3>VS Code Extension</h3>
+          </div>
+          <div class="score-badge">6.81</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Native VS Code panel with side-by-side inline diff review before any file is written, @-mention with line-range context, an editable Markdown plan in Plan mode, and per-message checkpoint rewind.</p>
+          <p><strong>Why it matters:</strong> Review and control Claude&#39;s file changes visually inside VS Code without switching to a terminal.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.8</b>
+            <i style="--w:58%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>7.0</b>
+            <i style="--w:70%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.3</b>
+            <i style="--w:63%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/vs-code">https://code.claude.com/docs/en/vs-code</a></div>
+      </article>
+      <article class="feature-card" id="rank-23">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#23</span><strong>Code Quality</strong></div>
+            <h3>/security-review</h3>
+          </div>
+          <div class="score-badge">6.73</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Built-in command that analyzes the current git diff for security vulnerabilities including injection, auth issues, and data exposure.</p>
+          <p><strong>Why it matters:</strong> Catches security regressions before they leave the branch, without leaving the terminal.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.0</b>
+            <i style="--w:70%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.8</b>
+            <i style="--w:58%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.3</b>
+            <i style="--w:83%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.3</b>
+            <i style="--w:63%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-24">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#24</span><strong>Code Quality</strong></div>
+            <h3>/verify</h3>
+          </div>
+          <div class="score-badge">6.68</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Bundled skill that builds and runs your app, then observes the result to confirm a code change works - rather than relying on tests or type checks.</p>
+          <p><strong>Why it matters:</strong> Validates changes against live app behavior, not just static analysis, catching runtime issues tests miss.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.0</b>
+            <i style="--w:70%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.0</b>
+            <i style="--w:60%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/skills">https://code.claude.com/docs/en/skills</a></div>
+      </article>
+      <article class="feature-card" id="rank-25">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#25</span><strong>Model Capabilities</strong></div>
+            <h3>1 Million Token Context Window</h3>
+          </div>
+          <div class="score-badge">6.68</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Opus and Sonnet support a 1 million token context window via the opus[1m] or sonnet[1m] model aliases, or by appending [1m] to a full model name.</p>
+          <p><strong>Why it matters:</strong> Handle massive codebases or long sessions without hitting context limits on complex multi-file tasks.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.3</b>
+            <i style="--w:53%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.2</b>
+            <i style="--w:82%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.3</b>
+            <i style="--w:63%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/model-config">https://code.claude.com/docs/en/model-config</a></div>
+      </article>
+      <article class="feature-card" id="rank-26">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#26</span><strong>Research</strong></div>
+            <h3>/deep-research</h3>
+          </div>
+          <div class="score-badge">6.65</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Bundled workflow that fans out web searches across angles, fetches and cross-checks sources, and synthesizes a cited report.</p>
+          <p><strong>Why it matters:</strong> Delivers a sourced research brief in one command instead of manually searching and reading multiple pages.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.7</b>
+            <i style="--w:67%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.8</b>
+            <i style="--w:58%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.3</b>
+            <i style="--w:83%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.0</b>
+            <i style="--w:60%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-27">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#27</span><strong>Workflow Control</strong></div>
+            <h3>/resume</h3>
+          </div>
+          <div class="score-badge">6.61</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Reopens a previous conversation by ID, name, or interactive picker; background sessions appear in the picker marked with bg.</p>
+          <p><strong>Why it matters:</strong> Pick up any past session exactly where you left off, including sessions that ran in the background.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.7</b>
+            <i style="--w:67%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.8</b>
+            <i style="--w:88%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>4.0</b>
+            <i style="--w:40%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>4.0</b>
+            <i style="--w:40%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-28">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#28</span><strong>Integrations</strong></div>
+            <h3>/mcp</h3>
+          </div>
+          <div class="score-badge">6.59</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Manages MCP server connections and OAuth authentication for external tool integrations.</p>
+          <p><strong>Why it matters:</strong> Single command to connect, inspect, and authenticate any MCP server without editing config files.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.7</b>
+            <i style="--w:67%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>5.0</b>
+            <i style="--w:50%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>5.0</b>
+            <i style="--w:50%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-29">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#29</span><strong>CI/CD</strong></div>
+            <h3>GitHub Actions (@claude Trigger)</h3>
+          </div>
+          <div class="score-badge">6.53</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Install the Claude GitHub App and add a workflow YAML to get @claude mentions in PRs and issues, plus event-driven and scheduled automation with full CLI flag passthrough via claude_args.</p>
+          <p><strong>Why it matters:</strong> Turns GitHub comments into automated code changes and PRs without leaving your normal review workflow.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.7</b>
+            <i style="--w:57%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>5.7</b>
+            <i style="--w:57%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.3</b>
+            <i style="--w:63%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/github-actions">https://code.claude.com/docs/en/github-actions</a></div>
+      </article>
+      <article class="feature-card" id="rank-30">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#30</span><strong>Permissions &amp; Security</strong></div>
+            <h3>Auto Mode with ML Classifier</h3>
+          </div>
+          <div class="score-badge">6.50</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> In auto mode, a built-in ML classifier evaluates each tool call against environment context and custom allow/soft-deny/hard-deny rule sets to decide whether to approve, prompt, or block.</p>
+          <p><strong>Why it matters:</strong> Reduces interruptions on routine operations while still catching genuinely risky actions.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.8</b>
+            <i style="--w:68%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.3</b>
+            <i style="--w:53%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>7.8</b>
+            <i style="--w:78%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/settings">https://code.claude.com/docs/en/settings</a></div>
+      </article>
+      <article class="feature-card" id="rank-31">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#31</span><strong>Automation &amp; Hooks</strong></div>
+            <h3>Hooks System</h3>
+          </div>
+          <div class="score-badge">6.50</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> User-defined shell commands, HTTP endpoints, LLM prompt evaluations, MCP tools, or spawned subagents that run automatically at specific lifecycle points (PreToolUse, PostToolUse, Notification, etc.).</p>
+          <p><strong>Why it matters:</strong> Adds deterministic enforcement and automation that doesn&#39;t depend on Claude choosing to act.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.8</b>
+            <i style="--w:78%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.5</b>
+            <i style="--w:55%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>4.8</b>
+            <i style="--w:48%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>7.0</b>
+            <i style="--w:70%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>6.8</b>
+            <i style="--w:68%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/hooks-guide">https://code.claude.com/docs/en/hooks-guide</a></div>
+      </article>
+      <article class="feature-card" id="rank-32">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#32</span><strong>Non-Interactive Mode</strong></div>
+            <h3>--print / -p (Headless Mode)</h3>
+          </div>
+          <div class="score-badge">6.46</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Runs Claude non-interactively: sends a prompt, prints the response, and exits; accepts piped stdin content.</p>
+          <p><strong>Why it matters:</strong> Compose Claude into shell pipelines, CI scripts, and automation without any interactive UI.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.3</b>
+            <i style="--w:73%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.7</b>
+            <i style="--w:57%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>5.2</b>
+            <i style="--w:52%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>5.5</b>
+            <i style="--w:55%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/cli-reference">https://code.claude.com/docs/en/cli-reference</a></div>
+      </article>
+      <article class="feature-card" id="rank-33">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#33</span><strong>Workflow Control</strong></div>
+            <h3>/model</h3>
+          </div>
+          <div class="score-badge">6.42</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Switches the model mid-session; as of v2.1.153 it also saves the choice as your default for new sessions. The picker includes a left/right arrow effort-level slider for supported models.</p>
+          <p><strong>Why it matters:</strong> Swap to Opus for a hard problem and back to Sonnet for routine work without restarting.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.0</b>
+            <i style="--w:60%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>7.3</b>
+            <i style="--w:73%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>9.3</b>
+            <i style="--w:93%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>3.5</b>
+            <i style="--w:35%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>3.7</b>
+            <i style="--w:37%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-34">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#34</span><strong>Cost &amp; Monitoring</strong></div>
+            <h3>/usage</h3>
+          </div>
+          <div class="score-badge">6.42</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Shows session cost, plan usage limits, and activity stats broken down by skill, subagent, plugin, and MCP server. /cost and /stats are aliases.</p>
+          <p><strong>Why it matters:</strong> Pinpoints which skills or agents are burning the most tokens so you can optimize session cost.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>5.7</b>
+            <i style="--w:57%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>9.3</b>
+            <i style="--w:93%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>4.3</b>
+            <i style="--w:43%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>4.5</b>
+            <i style="--w:45%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-35">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#35</span><strong>Surfaces &amp; Access</strong></div>
+            <h3>Claude Code on the Web</h3>
+          </div>
+          <div class="score-badge">6.42</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> A browser-based surface at claude.ai/code that runs sessions on Anthropic-managed cloud infrastructure, clones GitHub repos, and keeps sessions alive after the browser tab closes.</p>
+          <p><strong>Why it matters:</strong> Kick off long-running tasks without a local setup and check back from any device when they finish.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.8</b>
+            <i style="--w:68%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.2</b>
+            <i style="--w:52%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>7.0</b>
+            <i style="--w:70%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.8</b>
+            <i style="--w:68%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/claude-code-on-the-web">https://code.claude.com/docs/en/claude-code-on-the-web</a></div>
+      </article>
+      <article class="feature-card" id="rank-36">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#36</span><strong>Workflow Control</strong></div>
+            <h3>Image Paste (Ctrl+V)</h3>
+          </div>
+          <div class="score-badge">6.38</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Press Ctrl+V (or Cmd+V in iTerm2, Alt+V on Windows/WSL) to paste a clipboard image into the prompt as an [Image #N] chip you can reference in your message.</p>
+          <p><strong>Why it matters:</strong> Drop in a screenshot of a bug or a design mockup without leaving the terminal.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.3</b>
+            <i style="--w:63%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.3</b>
+            <i style="--w:83%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>4.3</b>
+            <i style="--w:43%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>5.3</b>
+            <i style="--w:53%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/interactive-mode">https://code.claude.com/docs/en/interactive-mode</a></div>
+      </article>
+      <article class="feature-card" id="rank-37">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#37</span><strong>Session Management</strong></div>
+            <h3>Remote Control</h3>
+          </div>
+          <div class="score-badge">6.38</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Connects claude.ai/code or the Claude mobile app to a local Claude Code session so you can drive it from any browser or phone, including sending messages and approving permission prompts remotely.</p>
+          <p><strong>Why it matters:</strong> Continue in-progress local work from a phone or another computer without moving files to the cloud.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.7</b>
+            <i style="--w:67%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>4.8</b>
+            <i style="--w:48%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>6.7</b>
+            <i style="--w:67%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>7.7</b>
+            <i style="--w:77%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>8.3</b>
+            <i style="--w:83%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/remote-control">https://code.claude.com/docs/en/remote-control</a></div>
+      </article>
+      <article class="feature-card" id="rank-38">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#38</span><strong>Permissions &amp; Security</strong></div>
+            <h3>Allow / Deny / Ask Permission Rules</h3>
+          </div>
+          <div class="score-badge">6.32</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Granular settings.json rules whitelist or block specific tool calls (e.g., Bash(npm run *), Read(.env), WebFetch) with deny evaluated first before ask, then allow.</p>
+          <p><strong>Why it matters:</strong> Prevents accidental destructive commands or credential reads without blocking everything else.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.7</b>
+            <i style="--w:67%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>4.5</b>
+            <i style="--w:45%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>3.8</b>
+            <i style="--w:38%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/settings">https://code.claude.com/docs/en/settings</a></div>
+      </article>
+      <article class="feature-card" id="rank-39">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#39</span><strong>Memory</strong></div>
+            <h3>@-Import Syntax in CLAUDE.md</h3>
+          </div>
+          <div class="score-badge">6.29</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Use @path/to/file inside any CLAUDE.md to pull in external docs at session start; imported files load fully into context and can recursively import others up to four hops deep.</p>
+          <p><strong>Why it matters:</strong> Keeps CLAUDE.md concise by referencing shared docs like READMEs and package.json rather than duplicating them.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.0</b>
+            <i style="--w:70%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.0</b>
+            <i style="--w:60%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>6.8</b>
+            <i style="--w:68%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>5.7</b>
+            <i style="--w:57%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>4.5</b>
+            <i style="--w:45%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/memory">https://code.claude.com/docs/en/memory</a></div>
+      </article>
+      <article class="feature-card" id="rank-40">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#40</span><strong>Permissions &amp; Security</strong></div>
+            <h3>/permissions</h3>
+          </div>
+          <div class="score-badge">6.23</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Interactive dialog to manage allow, ask, and deny rules by scope, including review of recent auto-mode denials.</p>
+          <p><strong>Why it matters:</strong> Gives you a single UI to tune Claude&#39;s permissions without editing settings JSON by hand.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.3</b>
+            <i style="--w:63%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>6.7</b>
+            <i style="--w:67%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.2</b>
+            <i style="--w:82%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>4.2</b>
+            <i style="--w:42%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>3.7</b>
+            <i style="--w:37%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-41">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#41</span><strong>IDE Integrations</strong></div>
+            <h3>VS Code @browser Chrome Integration</h3>
+          </div>
+          <div class="score-badge">6.23</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Type @browser in the VS Code prompt to give Claude control of your Chrome browser via the Claude in Chrome extension: open tabs, read console errors, and automate web workflows using your existing login state.</p>
+          <p><strong>Why it matters:</strong> Debug live web apps and automate browser tasks without leaving VS Code or managing separate browser automation setup.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.8</b>
+            <i style="--w:68%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>4.7</b>
+            <i style="--w:47%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>5.8</b>
+            <i style="--w:58%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>8.2</b>
+            <i style="--w:82%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/vs-code">https://code.claude.com/docs/en/vs-code</a></div>
+      </article>
+      <article class="feature-card" id="rank-42">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#42</span><strong>Plugins</strong></div>
+            <h3>Plugin Marketplaces</h3>
+          </div>
+          <div class="score-badge">6.21</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Host a marketplace.json catalog in any git repo and users install plugins via /plugin install; Anthropic maintains an official curated marketplace and a community marketplace for third-party submissions.</p>
+          <p><strong>Why it matters:</strong> Teams can self-host internal plugin catalogs while the community marketplace gives access to vetted third-party plugins.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.2</b>
+            <i style="--w:52%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>6.7</b>
+            <i style="--w:67%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.7</b>
+            <i style="--w:67%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/plugin-marketplaces">https://code.claude.com/docs/en/plugin-marketplaces</a></div>
+      </article>
+      <article class="feature-card" id="rank-43">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#43</span><strong>Code Quality</strong></div>
+            <h3>/code-review ultra</h3>
+          </div>
+          <div class="score-badge">6.18</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Running /code-review ultra (or the alias /ultrareview) runs a deep multi-agent code review in a cloud sandbox.</p>
+          <p><strong>Why it matters:</strong> Thorough multi-agent review for high-stakes PRs without spinning up your own infrastructure.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.0</b>
+            <i style="--w:70%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>4.2</b>
+            <i style="--w:42%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>6.7</b>
+            <i style="--w:67%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>7.3</b>
+            <i style="--w:73%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-44">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#44</span><strong>Workflow Control</strong></div>
+            <h3>Extended Thinking Toggle (Alt+T)</h3>
+          </div>
+          <div class="score-badge">6.17</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Press Option+T (macOS) or Alt+T (Windows/Linux) to toggle extended thinking for the session; on supported models Claude also reasons between tool calls (interleaved thinking).</p>
+          <p><strong>Why it matters:</strong> Turn on deep reasoning globally for a session when working through a complex architectural problem.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.2</b>
+            <i style="--w:62%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.8</b>
+            <i style="--w:58%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.7</b>
+            <i style="--w:87%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>4.8</b>
+            <i style="--w:48%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>4.8</b>
+            <i style="--w:48%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/model-config">https://code.claude.com/docs/en/model-config</a></div>
+      </article>
+      <article class="feature-card" id="rank-45">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#45</span><strong>Workflow Control</strong></div>
+            <h3>/effort</h3>
+          </div>
+          <div class="score-badge">6.16</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Sets reasoning effort (low, medium, high, xhigh, max, ultracode) via an interactive slider or direct argument, controlling how much the model thinks per turn.</p>
+          <p><strong>Why it matters:</strong> Trade cost for capability on a per-task basis without changing your model.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.2</b>
+            <i style="--w:62%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.5</b>
+            <i style="--w:55%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.3</b>
+            <i style="--w:83%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.0</b>
+            <i style="--w:60%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>5.0</b>
+            <i style="--w:50%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-46">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#46</span><strong>Parallel Work</strong></div>
+            <h3>/batch</h3>
+          </div>
+          <div class="score-badge">6.14</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Bundled skill that decomposes a large change into 5 to 30 independent units, presents a plan for approval, then spawns one background subagent per unit in an isolated git worktree.</p>
+          <p><strong>Why it matters:</strong> Parallelize a codebase-wide migration or refactor that would take hours done sequentially.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.2</b>
+            <i style="--w:72%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>3.8</b>
+            <i style="--w:38%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>5.7</b>
+            <i style="--w:57%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>8.2</b>
+            <i style="--w:82%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>8.2</b>
+            <i style="--w:82%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-47">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#47</span><strong>Integrations</strong></div>
+            <h3>.mcp.json Project-Scoped Servers</h3>
+          </div>
+          <div class="score-badge">6.11</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> A .mcp.json file at the project root defines MCP servers shared via version control, with ${VAR} and ${VAR:-default} environment-variable expansion in command, args, env, url, and headers.</p>
+          <p><strong>Why it matters:</strong> Lets teams share MCP server configs in git while keeping secrets out of the repo via env var references.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.8</b>
+            <i style="--w:68%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.8</b>
+            <i style="--w:58%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>6.7</b>
+            <i style="--w:67%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>5.3</b>
+            <i style="--w:53%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>4.3</b>
+            <i style="--w:43%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/mcp">https://code.claude.com/docs/en/mcp</a></div>
+      </article>
+      <article class="feature-card" id="rank-48">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#48</span><strong>Agent SDK</strong></div>
+            <h3>Agent SDK (Python &amp; TypeScript)</h3>
+          </div>
+          <div class="score-badge">6.11</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> The Claude Agent SDK exposes the same agent loop as Claude Code as a programmable async streaming API in both Python and TypeScript, with built-in tools for file read/edit, Bash, and web search.</p>
+          <p><strong>Why it matters:</strong> Embed a full Claude Code agent directly into your application without shelling out to the CLI.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>7.5</b>
+            <i style="--w:75%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>4.3</b>
+            <i style="--w:43%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>5.3</b>
+            <i style="--w:53%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>7.3</b>
+            <i style="--w:73%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/agent-sdk/overview">https://code.claude.com/docs/en/agent-sdk/overview</a></div>
+      </article>
+      <article class="feature-card" id="rank-49">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#49</span><strong>Permissions &amp; Security</strong></div>
+            <h3>/fewer-permission-prompts</h3>
+          </div>
+          <div class="score-badge">6.10</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Bundled skill that scans transcripts for common read-only Bash and MCP tool calls and writes a prioritized allowlist to project settings to reduce permission prompts.</p>
+          <p><strong>Why it matters:</strong> Cuts repetitive permission dialogs for safe, routine operations across a project.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>5.8</b>
+            <i style="--w:58%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.5</b>
+            <i style="--w:55%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.2</b>
+            <i style="--w:82%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.5</b>
+            <i style="--w:65%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>5.3</b>
+            <i style="--w:53%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      <article class="feature-card" id="rank-50">
+        <div class="feature-head">
+          <div>
+            <div class="rank-line"><span>#50</span><strong>Code Quality</strong></div>
+            <h3>/simplify</h3>
+          </div>
+          <div class="score-badge">6.07</div>
+        </div>
+        <div class="feature-copy">
+          <p><strong>What it does:</strong> Bundled skill that runs four parallel review agents covering reuse, simplification, efficiency, and abstraction level, then applies fixes - without hunting for correctness bugs.</p>
+          <p><strong>Why it matters:</strong> Cleans up code quality in one command without mixing cleanup concerns with bug-finding.</p>
+        </div>
+        <div class="scores" aria-label="Score breakdown">
+          
+          <div class="score-pill">
+            <span>Impact</span>
+            <b>6.2</b>
+            <i style="--w:62%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Breadth</span>
+            <b>5.0</b>
+            <i style="--w:50%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Ease</span>
+            <b>8.2</b>
+            <i style="--w:82%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Novelty</span>
+            <b>6.0</b>
+            <i style="--w:60%"></i>
+          </div>
+          <div class="score-pill">
+            <span>Wow</span>
+            <b>5.8</b>
+            <i style="--w:58%"></i>
+          </div>
+        </div>
+        <div class="source-row">Source: <a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+      </article>
+      </div>
+    </section>
+
+    <section class="block" id="appendix">
+      <div class="section-head">
+        <div class="section-kicker">Appendix</div>
+        <h2>Ranks 51-137</h2>
+        <p>The remaining confirmed Claude Code features from the companion ranking.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Feature</th>
+              <th>Composite</th>
+              <th>Category</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+        <tr>
+          <td>51</td>
+          <td>/diff</td>
+          <td>6.06</td>
+          <td>Code Quality</td>
+        </tr>
+        <tr>
+          <td>52</td>
+          <td>Plugins System</td>
+          <td>6.06</td>
+          <td>Plugins</td>
+        </tr>
+        <tr>
+          <td>53</td>
+          <td>/autofix-pr</td>
+          <td>6.04</td>
+          <td>CI/CD</td>
+        </tr>
+        <tr>
+          <td>54</td>
+          <td>/copy</td>
+          <td>6.03</td>
+          <td>Output</td>
+        </tr>
+        <tr>
+          <td>55</td>
+          <td>--continue / -c</td>
+          <td>6.03</td>
+          <td>Non-Interactive Mode</td>
+        </tr>
+        <tr>
+          <td>56</td>
+          <td>Agent View (claude agents)</td>
+          <td>6.00</td>
+          <td>Parallel Work</td>
+        </tr>
+        <tr>
+          <td>57</td>
+          <td>/schedule (Routines)</td>
+          <td>5.99</td>
+          <td>Automation &amp; Hooks</td>
+        </tr>
+        <tr>
+          <td>58</td>
+          <td>/agents</td>
+          <td>5.98</td>
+          <td>Parallel Work</td>
+        </tr>
+        <tr>
+          <td>59</td>
+          <td>/ultraplan</td>
+          <td>5.96</td>
+          <td>Planning</td>
+        </tr>
+        <tr>
+          <td>60</td>
+          <td>Dynamic Workflows</td>
+          <td>5.90</td>
+          <td>Parallel Work</td>
+        </tr>
+        <tr>
+          <td>61</td>
+          <td>/goal</td>
+          <td>5.90</td>
+          <td>Automation &amp; Hooks</td>
+        </tr>
+        <tr>
+          <td>62</td>
+          <td>/doctor</td>
+          <td>5.86</td>
+          <td>Troubleshooting</td>
+        </tr>
+        <tr>
+          <td>63</td>
+          <td>OAuth 2.0 for Remote MCP Servers</td>
+          <td>5.84</td>
+          <td>Integrations</td>
+        </tr>
+        <tr>
+          <td>64</td>
+          <td>Built-in Output Styles (Proactive, Explanatory, Learning)</td>
+          <td>5.84</td>
+          <td>Output Styles</td>
+        </tr>
+        <tr>
+          <td>65</td>
+          <td>Worktrees (--worktree flag)</td>
+          <td>5.83</td>
+          <td>Parallel Work</td>
+        </tr>
+        <tr>
+          <td>66</td>
+          <td>Native Sandbox</td>
+          <td>5.82</td>
+          <td>Permissions &amp; Security</td>
+        </tr>
+        <tr>
+          <td>67</td>
+          <td>claude.ai Connector Sync</td>
+          <td>5.81</td>
+          <td>Integrations</td>
+        </tr>
+        <tr>
+          <td>68</td>
+          <td>--permission-mode / --dangerously-skip-permissions</td>
+          <td>5.80</td>
+          <td>Non-Interactive Mode</td>
+        </tr>
+        <tr>
+          <td>69</td>
+          <td>Path-Scoped Rules (.claude/rules/)</td>
+          <td>5.75</td>
+          <td>Memory</td>
+        </tr>
+        <tr>
+          <td>70</td>
+          <td>Per-Subagent Model Selection</td>
+          <td>5.72</td>
+          <td>Sub-Agents</td>
+        </tr>
+        <tr>
+          <td>71</td>
+          <td>additionalDirectories (--add-dir)</td>
+          <td>5.72</td>
+          <td>Permissions &amp; Security</td>
+        </tr>
+        <tr>
+          <td>72</td>
+          <td>/loop</td>
+          <td>5.72</td>
+          <td>Automation &amp; Hooks</td>
+        </tr>
+        <tr>
+          <td>73</td>
+          <td>/config</td>
+          <td>5.71</td>
+          <td>Settings</td>
+        </tr>
+        <tr>
+          <td>74</td>
+          <td>Dynamic Context Injection in Skills (!`command`)</td>
+          <td>5.71</td>
+          <td>Skills</td>
+        </tr>
+        <tr>
+          <td>75</td>
+          <td>/background</td>
+          <td>5.69</td>
+          <td>Parallel Work</td>
+        </tr>
+        <tr>
+          <td>76</td>
+          <td>/btw</td>
+          <td>5.65</td>
+          <td>Context Management</td>
+        </tr>
+        <tr>
+          <td>77</td>
+          <td>Custom Status Line</td>
+          <td>5.64</td>
+          <td>Status Line</td>
+        </tr>
+        <tr>
+          <td>78</td>
+          <td>/branch</td>
+          <td>5.63</td>
+          <td>Workflow Control</td>
+        </tr>
+        <tr>
+          <td>79</td>
+          <td>PreToolUse Hook</td>
+          <td>5.63</td>
+          <td>Automation &amp; Hooks</td>
+        </tr>
+        <tr>
+          <td>80</td>
+          <td>Background Session Worktree Auto-Isolation</td>
+          <td>5.62</td>
+          <td>Parallel Work</td>
+        </tr>
+        <tr>
+          <td>81</td>
+          <td>--allowedTools / --disallowedTools</td>
+          <td>5.62</td>
+          <td>Non-Interactive Mode</td>
+        </tr>
+        <tr>
+          <td>82</td>
+          <td>/statusline Generator</td>
+          <td>5.61</td>
+          <td>Status Line</td>
+        </tr>
+        <tr>
+          <td>83</td>
+          <td>/insights</td>
+          <td>5.59</td>
+          <td>Cost &amp; Monitoring</td>
+        </tr>
+        <tr>
+          <td>84</td>
+          <td>--output-format (text / json / stream-json)</td>
+          <td>5.56</td>
+          <td>Non-Interactive Mode</td>
+        </tr>
+        <tr>
+          <td>85</td>
+          <td>Skill Argument Substitution</td>
+          <td>5.44</td>
+          <td>Skills</td>
+        </tr>
+        <tr>
+          <td>86</td>
+          <td>Live Skill Reload</td>
+          <td>5.38</td>
+          <td>Skills</td>
+        </tr>
+        <tr>
+          <td>87</td>
+          <td>Background Session Dispatch (claude --bg)</td>
+          <td>5.36</td>
+          <td>Parallel Work</td>
+        </tr>
+        <tr>
+          <td>88</td>
+          <td>/teleport</td>
+          <td>5.35</td>
+          <td>Session Management</td>
+        </tr>
+        <tr>
+          <td>89</td>
+          <td>Agent Teams (experimental)</td>
+          <td>5.34</td>
+          <td>Sub-Agents</td>
+        </tr>
+        <tr>
+          <td>90</td>
+          <td>Settings File Hierarchy (5-Layer)</td>
+          <td>5.33</td>
+          <td>Settings &amp; Config</td>
+        </tr>
+        <tr>
+          <td>91</td>
+          <td>/skills</td>
+          <td>5.32</td>
+          <td>Skills</td>
+        </tr>
+        <tr>
+          <td>92</td>
+          <td>--json-schema</td>
+          <td>5.31</td>
+          <td>Non-Interactive Mode</td>
+        </tr>
+        <tr>
+          <td>93</td>
+          <td>Pre-approved Tools per Skill (allowed-tools)</td>
+          <td>5.29</td>
+          <td>Skills</td>
+        </tr>
+        <tr>
+          <td>94</td>
+          <td>--append-system-prompt / --system-prompt</td>
+          <td>5.28</td>
+          <td>Non-Interactive Mode</td>
+        </tr>
+        <tr>
+          <td>95</td>
+          <td>Skill Forked Execution (context: fork)</td>
+          <td>5.27</td>
+          <td>Skills</td>
+        </tr>
+        <tr>
+          <td>96</td>
+          <td>Forked Subagents (/fork)</td>
+          <td>5.26</td>
+          <td>Sub-Agents</td>
+        </tr>
+        <tr>
+          <td>97</td>
+          <td>--max-budget-usd</td>
+          <td>5.18</td>
+          <td>Non-Interactive Mode</td>
+        </tr>
+        <tr>
+          <td>98</td>
+          <td>Foreground vs. Background Subagent Execution</td>
+          <td>5.17</td>
+          <td>Sub-Agents</td>
+        </tr>
+        <tr>
+          <td>99</td>
+          <td>Subagent Worktree Isolation (isolation: worktree)</td>
+          <td>5.16</td>
+          <td>Sub-Agents</td>
+        </tr>
+        <tr>
+          <td>100</td>
+          <td>Stop / SubagentStop Hooks</td>
+          <td>5.16</td>
+          <td>Automation &amp; Hooks</td>
+        </tr>
+        <tr>
+          <td>101</td>
+          <td>Subagent Persistent Memory</td>
+          <td>5.15</td>
+          <td>Sub-Agents</td>
+        </tr>
+        <tr>
+          <td>102</td>
+          <td>MCP Channels (Push Messages)</td>
+          <td>5.13</td>
+          <td>Integrations</td>
+        </tr>
+        <tr>
+          <td>103</td>
+          <td>MCP Transport Types (HTTP, SSE, Stdio, WebSocket)</td>
+          <td>5.11</td>
+          <td>Integrations</td>
+        </tr>
+        <tr>
+          <td>104</td>
+          <td>Targeted Summarize from /rewind</td>
+          <td>5.06</td>
+          <td>Workflow Control</td>
+        </tr>
+        <tr>
+          <td>105</td>
+          <td>/export</td>
+          <td>5.03</td>
+          <td>Output</td>
+        </tr>
+        <tr>
+          <td>106</td>
+          <td>/memory</td>
+          <td>4.98</td>
+          <td>Project Setup</td>
+        </tr>
+        <tr>
+          <td>107</td>
+          <td>Notification Hook</td>
+          <td>4.98</td>
+          <td>Automation &amp; Hooks</td>
+        </tr>
+        <tr>
+          <td>108</td>
+          <td>Custom Output Styles</td>
+          <td>4.97</td>
+          <td>Output Styles</td>
+        </tr>
+        <tr>
+          <td>109</td>
+          <td>Agent SDK Programmatic Subagents</td>
+          <td>4.97</td>
+          <td>Agent SDK</td>
+        </tr>
+        <tr>
+          <td>110</td>
+          <td>Plugin-Bundled MCP Servers</td>
+          <td>4.91</td>
+          <td>Plugins</td>
+        </tr>
+        <tr>
+          <td>111</td>
+          <td>PermissionRequest Hook</td>
+          <td>4.90</td>
+          <td>Automation &amp; Hooks</td>
+        </tr>
+        <tr>
+          <td>112</td>
+          <td>Agent SDK Session Resume &amp; Fork</td>
+          <td>4.87</td>
+          <td>Agent SDK</td>
+        </tr>
+        <tr>
+          <td>113</td>
+          <td>MCP Resources via @ Mentions</td>
+          <td>4.86</td>
+          <td>Integrations</td>
+        </tr>
+        <tr>
+          <td>114</td>
+          <td>--max-turns</td>
+          <td>4.83</td>
+          <td>Non-Interactive Mode</td>
+        </tr>
+        <tr>
+          <td>115</td>
+          <td>Claude Code as an MCP Server (claude mcp serve)</td>
+          <td>4.81</td>
+          <td>Integrations</td>
+        </tr>
+        <tr>
+          <td>116</td>
+          <td>FileChanged Hook</td>
+          <td>4.80</td>
+          <td>Automation &amp; Hooks</td>
+        </tr>
+        <tr>
+          <td>117</td>
+          <td>Agent SDK Multi-Cloud Support (Bedrock, Vertex, Azure)</td>
+          <td>4.80</td>
+          <td>Agent SDK</td>
+        </tr>
+        <tr>
+          <td>118</td>
+          <td>MCP Prompts as Slash Commands</td>
+          <td>4.77</td>
+          <td>Integrations</td>
+        </tr>
+        <tr>
+          <td>119</td>
+          <td>Skill Scope Levels</td>
+          <td>4.77</td>
+          <td>Skills</td>
+        </tr>
+        <tr>
+          <td>120</td>
+          <td>env Key in settings.json</td>
+          <td>4.77</td>
+          <td>Settings &amp; Config</td>
+        </tr>
+        <tr>
+          <td>121</td>
+          <td>/recap</td>
+          <td>4.74</td>
+          <td>Session Management</td>
+        </tr>
+        <tr>
+          <td>122</td>
+          <td>Hook Matcher System</td>
+          <td>4.69</td>
+          <td>Automation &amp; Hooks</td>
+        </tr>
+        <tr>
+          <td>123</td>
+          <td>--bare</td>
+          <td>4.64</td>
+          <td>Non-Interactive Mode</td>
+        </tr>
+        <tr>
+          <td>124</td>
+          <td>Managed / Enterprise Policy Settings</td>
+          <td>4.63</td>
+          <td>Settings &amp; Config</td>
+        </tr>
+        <tr>
+          <td>125</td>
+          <td>Subagent Scope Hierarchy</td>
+          <td>4.54</td>
+          <td>Sub-Agents</td>
+        </tr>
+        <tr>
+          <td>126</td>
+          <td>/hooks</td>
+          <td>4.53</td>
+          <td>Automation &amp; Hooks</td>
+        </tr>
+        <tr>
+          <td>127</td>
+          <td>MCP Elicitation</td>
+          <td>4.51</td>
+          <td>Integrations</td>
+        </tr>
+        <tr>
+          <td>128</td>
+          <td>disable-model-invocation Flag</td>
+          <td>4.51</td>
+          <td>Skills</td>
+        </tr>
+        <tr>
+          <td>129</td>
+          <td>alwaysLoad Flag</td>
+          <td>4.48</td>
+          <td>Integrations</td>
+        </tr>
+        <tr>
+          <td>130</td>
+          <td>MCP Output Limits (MAX_MCP_OUTPUT_TOKENS)</td>
+          <td>4.48</td>
+          <td>Integrations</td>
+        </tr>
+        <tr>
+          <td>131</td>
+          <td>--settings / --setting-sources</td>
+          <td>4.48</td>
+          <td>Non-Interactive Mode</td>
+        </tr>
+        <tr>
+          <td>132</td>
+          <td>PreCompact / PostCompact Hooks</td>
+          <td>4.47</td>
+          <td>Automation &amp; Hooks</td>
+        </tr>
+        <tr>
+          <td>133</td>
+          <td>Agent Team Plan Approval Gate</td>
+          <td>4.40</td>
+          <td>Sub-Agents</td>
+        </tr>
+        <tr>
+          <td>134</td>
+          <td>HTML Comment Stripping in CLAUDE.md</td>
+          <td>4.21</td>
+          <td>Memory</td>
+        </tr>
+        <tr>
+          <td>135</td>
+          <td>--no-session-persistence</td>
+          <td>4.20</td>
+          <td>Non-Interactive Mode</td>
+        </tr>
+        <tr>
+          <td>136</td>
+          <td>permission-prompt-tool</td>
+          <td>4.02</td>
+          <td>Non-Interactive Mode</td>
+        </tr>
+        <tr>
+          <td>137</td>
+          <td>Custom API Key Helper (apiKeyHelper)</td>
+          <td>3.95</td>
+          <td>Settings &amp; Config</td>
+        </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      Every Claude Feature Ranked - built from the local resource pack for Samuelhuang.
+    </footer>
+  </main>
+</body>
+</html>

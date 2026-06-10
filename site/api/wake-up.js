@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { verifyKey } from 'discord-interactions'
+import { requireDashboardAuth } from './_dashboard-auth.js'
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -22,18 +23,6 @@ function isValidTimeZone(timeZone) {
 function getRequestTimeZone(req) {
   const requested = req.body?.timeZone || req.headers['x-time-zone']
   return requested && isValidTimeZone(requested) ? requested : DEFAULT_TIME_ZONE
-}
-
-function getPin(req) {
-  return req.headers['x-samuel-os-pin'] || req.headers['x-dashboard-pin'] || req.body?.pin || ''
-}
-
-function requireDashboardPin(req, res) {
-  const expected = process.env.SAMUEL_OS_PIN || process.env.DASHBOARD_PIN || ''
-  if (!expected) return true
-  if (getPin(req) === expected) return true
-  res.status(401).json({ error: 'PIN required' })
-  return false
 }
 
 function datePartsInTimeZone(date, timeZone) {
@@ -201,7 +190,7 @@ export default async function handler(req, res) {
     isDiscordInteraction = true
   } else if (req.body?.source === 'web') {
     // Web dashboard POST
-    if (!requireDashboardPin(req, res)) return
+    if (!requireDashboardAuth(req, res)) return
     text = req.body.time || 'now'
     isWebRequest = true
   } else if (req.body?.message?.text) {

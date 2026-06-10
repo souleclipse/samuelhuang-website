@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build Claude Subagents Better Than 99% of People</title>
+<meta name="description" content="The complete guide to Claude Code subagents: what they are, when to use one, how to build your own, and how to save money. From the 30-second version to a fleet of orchestrated specialists.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1B1E26;
+    --line: #262932;
+    --ink: #F2F3F5;
+    --ink-soft: #B4B7C1;
+    --ink-mute: #767986;
+    --claude: #E08A6A;
+    --claude-bg: #2A1C16;
+    --codex: #2BC79A;
+    --codex-bg: #11271F;
+    --shared: #8B93FF;
+    --shared-bg: #1A1B30;
+    --warn: #E0B36A;
+    --warn-bg: #2A2316;
+    --danger: #E07A7A;
+    --danger-bg: #2A1616;
+    --code-bg: #06070A;
+    --code-ink: #DCDEE3;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* TOP BAR */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar .brand-mark {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 600;
+  }
+  .topbar .home-link {
+    font-size: 13px;
+    color: var(--ink-mute);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.15s;
+  }
+  .topbar .home-link:hover { color: var(--claude); }
+
+  /* HERO */
+  header.hero { padding: 8px 0 44px; text-align: left; }
+  .hero .eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--claude);
+    margin-bottom: 18px;
+    font-weight: 600;
+  }
+  .hero h1 {
+    font-size: 46px;
+    line-height: 1.08;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 18px;
+  }
+  .hero p.sub {
+    font-size: 18px;
+    color: var(--ink-soft);
+    max-width: 680px;
+  }
+  .hero .resource-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 26px;
+  }
+  .res-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .res-btn:hover { color: var(--ink); border-color: var(--claude); }
+  .res-btn.primary { background: var(--claude-bg); border-color: #5A3428; color: var(--claude); }
+
+  /* TOC */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px 26px;
+    margin-bottom: 64px;
+  }
+  .toc h3 {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 28px;
+  }
+  @media (max-width: 720px) { .toc-grid { grid-template-columns: 1fr; } }
+  .toc-grid a {
+    display: flex;
+    gap: 12px;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    padding: 5px 0;
+    border-bottom: 1px dashed transparent;
+    transition: color 0.15s;
+  }
+  .toc-grid a:hover { color: var(--claude); }
+  .toc-grid a .n { color: var(--ink-mute); font-variant-numeric: tabular-nums; flex: 0 0 22px; font-weight: 600; }
+
+  /* SECTIONS */
+  section { margin-bottom: 68px; scroll-margin-top: 24px; }
+  h2 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  h2 .num {
+    flex: 0 0 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--claude-bg);
+    border: 1px solid #5A3428;
+    color: var(--claude);
+    text-align: center;
+    line-height: 32px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  h3.sub-h {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 30px 0 10px;
+    color: var(--ink);
+  }
+  h4.mini-h {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 22px 0 8px;
+    color: var(--ink);
+  }
+  .section-sub {
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+    max-width: 740px;
+  }
+  p.body { color: var(--ink-soft); margin-bottom: 14px; max-width: 760px; }
+  p.body strong { color: var(--ink); }
+  p.body:last-child { margin-bottom: 0; }
+
+  ul.body, ol.body { color: var(--ink-soft); margin: 0 0 16px; padding-left: 22px; max-width: 760px; }
+  ul.body li, ol.body li { margin-bottom: 8px; }
+  ul.body li strong, ol.body li strong { color: var(--ink); }
+
+  code {
+    color: var(--claude);
+    background: var(--claude-bg);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+  }
+
+  /* EXPLAINER */
+  .explainer {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+  .explainer p { color: var(--ink-soft); margin-bottom: 12px; }
+  .explainer p:last-child { margin-bottom: 0; }
+  .explainer strong { color: var(--ink); }
+
+  /* CALLOUTS */
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--claude);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.danger { border-left-color: var(--danger); }
+  .callout.key { border-left-color: var(--shared); }
+  .callout .clabel {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--claude);
+  }
+  .callout.warn .clabel { color: var(--warn); }
+  .callout.danger .clabel { color: var(--danger); }
+  .callout.key .clabel { color: var(--shared); }
+  .callout p { color: var(--ink-soft); font-size: 14.5px; }
+  .callout p + p { margin-top: 10px; }
+  .callout strong { color: var(--ink); }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 8px 0 4px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  thead th {
+    background: var(--surface-2);
+    text-align: left;
+    padding: 13px 18px;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-mute);
+    border-bottom: 1px solid var(--line);
+  }
+  tbody td {
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td.col-key { font-weight: 600; color: var(--ink); white-space: nowrap; }
+
+  /* CODE BLOCK with copy */
+  .code-card { margin: 18px 0; }
+  .code-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .code-toolbar .code-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .code-toolbar .code-name .file { color: var(--claude); font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; }
+  .copy-btn {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 7px 12px;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .copy-btn:hover { color: var(--ink); border-color: var(--claude); }
+  .copy-btn.copied { color: var(--claude); background: var(--claude-bg); border-color: #5A3428; }
+  pre.code {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    color: var(--code-ink);
+    padding: 18px 20px;
+    border-radius: 10px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.8px;
+    line-height: 1.65;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  pre.code .fm { color: #6A6E7C; }
+  pre.code .key { color: var(--claude); }
+  pre.code .comment { color: #6A6E7C; font-style: italic; }
+
+  /* SIGNAL CARDS */
+  .signal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 8px;
+  }
+  @media (max-width: 720px) { .signal-grid { grid-template-columns: 1fr; } }
+  .signal {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .signal.go { border-left: 3px solid var(--codex); }
+  .signal.stop { border-left: 3px solid var(--danger); }
+  .signal h4 { font-size: 14.5px; margin-bottom: 6px; color: var(--ink); }
+  .signal p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
+  .signal .tagline { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+  .signal.go .tagline { color: var(--codex); }
+  .signal.stop .tagline { color: var(--danger); }
+
+  /* TWO-COLUMN CARDS (kinds, levers) */
+  .duo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 8px;
+  }
+  @media (max-width: 720px) { .duo { grid-template-columns: 1fr; } }
+  .kind-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px;
+    border-top: 3px solid var(--claude);
+  }
+  .kind-card.b { border-top-color: var(--shared); }
+  .kind-card .ktag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+    background: var(--claude-bg);
+    color: var(--claude);
+  }
+  .kind-card.b .ktag { background: var(--shared-bg); color: var(--shared); }
+  .kind-card h3 { font-size: 18px; margin-bottom: 8px; }
+  .kind-card p { font-size: 14px; color: var(--ink-soft); margin-bottom: 10px; }
+  .kind-card p:last-child { margin-bottom: 0; }
+  .kind-card strong { color: var(--ink); }
+
+  /* CHECK GUT */
+  .gutcheck {
+    background: var(--claude-bg);
+    border: 1px solid #5A3428;
+    border-radius: 14px;
+    padding: 26px 30px;
+    margin: 8px 0 24px;
+  }
+  .gutcheck .q {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--claude);
+    line-height: 1.4;
+  }
+  .gutcheck p { color: var(--ink-soft); font-size: 14.5px; margin-top: 12px; }
+
+  /* CHEAT SHEET */
+  .cheat {
+    background: var(--shared-bg);
+    border: 1px solid #2D2F50;
+    border-radius: 16px;
+    padding: 30px 32px;
+  }
+  .cheat h3 { font-size: 16px; color: var(--shared); margin: 22px 0 8px; }
+  .cheat h3:first-child { margin-top: 0; }
+  .cheat p { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 10px; }
+  .cheat strong { color: var(--ink); }
+  .cheat ol { color: var(--ink-soft); padding-left: 22px; margin-bottom: 10px; }
+  .cheat ol li { margin-bottom: 6px; }
+  .cheat ol li strong { color: var(--ink); }
+
+  /* SOURCES */
+  .sources { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  @media (max-width: 720px) { .sources { grid-template-columns: 1fr; } }
+  .sources h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute); margin-bottom: 12px; }
+  .sources ul { list-style: none; }
+  .sources li { margin-bottom: 10px; font-size: 14px; }
+  .sources a { color: var(--codex); text-decoration: none; word-break: break-word; }
+  .sources a:hover { text-decoration: underline; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translate(-50%, 90px);
+    border: 1px solid #5A3428;
+    border-radius: 8px;
+    background: var(--claude-bg);
+    color: var(--claude);
+    padding: 10px 14px;
+    font-size: 13px;
+    transition: transform 0.22s ease;
+    z-index: 50;
+  }
+  .toast.visible { transform: translate(-50%, 0); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 28px 0 0;
+    margin-top: 16px;
+    text-align: center;
+    color: var(--ink-mute);
+    font-size: 12.5px;
+  }
+  footer a { color: var(--ink-soft); text-decoration: none; }
+  footer a:hover { color: var(--claude); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <span class="brand-mark">Beginner → Advanced Guide</span>
+    <a class="home-link" href="/">samuelhuang.org</a>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <span class="eyebrow">Claude Code Subagents</span>
+    <h1>Build Claude Subagents<br>Better Than 99% of People</h1>
+    <p class="sub">From "what is this" to running your own fleet. What a subagent is, when to reach for one, how to write a great one, and how to save money doing it. Read top to bottom once, then keep it as a reference.</p>
+    <div class="resource-row">
+      <a class="res-btn primary" href="/guide/claude-subagents/slides">▦ Open the slide deck</a>
+      <a class="res-btn" href="https://youtu.be/e18sdZLwP7o" target="_blank" rel="noopener">▶ Watch the video</a>
+      <a class="res-btn" href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">↗ Official docs</a>
+    </div>
+  </header>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <h3>What's inside</h3>
+    <div class="toc-grid">
+      <a href="#p1"><span class="n">1</span>The 30-second version</a>
+      <a href="#p2"><span class="n">2</span>The mental model</a>
+      <a href="#p3"><span class="n">3</span>The two kinds of subagent</a>
+      <a href="#p4"><span class="n">4</span>What a custom one looks like</a>
+      <a href="#p5"><span class="n">5</span>How Claude decides to use one</a>
+      <a href="#p6"><span class="n">6</span>The settings (frontmatter)</a>
+      <a href="#p7"><span class="n">7</span>Tools, and why you restrict them</a>
+      <a href="#p8"><span class="n">8</span>Saving money</a>
+      <a href="#p9"><span class="n">9</span>When to actually use one</a>
+      <a href="#p10"><span class="n">10</span>Build your own, step by step</a>
+      <a href="#p11"><span class="n">11</span>Six ready-to-copy agents</a>
+      <a href="#p12"><span class="n">12</span>Chaining &amp; orchestration</a>
+      <a href="#p13"><span class="n">13</span>Limitations &amp; gotchas</a>
+      <a href="#p14"><span class="n">14</span>Common mistakes</a>
+      <a href="#p15"><span class="n">15</span>Subagents vs. everything else</a>
+      <a href="#p16"><span class="n">16</span>Cheat sheet</a>
+    </div>
+  </nav>
+
+  <!-- 1 -->
+  <section id="p1">
+    <h2><span class="num">1</span>The 30-Second Version</h2>
+    <p class="body"><strong>A subagent is a second Claude that your main Claude can hand a job to.</strong></p>
+    <p class="body">It runs in its own separate window, does the messy work (reading 40 files, searching the whole codebase, digging through logs), then hands back a short summary. All the noise stays in its window. Your main chat only sees the clean answer.</p>
+    <p class="body">That is the whole idea. Everything else in this guide is detail on top of that one sentence. Three things to lock in before we go deep:</p>
+    <ol class="body">
+      <li><strong>Subagents save your context.</strong> The main chat stays clean because the grunt work happens somewhere else.</li>
+      <li><strong>There are built-in ones and ones you build yourself.</strong> Claude ships with a few. You can write your own as little files.</li>
+      <li><strong>You can specialize them.</strong> Each one can have its own job, its own tools, and its own (cheaper) model.</li>
+    </ol>
+  </section>
+
+  <!-- 2 -->
+  <section id="p2">
+    <h2><span class="num">2</span>The Mental Model (Read This Twice)</h2>
+    <p class="body">Picture your main Claude session as <strong>you, the general contractor</strong> on a job site.</p>
+    <p class="body">You do not personally read every spec sheet, count every nail, and inspect every weld. If you did, your head would be so full of detail you would lose track of the actual build. Instead you send specialists off: "Go inspect the foundation and report back." They go do the dirty, detailed work. They come back and say "Foundation's good, one crack on the north wall, here's the photo." You never had to hold all that detail in your own head.</p>
+    <p class="body">That is exactly what a subagent is. A specialist you send off so your own head (the context window) stays clear.</p>
+
+    <h3 class="sub-h">Why this matters: the context window problem</h3>
+    <p class="body">Claude has a limited memory for any single conversation. Every file it reads, every search result, every log line gets added to that memory and stays there for the rest of the chat. Do enough heavy work and the window fills up. When it fills up, Claude gets slower, more expensive, and starts forgetting things from earlier.</p>
+    <p class="body">Heavy tasks are the worst offenders:</p>
+    <ul class="body">
+      <li>Searching 200 files for one pattern dumps dozens of file contents into memory.</li>
+      <li>Running a test suite dumps hundreds of lines of output.</li>
+      <li>Researching a problem dumps pages of documentation.</li>
+    </ul>
+    <p class="body">A subagent does all of that in <strong>its own</strong> memory. When it finishes, only the final summary comes back to your main chat. The 200 file reads, the test output, the research pages all stay behind in the subagent's window and disappear when it is done.</p>
+    <div class="callout key">
+      <span class="clabel">The #1 reason subagents exist</span>
+      <p>Not speed. Not even cost directly. <strong>Context preservation.</strong> Keep that front of mind and every other decision in this guide gets easier.</p>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="p3">
+    <h2><span class="num">3</span>The Two Kinds of Subagent</h2>
+    <div class="duo">
+      <div class="kind-card">
+        <span class="ktag">Kind 1 · Built-in</span>
+        <h3>Native subagents</h3>
+        <p>These ship with Claude Code. You do not create them. Claude reaches for them automatically when a task fits — you'll often see it say "Exploring…" without you asking.</p>
+        <p><strong>You get value on day one without building anything.</strong> The built-ins are already working for you. Building your own is the next level, not the entry fee.</p>
+      </div>
+      <div class="kind-card b">
+        <span class="ktag">Kind 2 · Custom</span>
+        <h3>The ones you build</h3>
+        <p>These are the ones you write. They live as little Markdown files in a folder. They are how you create a permanent "code reviewer," a "researcher," a "test runner" — whatever recurring specialist you need.</p>
+        <p><strong>The rest of this guide is mostly about these.</strong></p>
+      </div>
+    </div>
+
+    <h3 class="sub-h">The three built-ins that do real work</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Built-in</th><th>Model</th><th>Tools</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td class="col-key">Explore</td><td>Haiku (fast, cheap)</td><td>Read-only</td><td>Fast codebase search and file discovery. Skips your CLAUDE.md and git status to stay quick and cheap. Can be told to be "quick," "medium," or "very thorough."</td></tr>
+          <tr><td class="col-key">Plan</td><td>Inherits main model</td><td>Read-only</td><td>Gathers codebase context during Plan mode, before Claude presents a plan.</td></tr>
+          <tr><td class="col-key">General-purpose</td><td>Inherits main model</td><td>All tools</td><td>Complex, multi-step jobs that need both exploration AND action. The Swiss Army knife.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="body" style="margin-top:16px;">There are also small helper agents Claude uses behind the scenes (one that sets up your status line, one that answers questions about Claude Code itself). You will rarely think about those.</p>
+  </section>
+
+  <!-- 4 -->
+  <section id="p4">
+    <h2><span class="num">4</span>What a Custom Subagent Actually Looks Like</h2>
+    <p class="section-sub">A custom subagent is just <strong>one Markdown file</strong> with two parts: a <strong>frontmatter</strong> block at the top (settings, in YAML between <code>---</code> lines) and a <strong>body</strong> below it (plain-English instructions that become the subagent's whole personality and job).</p>
+
+    <div class="code-card">
+      <div class="code-toolbar">
+        <span class="code-name">A complete, real one · <span class="file">.claude/agents/code-reviewer.md</span></span>
+        <button class="copy-btn" data-copy="ex-reviewer">Copy</button>
+      </div>
+      <pre class="code" id="ex-reviewer"><span class="fm">---</span>
+<span class="key">name:</span> code-reviewer
+<span class="key">description:</span> Expert code review specialist. Use proactively after writing or modifying code. Also triggers on "review my changes" or "check this PR".
+<span class="key">tools:</span> Read, Grep, Glob, Bash
+<span class="key">model:</span> sonnet
+<span class="fm">---</span>
+
+You are a senior code reviewer ensuring high standards of code quality and security.
+
+When invoked:
+1. Run git diff to see recent changes
+2. Focus on modified files
+3. Begin review immediately without asking for clarification
+
+Review checklist:
+- Code clarity and readability
+- Proper error handling
+- No exposed secrets or API keys
+- Input validation present
+- Adequate test coverage
+
+Provide feedback in three tiers:
+- Critical (must fix before merge)
+- Warnings (should fix)
+- Suggestions (consider improving)
+
+Include specific file paths and line references.</pre>
+    </div>
+    <p class="body">That is it. That file IS the subagent. Drop it in the right folder and Claude can now use it.</p>
+
+    <h3 class="sub-h">Where these files live: project-level vs global-level</h3>
+    <p class="body">This is the part beginners get wrong most often, so go slow here. It comes down to one choice: <strong>where you save the file.</strong> That single choice decides two separate things — <strong>where you can use the agent</strong> (which projects it shows up in) and <strong>who else gets it</strong> (just you, or your whole team).</p>
+
+    <div class="duo">
+      <div class="kind-card">
+        <span class="ktag">Option A · Project-level</span>
+        <h3><code>.claude/agents/</code> in a repo</h3>
+        <p><strong>Where you can use it:</strong> ONLY inside that project. Open a different project and it's gone — it's bolted to this one repo.</p>
+        <p><strong>Who else gets it:</strong> Your whole team. It gets committed to git, so a teammate who clones or pulls gets the agent automatically, no install.</p>
+        <p><strong>Best for:</strong> agents that only make sense for this codebase — a "run our test suite" agent, a reviewer that knows your conventions, a deploy helper.</p>
+      </div>
+      <div class="kind-card b">
+        <span class="ktag">Option B · Global / user-level</span>
+        <h3><code>~/.claude/agents/</code> in home</h3>
+        <p><strong>Where you can use it:</strong> Every project on your machine. It follows you everywhere.</p>
+        <p><strong>Who else gets it:</strong> Nobody. Just you. It's not part of any repo — your private toolkit. A teammate only gets it if you hand them the file.</p>
+        <p><strong>Best for:</strong> your personal favorites — a general researcher, an "explain this code" helper, agents you reach for no matter what you're working on.</p>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin-top:18px;">
+      <table>
+        <thead><tr><th></th><th>Project-level</th><th>Global / user-level</th></tr></thead>
+        <tbody>
+          <tr><td class="col-key">Lives in</td><td>A specific project's folder</td><td>Your home folder</td></tr>
+          <tr><td class="col-key">Usable in</td><td>Only that one project</td><td>Every project on your machine</td></tr>
+          <tr><td class="col-key">Shared with team?</td><td><strong>Yes</strong> — rides along in git</td><td><strong>No</strong> — private to you</td></tr>
+          <tr><td class="col-key">Travels with</td><td>The codebase</td><td>Your machine / account</td></tr>
+          <tr><td class="col-key">Best for</td><td>Project-specific specialists</td><td>Your everyday personal agents</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4 class="mini-h">When the same name exists in both</h4>
+    <p class="body">If a project-level agent and a global agent share the same <code>name</code>, the <strong>project one wins</strong> inside that project. This is on purpose — it lets a project override your personal default with a project-specific version. Everywhere else, your global one still applies.</p>
+
+    <h4 class="mini-h">Two smaller notes</h4>
+    <ul class="body">
+      <li>You can organize agents into subfolders (like <code>.claude/agents/review/security.md</code>). The path changes nothing — only the unique <code>name</code> field matters.</li>
+      <li>There are a couple more advanced scopes (plugins can ship agents; enterprises can push org-wide managed ones). For 99% of use, project- and global-level are the only two you need.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="clabel">Gotcha</span>
+      <p>If you create or edit one of these files by hand, <strong>restart your Claude Code session</strong> so it picks up the change. The exception is the <code>/agents</code> command (below), which takes effect immediately.</p>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="p5">
+    <h2><span class="num">5</span>How Claude Decides to Use One</h2>
+    <p class="section-sub">You almost never call a subagent like a function. Claude picks them for you. Four ways it happens, from most hands-off to most deliberate.</p>
+
+    <h4 class="mini-h">1. Automatic delegation (the default)</h4>
+    <p class="body">Claude reads the <code>description</code> field of every available subagent and routes to the matching one. This is why the description is the single most important line in the whole file. It is not a label — it is the trigger rule.</p>
+    <ul class="body">
+      <li><strong>Weak:</strong> <code>"Security expert"</code> (Claude has no idea when to use this)</li>
+      <li><strong>Strong:</strong> <code>"Reviews code for security vulnerabilities. Use proactively after writing auth or data-handling code. Triggers on 'check this for security issues'."</code></li>
+    </ul>
+
+    <h4 class="mini-h">2. Proactive invocation</h4>
+    <p class="body">Put the literal phrase <strong>"use proactively"</strong> in the description and Claude will reach for the agent without you asking — e.g. a code reviewer that fires automatically right after you change code.</p>
+
+    <h4 class="mini-h">3. Explicit, by name</h4>
+    <p class="body">Just ask in plain English: <em>"Use the test-runner subagent to fix the failing tests."</em> Or guarantee a specific one runs by @-mentioning it: <code>@agent-code-reviewer check the auth changes</code>. The @-mention is the "I definitely want THIS one" button.</p>
+
+    <h4 class="mini-h">4. As the whole session's default</h4>
+    <p class="body">You can launch Claude so a subagent's personality runs the entire session: <code>claude --agent code-reviewer</code>. Most beginners never need this, but it exists.</p>
+
+    <div class="callout">
+      <span class="clabel">The /agents command</span>
+      <p>Type <code>/agents</code> in Claude Code to open a manager. From there you can see which subagents are running, browse every available agent, <strong>create a new one</strong> with a guided form (or by describing it and letting Claude write the file), and edit or delete existing ones. For beginners this is the easiest way to make your first subagent — and changes apply immediately, no restart.</p>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="p6">
+    <h2><span class="num">6</span>The Settings (Frontmatter Fields)</h2>
+    <p class="section-sub">You only need <strong>two</strong> fields to have a working subagent. Everything else is optional power.</p>
+
+    <h4 class="mini-h">The two required fields</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td class="col-key">name</td><td>The agent's ID. Lowercase, hyphens only (<code>code-reviewer</code>). Must be unique.</td></tr>
+          <tr><td class="col-key">description</td><td>When Claude should use it. This is your trigger rule. Write it carefully.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4 class="mini-h">The two you'll use constantly</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td class="col-key">tools</td><td>Which tools the agent may touch. Leave it out and it inherits everything. (See Part 7.)</td></tr>
+          <tr><td class="col-key">model</td><td><code>haiku</code>, <code>sonnet</code>, <code>opus</code>, or <code>inherit</code>. Leave it out and it inherits the main model. (See Part 8.)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4 class="mini-h">The advanced fields (newer versions, nice to know)</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td class="col-key">disallowedTools</td><td>The opposite of <code>tools</code>. Inherit everything EXCEPT these. Handy for "give it everything but writing."</td></tr>
+          <tr><td class="col-key">maxTurns</td><td>Caps how many steps the agent can take. Stops runaway agents from burning tokens on tangents.</td></tr>
+          <tr><td class="col-key">color</td><td>The display color in the UI. Cosmetic.</td></tr>
+          <tr><td class="col-key">skills</td><td>Preloads specific skills into the agent at startup.</td></tr>
+          <tr><td class="col-key">permissionMode</td><td>Overrides how the agent handles permission prompts.</td></tr>
+          <tr><td class="col-key">isolation: worktree</td><td>Gives the agent its own isolated copy of the repo so parallel agents don't collide when editing files.</td></tr>
+          <tr><td class="col-key">background: true</td><td>Always run this one as a non-blocking background task.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="body" style="margin-top:16px;">Start with the four. Reach for these later.</p>
+  </section>
+
+  <!-- 7 -->
+  <section id="p7">
+    <h2><span class="num">7</span>Tools (and Why You Restrict Them)</h2>
+    <p class="body">If you don't list any tools, your subagent inherits <strong>everything</strong> the main session has: reading, writing, running commands, web access, your connected services, all of it. That is usually too much.</p>
+    <p class="body">Restricting tools is free, physical enforcement. A code reviewer that only has <code>Read, Grep, Glob</code> literally cannot modify your code, no matter what goes wrong. <strong>You are not trusting it to behave. You made misbehaving impossible.</strong></p>
+
+    <div class="explainer">
+      <p><strong>Look-but-don't-touch roles</strong> (reviewer, auditor, researcher, explorer): <code>tools: Read, Grep, Glob, Bash</code> — Bash is for read-only things like <code>git diff</code> or tests, not editing.</p>
+      <p><strong>Fix-it roles</strong> (debugger, implementer): add <code>Edit</code> and/or <code>Write</code>.</p>
+      <p><strong>Web research roles:</strong> <code>tools: WebSearch, WebFetch, Read</code>.</p>
+    </div>
+    <p class="body" style="margin-top:18px;">Two ways to control it: <code>tools:</code> is an <strong>allowlist</strong> (only these, nothing else); <code>disallowedTools:</code> is a <strong>denylist</strong> (everything except these). For a reviewer, an allowlist is cleanest. For "give it the works but never let it write," a <code>disallowedTools: Write, Edit</code> denylist is faster.</p>
+  </section>
+
+  <!-- 8 -->
+  <section id="p8">
+    <h2><span class="num">8</span>Saving Money with Subagents</h2>
+    <p class="section-sub">One of the biggest wins, and one of the easiest places to shoot yourself in the foot.</p>
+
+    <h3 class="sub-h">Lever 1: Run cheap agents on cheap models</h3>
+    <p class="body">Every subagent can run on a different model. This is the main cost dial.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Model</th><th>Rough cost (per M tokens)</th><th>Use it for</th></tr></thead>
+        <tbody>
+          <tr><td class="col-key">Haiku</td><td>~$1 in / $5 out</td><td>Scanning files, summarizing logs, simple search, documentation. The cheap workhorse.</td></tr>
+          <tr><td class="col-key">Sonnet</td><td>~$3 in / $15 out</td><td>Most implementation and review work. The default sweet spot.</td></tr>
+          <tr><td class="col-key">Opus</td><td>Significantly higher</td><td>Deep reasoning only: subtle security audits, complex architecture, anywhere a wrong answer is expensive.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="body" style="margin-top:14px;"><em>Prices are approximate and change. Treat them as ratios, not gospel.</em></p>
+    <p class="body">The pattern that wins: <strong>a smart model running the show, cheap models doing the legwork.</strong> Anthropic's own multi-agent research system used an Opus "lead" with Sonnet "workers" and beat a single Opus by a wide margin on hard research tasks. The model <strong>mix</strong> beats raw spend.</p>
+    <ul class="body">
+      <li>Set your codebase explorer and doc writer to <code>model: haiku</code>. They don't need deep reasoning.</li>
+      <li>Keep reviewers and implementers on <code>sonnet</code>.</li>
+      <li>Reserve <code>opus</code> for the security auditor and gnarly debugging.</li>
+      <li>You can also set <code>CLAUDE_CODE_SUBAGENT_MODEL</code> to force a cheap model on all subagents at once (great for automated/CI runs).</li>
+    </ul>
+
+    <h3 class="sub-h">Lever 2: Context offloading (the structural saving)</h3>
+    <p class="body">This is the saving you get just by using subagents at all. The subagent reads 50 files in its own window and hands back a 3-paragraph summary. You paid for those 50 file reads <strong>once, over there</strong>. They never enter your main chat, so you're not re-paying to carry them in context for the rest of your session. On a long session, this is enormous.</p>
+
+    <div class="callout danger">
+      <span class="clabel">The trap: subagents are NOT free</span>
+      <p>A subagent starts with a blank slate. It can't see your conversation, so it re-gathers context every time it spins up. The numbers people throw around: plain chat <strong>1×</strong> tokens, single-agent coding <strong>~4×</strong>, multi-agent (lots of subagents) <strong>~15×</strong>.</p>
+      <p>That 15× is the price of parallelism and isolation. It's worth it when the task is big or keeping your main context clean is the whole point. It's a <strong>waste</strong> on a 20-second task you could have done inline.</p>
+    </div>
+    <p class="body"><strong>The rule:</strong> if the job would read 10+ files or spit out noise you'll never need again, a subagent saves money overall. If it's a small, targeted change, do it inline and skip the overhead. Bonus lever: set <code>maxTurns</code> on any agent that might wander.</p>
+  </section>
+
+  <!-- 9 -->
+  <section id="p9">
+    <h2><span class="num">9</span>When To Actually Use One</h2>
+    <p class="section-sub">The most important section. Here's how to know in the moment, every time.</p>
+
+    <div class="gutcheck">
+      <div class="q">"Is this task about to dump a pile of stuff into my chat that I'll never need to look at again?"</div>
+      <p>If yes, that's a subagent. If no, it's probably not. That's the whole heuristic — it traces straight back to Part 2: subagents exist to protect your main context. Almost every "should I use one" question is really this question in disguise.</p>
+    </div>
+
+    <h3 class="sub-h">Signals that say "use a subagent"</h3>
+    <div class="signal-grid">
+      <div class="signal go"><span class="tagline">Use one</span><h4>1. It's going to read a LOT of files.</h4><p>Searching the whole codebase, scanning 15 files, crawling a directory. Each would land in your main context and sit there. The subagent absorbs it all and returns a summary. The most common trigger.</p></div>
+      <div class="signal go"><span class="tagline">Use one</span><h4>2. It'll spit out a wall of output you glance at once.</h4><p>The test suite, a giant log, pages of web research, a noisy build. The raw output is throwaway — you want the verdict ("3 tests failed, all in auth"), not 400 lines of stack traces.</p></div>
+      <div class="signal go"><span class="tagline">Use one</span><h4>3. You keep doing this exact task over and over.</h4><p>Reviewing every PR, auditing every auth change, updating docs after each release. Package it once as a specialist and it's permanent — no re-explaining, consistent standard.</p></div>
+      <div class="signal go"><span class="tagline">Use one</span><h4>4. Several independent jobs, none needs another's output.</h4><p>The parallel test. Fire several at once — auth, database, API routes explored simultaneously, then synthesize. If the pieces ARE ordered (step 2 needs step 1), it's not parallel, so stay inline.</p></div>
+      <div class="signal go"><span class="tagline">Use one</span><h4>5. You want a second opinion not biased by how you built it.</h4><p>A fresh subagent never saw your reasoning — it judges the result on its own terms. Your main chat is emotionally invested in the code it just wrote. The fresh context is the feature.</p></div>
+      <div class="signal go"><span class="tagline">Use one</span><h4>6. You do NOT want it able to change anything.</h4><p>A subagent with only <code>Read, Grep, Glob</code> physically cannot edit or delete. For an auditor turned loose on a repo, that lockdown is enforced, not a suggestion.</p></div>
+      <div class="signal go"><span class="tagline">Use one</span><h4>7. Your context is almost full but you're not done.</h4><p>Offload the next heavy chunk so you keep going without compacting or losing the thread of your main session.</p></div>
+      <div class="signal go" style="background:var(--codex-bg);border-color:#1C5A48;"><span class="tagline">Remember</span><h4>The fast rule of thumb</h4><p><strong>10+ files, or output you'll never re-read = subagent.</strong> Under that bar, stay inline.</p></div>
+    </div>
+
+    <h3 class="sub-h">Signals that say "do NOT use one"</h3>
+    <div class="signal-grid">
+      <div class="signal stop"><span class="tagline">Stay inline</span><h4>1. It's small and quick.</h4><p>A subagent has real startup cost — a blank context it must re-gather. If the task takes 30 seconds inline, you paid setup overhead for nothing. The most common misuse, and why people call subagents "slow."</p></div>
+      <div class="signal stop"><span class="tagline">Stay inline</span><h4>2. You're in a tight back-and-forth.</h4><p>Step 2 depends on the full detail of step 1, step 3 on step 2. Subagents hand back a summary and run start-to-finish without checking in. Iterative work belongs inline where you steer turn by turn.</p></div>
+      <div class="signal stop"><span class="tagline">Stay inline</span><h4>3. It needs everything you've talked about.</h4><p>A subagent starts blank. If the job needs the last 20 messages, either re-explain it in the task (clunky) or use a <strong>fork</strong> — a subagent that DOES inherit the full conversation (Part 15).</p></div>
+      <div class="signal stop"><span class="tagline">Stay inline</span><h4>4. It'll need to ask you a question partway.</h4><p>Subagents can't stop to ask anything; background ones auto-deny anything that would prompt you. If the task is ambiguous, clarify it BEFORE you delegate.</p></div>
+      <div class="signal stop"><span class="tagline">Stay inline</span><h4>5. You want it to spin up its own subagents.</h4><p>Subagents can't nest. Only your main chat is the conductor. If you need a chain, run it from the main conversation (Part 12).</p></div>
+      <div class="signal stop"><span class="tagline">Stay inline</span><h4>6. The subagents would need to talk to each other.</h4><p>A subagent only ever reports back to the main chat. Two can't message each other or share state. If the work needs agents to discuss and react in real time, that's an Agent Team, not subagents (Part 15).</p></div>
+    </div>
+
+    <div class="callout">
+      <span class="clabel">Two quick before/after gut checks</span>
+      <p><strong>"Find every place we call the old payments API."</strong> → It'll grep the repo and read a dozen files. You want the list, not the noise. <strong>Use one.</strong><br>
+      <strong>"Rename this variable and update the three spots."</strong> → Tiny, targeted, you can see all of it. <strong>Stay inline.</strong><br>
+      <strong>"Review the 600-line PR for security issues."</strong> → Lots of reading + an unbiased eye. <strong>Use one.</strong><br>
+      <strong>"Add a console.log here."</strong> → One line. <strong>Stay inline.</strong></p>
+    </div>
+    <div class="callout warn">
+      <span class="clabel">The escape hatch for quick questions</span>
+      <p>For a quick question about something already in your chat, don't even use a subagent. Use <code>/btw</code> — it sees your full context but has no tools, so it answers fast and cheap without spinning anything up. Reach for a subagent only when there's real, tool-using work to offload.</p>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section id="p10">
+    <h2><span class="num">10</span>Build Your Own, Step by Step</h2>
+    <p class="section-sub">Two ways. Start with the easy one.</p>
+
+    <h3 class="sub-h">The easy way (recommended for your first)</h3>
+    <ol class="body">
+      <li>Type <code>/agents</code> in Claude Code.</li>
+      <li>Choose to create a new agent.</li>
+      <li>Either fill in the form, or just <strong>describe what you want</strong> and let Claude write the file.</li>
+      <li>Pick its tools and model in the UI.</li>
+      <li>Save. It works immediately, no restart.</li>
+    </ol>
+
+    <h3 class="sub-h">The manual way (when you know what you want)</h3>
+    <ol class="body">
+      <li>Decide the <strong>one job</strong> this agent does. One job. If you catch yourself writing "and also," split it into two agents.</li>
+      <li>Create the file: <code>.claude/agents/your-agent-name.md</code> (project) or <code>~/.claude/agents/your-agent-name.md</code> (personal).</li>
+      <li>Write the frontmatter — <code>name</code> (matches filename, lowercase-hyphenated), <code>description</code> (the trigger rule: WHEN to use it, signal phrases, add "use proactively" if it should self-fire), <code>tools</code> (the minimum it needs), <code>model</code> (cheap if simple, sonnet/opus if it must think).</li>
+      <li>Write the body — <strong>Role</strong> (one sharp sentence), <strong>Workflow</strong> (numbered steps), <strong>Checklist/criteria</strong> (what to look for / what "done" means), <strong>Output format</strong> (tiers, line refs, word limits), <strong>Constraints</strong> (what NOT to do).</li>
+      <li>Keep the body short. Focused prompts beat long ones — a bloated body makes the agent lose track of its own rules.</li>
+      <li>Restart the session (if you wrote the file by hand), then test it and watch whether it routes correctly. First runs often reveal a vague description; tighten it.</li>
+    </ol>
+  </section>
+
+  <!-- 11 -->
+  <section id="p11">
+    <h2><span class="num">11</span>Six Ready-to-Copy Agents</h2>
+    <p class="section-sub">Drop any of these into <code>.claude/agents/</code>. Adjust tools and model to taste.</p>
+
+    <div class="callout">
+      <span class="clabel">Pro move: borrow before you build</span>
+      <p>Whole collections of battle-tested Claude Code subagents live on GitHub (search "claude code subagents" or "Awesome Claude Code Subagents"). Download the <code>.md</code>, drop it in <code>.claude/agents/</code>, and it works immediately. Starting from someone else's proven agent and tweaking it beats writing one from scratch — but vet it for prompt injection first.</p>
+    </div>
+
+    <div class="code-card">
+      <div class="code-toolbar"><span class="code-name">1 · Code Reviewer <span class="file">· sonnet</span></span><button class="copy-btn" data-copy="a1">Copy</button></div>
+      <pre class="code" id="a1"><span class="fm">---</span>
+<span class="key">name:</span> code-reviewer
+<span class="key">description:</span> Expert code review specialist. Use proactively immediately after writing or modifying code. Triggers on "review my changes" or "check this PR".
+<span class="key">tools:</span> Read, Grep, Glob, Bash
+<span class="key">model:</span> sonnet
+<span class="fm">---</span>
+
+You are a senior code reviewer ensuring high standards of code quality and security.
+
+When invoked:
+1. Run git diff to see recent changes
+2. Focus on modified files
+3. Begin review immediately without asking for clarification
+
+Review checklist:
+- Code clarity and readability
+- Well-named functions and variables
+- No duplicated logic
+- Proper error handling
+- No exposed secrets or API keys
+- Input validation present
+- Adequate test coverage
+
+Provide feedback in three tiers:
+- Critical (must fix before merge)
+- Warnings (should fix)
+- Suggestions (consider improving)
+
+Include specific file paths, line references, and concrete fix examples.</pre>
+    </div>
+
+    <div class="code-card">
+      <div class="code-toolbar"><span class="code-name">2 · Debugger <span class="file">· sonnet</span></span><button class="copy-btn" data-copy="a2">Copy</button></div>
+      <pre class="code" id="a2"><span class="fm">---</span>
+<span class="key">name:</span> debugger
+<span class="key">description:</span> Debugging specialist for errors, test failures, and unexpected behavior. Use proactively when encountering any error message or failed test.
+<span class="key">tools:</span> Read, Edit, Bash, Grep, Glob
+<span class="key">model:</span> sonnet
+<span class="fm">---</span>
+
+You are an expert debugger specializing in root cause analysis.
+
+When invoked:
+1. Capture the full error message and stack trace
+2. Identify reproduction steps
+3. Isolate the failure location in the code
+4. Implement the minimal fix
+5. Verify by running the failing test or reproducing the scenario
+
+For each issue, return:
+- Root cause (not the symptom)
+- Evidence for your diagnosis
+- The specific fix applied
+- Verification result
+- One-line prevention tip
+
+Fix the underlying issue, not the surface symptom.</pre>
+    </div>
+
+    <div class="code-card">
+      <div class="code-toolbar"><span class="code-name">3 · Web Researcher <span class="file">· sonnet</span></span><button class="copy-btn" data-copy="a3">Copy</button></div>
+      <pre class="code" id="a3"><span class="fm">---</span>
+<span class="key">name:</span> researcher
+<span class="key">description:</span> General-purpose research agent. Use when a task needs web search, reading documentation, or gathering external information before a decision. Do not use for questions already answerable from the codebase.
+<span class="key">tools:</span> WebSearch, WebFetch, Read
+<span class="key">model:</span> sonnet
+<span class="fm">---</span>
+
+You are a research analyst. Find accurate, current information and return clean briefs.
+
+When invoked:
+1. Pin down the exact question to answer
+2. Search broadly, then read the best sources in depth
+3. Cross-reference key claims across multiple sources
+4. Flag where sources disagree
+
+Return:
+- Direct answer to the question
+- Key supporting evidence (bullets)
+- Source URLs for factual claims
+- Important caveats or uncertainties
+
+Return a summary only. Never dump raw search results or full page contents.</pre>
+    </div>
+
+    <div class="code-card">
+      <div class="code-toolbar"><span class="code-name">4 · Codebase Explorer <span class="file">· haiku</span></span><button class="copy-btn" data-copy="a4">Copy</button></div>
+      <pre class="code" id="a4"><span class="fm">---</span>
+<span class="key">name:</span> codebase-explorer
+<span class="key">description:</span> Explores and maps unfamiliar codebases. Use proactively before planning changes. Triggers on "how does X work" or "find where Y is implemented".
+<span class="key">tools:</span> Read, Grep, Glob, Bash
+<span class="key">model:</span> haiku
+<span class="fm">---</span>
+
+You are a codebase analyst. Understand codebases quickly and return structured maps.
+
+When invoked:
+1. Identify main entry points and top-level structure
+2. Find the files relevant to the question or task
+3. Map key dependencies and patterns
+4. Note conventions (naming, error handling, testing)
+
+Return:
+- Key files and what they do (bullet list)
+- Architecture summary (2-3 sentences)
+- Relevant patterns or conventions
+- Anything that would surprise an outsider
+
+Keep your response under 500 words. Synthesize. Do not dump file contents.</pre>
+    </div>
+
+    <div class="code-card">
+      <div class="code-toolbar"><span class="code-name">5 · Documentation Writer <span class="file">· haiku</span></span><button class="copy-btn" data-copy="a5">Copy</button></div>
+      <pre class="code" id="a5"><span class="fm">---</span>
+<span class="key">name:</span> doc-maintainer
+<span class="key">description:</span> Keeps documentation synced with code. Use proactively after changes to public APIs, function signatures, or user-facing behavior. Triggers on "update the docs".
+<span class="key">tools:</span> Read, Write, Edit, Glob, Grep
+<span class="key">model:</span> haiku
+<span class="fm">---</span>
+
+You are a technical writer keeping documentation accurate and current.
+
+When invoked:
+1. Read the relevant code files
+2. Read the existing documentation
+3. Identify what changed or is undocumented
+4. Write or update docs to match the current code
+
+Standards:
+- Match the tone and format of existing docs
+- Include code examples for API or signature changes
+- Skip internal/private functions unless asked
+- Flag anything uncertain instead of guessing
+
+Return a summary of what you changed and why.</pre>
+    </div>
+
+    <div class="code-card">
+      <div class="code-toolbar"><span class="code-name">6 · Security Auditor <span class="file">· opus</span></span><button class="copy-btn" data-copy="a6">Copy</button></div>
+      <pre class="code" id="a6"><span class="fm">---</span>
+<span class="key">name:</span> security-auditor
+<span class="key">description:</span> Reviews code for security vulnerabilities. Use proactively after writing auth, authorization, payment, or data-handling code. Triggers on "security review" or "check for vulnerabilities".
+<span class="key">tools:</span> Read, Grep, Glob, Bash
+<span class="key">model:</span> opus
+<span class="fm">---</span>
+
+You are a senior security engineer. Find real vulnerabilities, not style issues.
+
+When invoked:
+1. Run git diff to see recent changes
+2. Read files involved in auth, authorization, or data handling
+3. Search for common vulnerability patterns
+
+Check for:
+- SQL injection, XSS, command injection
+- Authentication and authorization flaws
+- Hardcoded secrets, API keys, credentials
+- Insecure deserialization
+- Missing input validation
+- Insecure direct object references
+- Dependency vulnerabilities
+
+Return:
+- Critical findings (file path, line number, severity, exploit scenario)
+- Suggested fix for each
+- Confidence level on each
+
+Only report findings you can trace to specific code. No theoretical issues.</pre>
+    </div>
+
+    <div class="callout key">
+      <span class="clabel">Notice the model column</span>
+      <p>The explorer and doc writer run on <strong>Haiku</strong> (cheap, simple work), the reviewer and debugger on <strong>Sonnet</strong> (balanced), the security auditor on <strong>Opus</strong> (a wrong answer here is expensive). That single column is most of your cost control.</p>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section id="p12">
+    <h2><span class="num">12</span>Chaining and Orchestration</h2>
+    <p class="section-sub">Where subagents go from "handy" to "a system." A few rules first, then the patterns.</p>
+
+    <h3 class="sub-h">The composition rules</h3>
+    <ul class="body">
+      <li><strong>Skills can call subagents.</strong> A skill (a saved workflow) can hand a step off to a subagent.</li>
+      <li><strong>Subagents can call skills.</strong> As long as the agent has the <code>Skill</code> tool. You can even preload skills with the <code>skills:</code> frontmatter field.</li>
+      <li><strong>Subagents CANNOT call other subagents.</strong> No nesting — on purpose, to prevent infinite loops. If you need a chain, the <strong>main conversation</strong> runs it: calls agent A, gets the result, then calls agent B with that result. The main chat is always the conductor.</li>
+    </ul>
+
+    <h3 class="sub-h">The patterns</h3>
+    <p class="body"><strong>Sequential chain.</strong> Main chat runs a pipeline: researcher finds the files → reviewer checks the plan → main implements. Best for 2–3 step flows where each step feeds the next.</p>
+    <p class="body"><strong>Fan-out / fan-in (parallel).</strong> Main chat fires several agents at once, waits for all, then combines. One explorer per module (auth, database, API) running simultaneously, then synthesize. This is where the speed gains live — Anthropic's research system cut research time dramatically by fanning out 3–5 subagents at once.</p>
+    <div class="callout">
+      <span class="clabel">When the fan-out outgrows a handful</span>
+      <p>Doing the orchestration by hand from the main chat is fine for two or three agents. When the job needs dozens (a codebase-wide audit, a 500-file migration, cross-checked research), reach for a <strong>dynamic workflow</strong> — a JavaScript script the main agent writes that orchestrates and runs many subagents in parallel at scale, then merges results. The trade-off is cost: more agents means meaningfully more tokens, so point it only at jobs that genuinely break into many independent pieces.</p>
+    </div>
+    <p class="body"><strong>Orchestrator-worker.</strong> One session that does no work itself. It only plans, delegates, reviews, and routes to the next worker: spec writer → architect review → implementer → code reviewer → final PR. Good for full feature pipelines. Put human checkpoints at the important handoffs so it can't run off a cliff.</p>
+    <p class="body"><strong>Builder/validator.</strong> A builder writes the code. A separate validator checks it in a fresh context with no memory of the reasoning, so it judges the result on its own terms. This is the strongest argument for subagents in serious work: the reviewer isn't biased by having written the thing.</p>
+    <p class="body"><strong>Worktree isolation.</strong> When several agents need to edit files at the same time, give each <code>isolation: worktree</code> so they work on separate copies and don't collide.</p>
+
+    <div class="callout warn">
+      <span class="clabel">How many agents?</span>
+      <p>Most good setups run <strong>2 to 8</strong> agents. Past that, descriptions start overlapping, Claude routes to the wrong one, and you spend more time debugging the fleet than doing the work. More agents is not better. <strong>Sharper agents is better.</strong></p>
+    </div>
+  </section>
+
+  <!-- 13 -->
+  <section id="p13">
+    <h2><span class="num">13</span>Limitations and Gotchas</h2>
+    <p class="section-sub">Keep this list handy. Most "why did my agent do that" moments are on it.</p>
+    <ul class="body">
+      <li><strong>Fresh memory every time.</strong> A subagent doesn't see your chat history or read files. It gets a task brief, its own system prompt, and your CLAUDE.md project rules (those still load). That's it. (Built-in Explore and Plan even skip CLAUDE.md to stay fast.)</li>
+      <li><strong>It cannot ask you questions.</strong> It runs to completion; background ones auto-deny anything that would prompt you. Clarify before delegating.</li>
+      <li><strong>No nesting.</strong> Subagents can't spawn subagents. Chain from the main chat instead.</li>
+      <li><strong>Only the final message comes back.</strong> All the intermediate work is gone once it finishes. That's the feature — but you can't go fish around in what it did.</li>
+      <li><strong>Startup overhead is real.</strong> Don't use one for a task you could finish inline in 30 seconds.</li>
+      <li><strong>Hand-edited files need a session restart.</strong> Files made via <code>/agents</code> don't.</li>
+      <li><strong>They cannot talk to each other.</strong> Two running agents are blind to each other. Everything routes through the main chat.</li>
+      <li><strong>Model names are lowercase.</strong> <code>sonnet</code>, not <code>Sonnet</code>. The field is <code>model</code>, not <code>Model</code>.</li>
+    </ul>
+  </section>
+
+  <!-- 14 -->
+  <section id="p14">
+    <h2><span class="num">14</span>Common Mistakes (and the Fix)</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Mistake</th><th>Why it bites</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td class="col-key">No <code>tools</code> field</td><td>Agent inherits write access and everything else. Security gap, unfocused.</td><td>Always list the minimum tools it needs.</td></tr>
+          <tr><td class="col-key">Vague <code>description</code></td><td>It never triggers, or triggers at the wrong time.</td><td>Write a trigger rule, not a label. Name the signal phrases.</td></tr>
+          <tr><td class="col-key">Subagent for trivial tasks</td><td>You pay startup overhead for no gain. Feels slow and token-hungry.</td><td>Do small targeted work inline.</td></tr>
+          <tr><td class="col-key">Expecting it to know the chat</td><td>It starts blank. It will be "confused."</td><td>Put needed context in the task, or use a fork.</td></tr>
+          <tr><td class="col-key">Agents WRITING big features</td><td>Fresh-context agents go blind to overall project state.</td><td>Use agents to gather and review. Let the main chat implement.</td></tr>
+          <tr><td class="col-key">Too many agents (15+)</td><td>Overlapping triggers, wrong routing, hard to debug.</td><td>Keep it to a handful. Merge overlapping ones.</td></tr>
+          <tr><td class="col-key">Overlapping descriptions</td><td>Two agents match the same request; Claude picks randomly.</td><td>Make trigger conditions mutually exclusive.</td></tr>
+          <tr><td class="col-key">No <code>maxTurns</code> on open-ended agents</td><td>One can wander and burn tokens.</td><td>Cap turns on anything exploratory.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 15 -->
+  <section id="p15">
+    <h2><span class="num">15</span>Subagents vs. Everything Else</h2>
+    <p class="section-sub">People mix these up constantly. Here's the clean version.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Thing</th><th>What it is</th><th>Lives where</th><th>Use when</th></tr></thead>
+        <tbody>
+          <tr><td class="col-key">Subagent</td><td>A second Claude with its own context and tools. Returns only a summary.</td><td><code>.claude/agents/*.md</code></td><td>A task is verbose, recurring, parallel, or needs isolation.</td></tr>
+          <tr><td class="col-key">Skill</td><td>Saved instructions/workflow loaded into your MAIN context. No separate window.</td><td><code>.claude/skills/</code></td><td>A reusable recipe you want Claude to follow in the current chat.</td></tr>
+          <tr><td class="col-key">Slash command</td><td>A quick built-in or custom command you type.</td><td>Built-in or skill-backed</td><td>A fast, one-shot action.</td></tr>
+          <tr><td class="col-key">MCP server</td><td>A connection to an outside tool or service (Slack, a database, GitHub).</td><td>External process</td><td>You need data or actions from another system.</td></tr>
+          <tr><td class="col-key">Fork</td><td>A subagent that DOES inherit your full conversation history.</td><td><code>/fork</code></td><td>A side task that genuinely needs everything said so far.</td></tr>
+          <tr><td class="col-key">Agent teams</td><td>Multiple full sessions with a lead and teammates that message each other. (Experimental.)</td><td>Separate sessions</td><td>A big project split across many agents that must coordinate.</td></tr>
+          <tr><td class="col-key">Dynamic workflow</td><td>A JS script the main agent writes that orchestrates subagents at scale: fan-out, pipeline stages, dozens to hundreds of agents.</td><td><code>.claude/workflows/*</code></td><td>A job too big for one conversation to coordinate by hand.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout key">
+      <span class="clabel">The one-line distinction</span>
+      <p><strong>A skill runs in your current head; a subagent runs in a fresh head and mails you back a summary.</strong></p>
+    </div>
+  </section>
+
+  <!-- 16 -->
+  <section id="p16">
+    <h2><span class="num">16</span>Cheat Sheet</h2>
+    <div class="cheat">
+      <h3>The one sentence</h3>
+      <p>A subagent is a second Claude you send off to do the messy work in its own window so your main chat stays clean.</p>
+
+      <h3>The minimum file</h3>
+      <div class="code-card" style="margin:8px 0 4px;">
+        <div class="code-toolbar"><span class="code-name"><span class="file">.claude/agents/my-agent.md</span></span><button class="copy-btn" data-copy="min">Copy</button></div>
+        <pre class="code" id="min"><span class="fm">---</span>
+<span class="key">name:</span> my-agent
+<span class="key">description:</span> What it does and exactly when to use it. Add "use proactively" to auto-fire.
+<span class="key">tools:</span> Read, Grep, Glob
+<span class="key">model:</span> haiku
+<span class="fm">---</span>
+You are a [role]. When invoked: [steps]. Return: [format]. Do not: [constraints].</pre>
+      </div>
+
+      <h3>Where it goes</h3>
+      <p><code>.claude/agents/</code> (team, shared via git) or <code>~/.claude/agents/</code> (just you). Make one fast: type <code>/agents</code>.</p>
+
+      <h3>The four rules that matter most</h3>
+      <ol>
+        <li><strong>One agent, one job.</strong></li>
+        <li><strong>The <code>description</code> is a trigger rule, not a label.</strong></li>
+        <li><strong>Give it the fewest tools it needs</strong> (read-only by default).</li>
+        <li><strong>Cheap model for grunt work, smart model for thinking.</strong></li>
+      </ol>
+
+      <h3>Save money</h3>
+      <p>Match model to task (Haiku for scanning, Sonnet for building, Opus for hard reasoning), let the agent absorb the noisy context, and never spin one up for a 30-second job.</p>
+
+      <h3>Remember the cost trap</h3>
+      <p>Subagents start blank and re-gather context. Worth it for big or noisy work, wasteful for small tasks. Rule of thumb: <strong>10+ files or throwaway output = use one.</strong></p>
+
+      <h3>The composition rules</h3>
+      <p>Skills can call agents, agents can call skills, agents cannot call agents. The main chat is always the conductor.</p>
+    </div>
+  </section>
+
+  <!-- SOURCES -->
+  <section id="sources">
+    <h2 style="font-size:20px;"><span class="num" style="background:var(--surface-2);border-color:var(--line);color:var(--ink-soft);">§</span>Sources</h2>
+    <div class="sources">
+      <div>
+        <h4>Official</h4>
+        <ul>
+          <li><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code subagents docs</a></li>
+          <li><a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">Claude Code best practices</a></li>
+          <li><a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">How we built our multi-agent research system (Anthropic)</a></li>
+          <li><a href="https://claude.com/blog/subagents-in-claude-code" target="_blank" rel="noopener">How and when to use subagents (Anthropic)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Community deep-dives</h4>
+        <ul>
+          <li><a href="https://www.tembo.io/blog/claude-code-subagents" target="_blank" rel="noopener">Tembo — Claude Code subagents</a></li>
+          <li><a href="https://www.pubnub.com/blog/best-practices-for-claude-code-sub-agents/" target="_blank" rel="noopener">PubNub — Best practices</a></li>
+          <li><a href="https://claudefa.st/blog/guide/agents/agent-patterns" target="_blank" rel="noopener">claudefast — Orchestration patterns</a></li>
+          <li><a href="https://claudekit.cc/blog/vc-04-subagents-from-basic-to-deep-dive-i-misunderstood" target="_blank" rel="noopener">Claudekit — Common mistakes</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Build Claude Subagents Better Than 99% of People &middot; <a href="/guide/claude-subagents/slides">Slide deck</a> &middot; <a href="/glossary">Page glossary</a> &middot; <a href="/">samuelhuang.org</a>
+  </footer>
+
+</div>
+
+<div class="toast" id="toast">Copied</div>
+
+<script>
+  const toast = document.getElementById('toast');
+  let toastTimer;
+
+  function showCopied(button) {
+    const original = button.dataset.originalText || button.textContent;
+    button.dataset.originalText = original;
+    document.querySelectorAll('.copy-btn').forEach(b => b.classList.remove('copied'));
+    button.classList.add('copied');
+    button.textContent = 'Copied';
+    toast.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      button.classList.remove('copied');
+      button.textContent = original;
+      toast.classList.remove('visible');
+    }, 1400);
+  }
+
+  async function writeClipboard(text) {
+    if (navigator.clipboard?.writeText) {
+      try { await navigator.clipboard.writeText(text); return; } catch {}
+    }
+    const fallback = document.createElement('textarea');
+    fallback.value = text;
+    fallback.setAttribute('readonly', '');
+    fallback.style.position = 'fixed';
+    fallback.style.left = '-9999px';
+    document.body.appendChild(fallback);
+    fallback.select();
+    document.execCommand('copy');
+    fallback.remove();
+  }
+
+  document.querySelectorAll('.copy-btn').forEach(button => {
+    button.addEventListener('click', async () => {
+      const target = document.getElementById(button.dataset.copy);
+      if (!target) return;
+      await writeClipboard(target.innerText.trim());
+      showCopied(button);
+    });
+  });
+</script>
+</body>
+</html>

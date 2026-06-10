@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Subagents in Claude Code — Beginner Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#1e1e1e;
+    --ink:#f1f3f5;
+    --muted:#ced4da;
+    --dim:#adb5bd;
+    --blue:#74c0fc;   --blue-fill:#16222e;
+    --green:#69db7c;  --green-fill:#16271a;
+    --yellow:#ffd43b; --yellow-fill:#2e2814;
+    --red:#ff8787;    --red-fill:#3a1818;
+    --purple:#b197fc; --purple-fill:#221a33;
+    --orange:#ffa94d; --orange-fill:#332112;
+    --neutral:#ced4da;--neutral-fill:#2b2b2b;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;overflow:hidden;}
+  body{
+    background-color:var(--bg);
+    background-image:radial-gradient(rgba(255,255,255,0.045) 1.1px, transparent 1.1px);
+    background-size:30px 30px;
+    color:var(--ink);
+    font-family:'Kalam',cursive;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- slide shell ---------- */
+  .slide{
+    position:fixed; inset:0;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    padding:5vh 6vw 8vh;
+    opacity:0; visibility:hidden; transform:scale(.985);
+    transition:opacity .35s ease, transform .35s ease;
+    text-align:center;
+  }
+  .slide.active{opacity:1; visibility:visible; transform:scale(1);}
+  .wrap{width:100%; max-width:1180px; display:flex; flex-direction:column; align-items:center; gap:2.4vh;}
+
+  /* ---------- typography (one legible hand font) ---------- */
+  .eyebrow{
+    font-size:clamp(.85rem,1.5vw,1.15rem); letter-spacing:3px; text-transform:uppercase;
+    color:var(--blue); font-weight:700;
+  }
+  h1{
+    font-family:'Kalam',cursive; font-weight:700; margin:0; line-height:1.02;
+    font-size:clamp(3rem,7.5vw,5.6rem); color:var(--ink);
+  }
+  h2{
+    font-family:'Kalam',cursive; font-weight:700; margin:0; line-height:1.1;
+    font-size:clamp(1.9rem,4.4vw,3.2rem); color:var(--ink);
+  }
+  .sub{font-size:clamp(1.1rem,2.4vw,1.7rem); color:var(--muted); font-weight:300;}
+  .cap{font-size:clamp(1.05rem,2.1vw,1.45rem); color:var(--muted); font-weight:400; max-width:920px;}
+  .big{font-size:clamp(1.4rem,3vw,2.2rem); color:var(--ink); line-height:1.3;}
+  .small{font-size:clamp(.95rem,1.7vw,1.2rem); color:var(--dim); font-weight:300;}
+  .aB{color:var(--blue);} .aG{color:var(--green);} .aR{color:var(--red);}
+  .aY{color:var(--yellow);} .aP{color:var(--purple);} .aO{color:var(--orange);}
+  b{font-weight:700;}
+
+  /* ---------- hand-drawn box ---------- */
+  .box{
+    border:3px solid var(--neutral);
+    background:var(--neutral-fill);
+    border-radius:255px 15px 225px 15px / 15px 225px 15px 255px;
+    padding:1.1rem 1.6rem;
+    color:var(--ink);
+    font-size:clamp(1.05rem,2vw,1.4rem);
+  }
+  .box.r2{border-radius:15px 225px 15px 255px / 255px 15px 225px 15px;}
+  .t-l{transform:rotate(-1.1deg);} .t-r{transform:rotate(1deg);}
+  .t-s{transform:rotate(-.5deg);} .t-z{transform:rotate(.5deg);}
+  .blue{border-color:var(--blue); background:var(--blue-fill);}
+  .green{border-color:var(--green); background:var(--green-fill);}
+  .yellow{border-color:var(--yellow); background:var(--yellow-fill);}
+  .red{border-color:var(--red); background:var(--red-fill);}
+  .purple{border-color:var(--purple); background:var(--purple-fill);}
+  .orange{border-color:var(--orange); background:var(--orange-fill);}
+  .box .lab{display:block; font-weight:700; font-size:1.05em; margin-bottom:.12em;}
+  .box .note{display:block; font-size:.82em; color:var(--muted); font-weight:300; line-height:1.3;}
+
+  .row{display:flex; gap:clamp(1rem,3vw,2.6rem); flex-wrap:wrap; justify-content:center; align-items:center; width:100%;}
+  .col{display:flex; flex-direction:column; gap:1.1rem; align-items:stretch;}
+  .panel{flex:1 1 0; min-width:280px; display:flex; flex-direction:column; gap:1rem; align-items:center;}
+  .panel h3{font-family:'Kalam',cursive; font-weight:700; font-size:clamp(1.5rem,3vw,2.2rem); margin:0;}
+
+  .chip{
+    border:2.6px solid var(--blue); background:var(--blue-fill);
+    border-radius:140px 12px 130px 12px / 12px 130px 12px 140px;
+    padding:.5rem 1rem; font-size:clamp(.95rem,1.7vw,1.25rem); color:var(--ink); font-weight:400;
+  }
+  .chip.g{border-color:var(--green); background:var(--green-fill);}
+  .chip.r{border-color:var(--red); background:var(--red-fill);}
+  .chip.n{border-color:var(--neutral); background:var(--neutral-fill);}
+
+  ul.hand{list-style:none; margin:0; padding:0; text-align:left; display:flex; flex-direction:column; gap:.55rem; width:100%;}
+  ul.hand li{font-size:clamp(1.05rem,2.1vw,1.45rem); line-height:1.25; padding-left:1.7rem; position:relative;}
+  ul.hand li::before{content:"›"; position:absolute; left:.2rem; color:var(--blue); font-weight:700;}
+  ul.hand.bad li::before{content:"✕"; color:var(--red); font-size:.9em;}
+  ul.hand.good li::before{content:"✓"; color:var(--green);}
+
+  /* cheat-sheet rows */
+  .map{display:flex; flex-direction:column; gap:.5rem; width:100%; max-width:940px;}
+  .map .r{display:flex; align-items:center; gap:.8rem; font-size:clamp(1.05rem,2.1vw,1.45rem); justify-content:flex-start; text-align:left;}
+  .map .k{flex:0 0 auto; color:var(--muted);}
+  .map .a{color:var(--blue); font-size:1.4em; line-height:0;}
+  .map .v{font-weight:700;}
+
+  /* code snippet box (monospace, syntax-tinted) */
+  .code{
+    font-family:ui-monospace,"Cascadia Code","Consolas",monospace;
+    border:3px solid var(--blue); background:#0d141c;
+    border-radius:12px; padding:1.05rem 1.4rem; max-width:760px; text-align:left;
+    font-size:clamp(.82rem,1.5vw,1.12rem); line-height:1.55; color:var(--muted);
+    white-space:pre; overflow:auto; box-shadow:0 8px 30px rgba(0,0,0,.4);
+  }
+  .code .k{color:var(--purple);} .code .s{color:var(--green);}
+  .code .f{color:var(--blue);} .code .c{color:var(--dim); font-style:italic;}
+
+  /* SVG diagram labels */
+  svg .lbl{font-family:'Kalam',cursive; fill:var(--ink); font-size:19px; text-anchor:middle; font-weight:400;}
+  svg .lbl.b{font-weight:700;}
+  svg .lbl.sm{font-size:15px; fill:var(--muted);}
+  .diagram{width:100%; max-width:1000px;}
+  .diagram.narrow{max-width:760px;}
+
+  /* ---------- chrome ---------- */
+  #bar{position:fixed; top:0; left:0; height:4px; background:var(--blue); width:0; transition:width .35s ease; z-index:50; border-radius:0 3px 3px 0;}
+  #counter{position:fixed; bottom:16px; right:22px; font-size:.95rem; color:var(--dim); z-index:50; letter-spacing:1px;}
+  #hint{position:fixed; bottom:16px; left:22px; font-size:.9rem; color:var(--dim); z-index:50;}
+  .nav{position:fixed; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:14px; z-index:50;}
+  .nav button{
+    font-family:'Kalam',cursive; font-weight:700; font-size:1.4rem; color:var(--ink); cursor:pointer;
+    background:var(--neutral-fill); border:2.5px solid var(--neutral);
+    border-radius:120px 10px 120px 10px/10px 120px 10px 120px; width:54px; height:40px; line-height:1;
+  }
+  .nav button:hover{border-color:var(--blue); color:var(--blue);}
+  .footer-tag{position:fixed; top:14px; right:22px; font-family:'Kalam'; font-weight:700; font-size:1.15rem; color:var(--dim); z-index:50;}
+</style>
+</head>
+<body>
+
+<!-- global defs: hand-drawn roughen filter + arrowheads -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.013" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="4"/>
+    </filter>
+    <marker id="ah-y" markerWidth="11" markerHeight="11" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 L3,5 Z" fill="#ffd43b"/></marker>
+    <marker id="ah-g" markerWidth="11" markerHeight="11" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 L3,5 Z" fill="#69db7c"/></marker>
+    <marker id="ah-b" markerWidth="11" markerHeight="11" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 L3,5 Z" fill="#74c0fc"/></marker>
+    <marker id="ah-r" markerWidth="11" markerHeight="11" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 L3,5 Z" fill="#ff8787"/></marker>
+    <marker id="ah-p" markerWidth="11" markerHeight="11" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 L3,5 Z" fill="#b197fc"/></marker>
+  </defs>
+</svg>
+
+<div id="bar"></div>
+<div class="footer-tag">Subagents</div>
+
+<!-- 1 — TITLE -->
+<section class="slide active">
+  <div class="wrap">
+    <div class="eyebrow">Claude Code</div>
+    <h1>Subagents</h1>
+    <div class="sub">What they are, and how to build great ones</div>
+    <div class="box blue t-s" style="margin-top:1rem; font-size:clamp(1rem,2vw,1.35rem);">
+      What they are. When to use one. How to build a great one. How to save money.
+    </div>
+    <div class="small" style="margin-top:1.4rem;">press → to start</div>
+  </div>
+</section>
+
+<!-- 2 — WHAT IT IS (the metaphor) -->
+<section class="slide">
+  <div class="wrap">
+    <div class="eyebrow">Start here</div>
+    <h2>A subagent is a <span class="aP">specialist you send off</span></h2>
+    <svg class="diagram" viewBox="0 0 1000 300" role="img">
+      <g filter="url(#rough)" fill="none">
+        <rect x="30" y="118" width="175" height="84" rx="14" stroke="#74c0fc" stroke-width="3" fill="#16222e"/>
+        <rect x="398" y="78"  width="40" height="26" rx="5" stroke="#b197fc" stroke-width="2" fill="#221a33"/>
+        <rect x="408" y="70"  width="40" height="26" rx="5" stroke="#b197fc" stroke-width="2" fill="#221a33"/>
+        <rect x="415" y="102" width="180" height="118" rx="14" stroke="#b197fc" stroke-width="3" fill="#221a33"/>
+        <rect x="800" y="123" width="160" height="74" rx="13" stroke="#69db7c" stroke-width="3" fill="#16271a"/>
+        <path d="M205,160 L412,160" stroke="#74c0fc" stroke-width="2.6" marker-end="url(#ah-b)"/>
+        <path d="M595,160 L797,160" stroke="#69db7c" stroke-width="2.6" marker-end="url(#ah-g)"/>
+        <path d="M878,123 C878,34 118,30 118,114" stroke="#69db7c" stroke-width="2.4" marker-end="url(#ah-g)"/>
+      </g>
+      <g class="lbl">
+        <text class="b" x="117" y="155" style="fill:#74c0fc">MAIN CHAT</text>
+        <text class="sm" x="117" y="180">(you)</text>
+        <text class="b" x="505" y="150" style="fill:#b197fc">SUBAGENT</text>
+        <text class="sm" x="505" y="176">reads files,</text>
+        <text class="sm" x="505" y="194">runs tests, digs</text>
+        <text class="b sm" x="305" y="148" style="fill:#74c0fc">go do a job</text>
+        <text class="b" x="880" y="156" style="fill:#69db7c">summary</text>
+        <text class="b sm" x="500" y="24" style="fill:#69db7c">only the answer comes back</text>
+      </g>
+    </svg>
+    <div class="cap">Like a general contractor sending a specialist to inspect the foundation. They do the dirty work. You get the report.</div>
+  </div>
+</section>
+
+<!-- 3 — THE WHY: CONTEXT -->
+<section class="slide">
+  <div class="wrap">
+    <div class="eyebrow">The real reason they exist</div>
+    <h2>It keeps your <span class="aB">context</span> clean</h2>
+    <div class="row" style="align-items:stretch;">
+      <div class="panel">
+        <h3 class="aR">Do it yourself</h3>
+        <svg viewBox="0 0 300 170" style="max-width:230px" role="img">
+          <g filter="url(#rough)" fill="none">
+            <circle cx="150" cy="85" r="62" stroke="#ff8787" stroke-width="3" fill="#3a1818"/>
+            <line x1="112" y1="62" x2="188" y2="62" stroke="#ff8787" stroke-width="2.4"/>
+            <line x1="108" y1="82" x2="192" y2="82" stroke="#ff8787" stroke-width="2.4"/>
+            <line x1="112" y1="102" x2="188" y2="102" stroke="#ff8787" stroke-width="2.4"/>
+            <line x1="120" y1="120" x2="180" y2="120" stroke="#ff8787" stroke-width="2.4"/>
+          </g>
+          <g class="lbl"><text class="b sm" x="150" y="160" style="fill:#ff8787">memory fills up</text></g>
+        </svg>
+        <div class="box red">Every file you read piles into your chat and stays there all session.</div>
+      </div>
+      <div class="panel">
+        <h3 class="aG">Send a subagent</h3>
+        <svg viewBox="0 0 320 170" style="max-width:285px" role="img">
+          <g filter="url(#rough)" fill="none">
+            <rect x="14" y="44" width="118" height="84" rx="11" stroke="#b197fc" stroke-width="2.8" fill="#221a33"/>
+            <line x1="34" y1="68" x2="112" y2="68" stroke="#b197fc" stroke-width="2.2"/>
+            <line x1="34" y1="86" x2="112" y2="86" stroke="#b197fc" stroke-width="2.2"/>
+            <line x1="34" y1="104" x2="112" y2="104" stroke="#b197fc" stroke-width="2.2"/>
+            <rect x="206" y="56" width="98" height="60" rx="11" stroke="#74c0fc" stroke-width="3" fill="#16222e"/>
+            <line x1="224" y1="86" x2="286" y2="86" stroke="#74c0fc" stroke-width="2.4"/>
+            <path d="M132,86 L204,86" stroke="#69db7c" stroke-width="2.6" marker-end="url(#ah-g)"/>
+          </g>
+          <g class="lbl">
+            <text class="b sm" x="73" y="148" style="fill:#b197fc">mess stays here</text>
+            <text class="b sm" x="255" y="140" style="fill:#74c0fc">clean</text>
+          </g>
+        </svg>
+        <div class="box green">It reads the pile in its own window. You get one clean summary.</div>
+      </div>
+    </div>
+    <div class="cap">This is the <b>number one</b> reason subagents exist. Not speed. Protecting your context.</div>
+  </div>
+</section>
+
+<!-- 4 — TWO KINDS -->
+<section class="slide">
+  <div class="wrap">
+    <div class="eyebrow">Two kinds</div>
+    <h2>Built-in <span class="aB">vs</span> the ones you build</h2>
+    <div class="row" style="align-items:stretch;">
+      <div class="panel">
+        <h3 class="aB">Built-in</h3>
+        <div class="box blue" style="width:100%;">
+          <span class="note" style="margin-bottom:.6rem;">Ship with Claude Code. It reaches for them on its own.</span>
+          <div class="row" style="gap:.6rem;">
+            <span class="chip">Explore</span>
+            <span class="chip">Plan</span>
+            <span class="chip">General-purpose</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 class="aG">Custom</h3>
+        <div class="box green" style="width:100%;">
+          <span class="lab aG">your-agent.md</span>
+          <span class="note">The specialists you build. Each one is a little Markdown file in a folder. This guide is mostly about these.</span>
+        </div>
+      </div>
+    </div>
+    <div class="cap">You get value on <b>day one</b> from the built-ins. Building your own is the next level, not the entry fee.</div>
+  </div>
+</section>
+
+<!-- 5 — WHAT A CUSTOM ONE LOOKS LIKE -->
+<section class="slide">
+  <div class="wrap">
+    <div class="eyebrow">The artifact</div>
+    <h2>It is just <span class="aB">one Markdown file</span></h2>
+<div class="code"><span class="c">---</span>
+<span class="f">name:</span> code-reviewer
+<span class="f">description:</span> Review code after changes. Use proactively.
+<span class="f">tools:</span> Read, Grep, Glob, Bash
+<span class="f">model:</span> sonnet
+<span class="c">---</span>
+
+You are a senior code reviewer.
+When invoked:
+1. Run git diff to see the changes
+2. Review the modified files
+Flag: bugs, security holes, missing tests.</div>
+    <div class="cap"><b>Settings on top</b> (between the dashes). <b>Instructions below</b> (that text becomes its whole brain). That file IS the subagent.</div>
+  </div>
+</section>
+
+<!-- 6 — THE FIELDS -->
+<section class="slide">
+  <div class="wrap">
+    <h2>Four settings, <span class="aB">one that matters most</span></h2>
+    <div class="map" style="max-width:900px;">
+      <div class="r"><span class="v aB" style="flex:0 0 130px;">name</span><span class="a">→</span><span class="k">its ID. lowercase, hyphens. <b>required</b></span></div>
+      <div class="r"><span class="v aB" style="flex:0 0 130px;">description</span><span class="a">→</span><span class="k"><b class="aB">WHEN to use it. This is the trigger.</b> required</span></div>
+      <div class="r"><span class="v" style="flex:0 0 130px;">tools</span><span class="a">→</span><span class="k">what it is allowed to touch</span></div>
+      <div class="r"><span class="v" style="flex:0 0 130px;">model</span><span class="a">→</span><span class="k">which brain it runs on (and how much it costs)</span></div>
+    </div>
+    <div class="box blue t-z" style="max-width:960px;">
+      Only <b>name</b> and <b>description</b> are required. The <b class="aB">description</b> is the line that decides whether your agent ever fires.
+    </div>
+  </div>
+</section>
+
+<!-- 7 - WRITE A GREAT ONE -->
+<section class="slide">
+  <div class="wrap">
+    <div class="eyebrow">Writing a great one</div>
+    <h2>How to write one that <span class="aB">actually works</span></h2>
+    <div class="row" style="align-items:stretch; width:100%; max-width:1080px;">
+      <div class="box red" style="flex:1 1 300px;">
+        <span class="lab aR">Weak description</span>
+        <span class="note">"Security expert."</span>
+        <span class="note" style="margin-top:.5rem;">Claude has no idea when to fire it. It just sits there, never triggering.</span>
+      </div>
+      <div class="box green" style="flex:1 1 300px;">
+        <span class="lab aG">Trigger description</span>
+        <span class="note">"Reviews code for security holes. <b>Use proactively</b> after auth or payment changes."</span>
+        <span class="note" style="margin-top:.5rem;">Now it fires on its own, at the right moment.</span>
+      </div>
+    </div>
+    <div class="sub aB" style="font-weight:700; margin-top:.4rem;">The body is its whole brain</div>
+    <div class="row" style="gap:.55rem; align-items:center;">
+      <span class="chip n">Role</span>
+      <span class="aB" style="font-size:1.5rem; line-height:0;">→</span>
+      <span class="chip n">Numbered steps</span>
+      <span class="aB" style="font-size:1.5rem; line-height:0;">→</span>
+      <span class="chip n">Output format</span>
+      <span class="aB" style="font-size:1.5rem; line-height:0;">→</span>
+      <span class="chip n">What NOT to do</span>
+    </div>
+    <div class="cap" style="margin-top:.2rem;"><b>One agent, one job.</b> Writing "and also"? That is two agents.</div>
+  </div>
+</section>
+
+<!-- 8 — WHERE IT LIVES: PROJECT VS GLOBAL -->
+<section class="slide">
+  <div class="wrap">
+    <div class="eyebrow">The part everyone gets wrong</div>
+    <h2>Project-level <span class="aB">vs</span> global-level</h2>
+    <div class="row" style="align-items:stretch;">
+      <div class="panel">
+        <h3 class="aB">Project</h3>
+        <div class="box blue" style="width:100%;">
+          <span class="lab aB">.claude/agents/ &nbsp;(in the repo)</span>
+          <ul class="hand" style="margin-top:.5rem;">
+            <li>Usable: only in <b>this</b> project</li>
+            <li>Shared: the <b>whole team</b>, through git</li>
+            <li>Belongs to: the <b>codebase</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 class="aG">Global</h3>
+        <div class="box green" style="width:100%;">
+          <span class="lab aG">~/.claude/agents/ &nbsp;(home folder)</span>
+          <ul class="hand good" style="margin-top:.5rem;">
+            <li>Usable: <b>every</b> project on your machine</li>
+            <li>Shared: <b>nobody</b>, just you</li>
+            <li>Belongs to: <b>you</b></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="box blue t-z" style="max-width:1000px;">A <b>project</b> agent belongs to the codebase. A <b>global</b> agent belongs to you.</div>
+  </div>
+</section>
+
+<!-- 9 — SPECIALISTS / BORROW FROM GITHUB -->
+<section class="slide">
+  <div class="wrap">
+    <div class="eyebrow">Subject-matter expertise</div>
+    <h2>Each one is a <span class="aP">specialist</span></h2>
+    <div class="row" style="gap:1rem; max-width:1100px;">
+      <div class="box purple" style="flex:1 1 210px;"><span class="lab aP">security-auditor</span><span class="note">finds vulnerabilities</span></div>
+      <div class="box blue" style="flex:1 1 210px;"><span class="lab aB">test-runner</span><span class="note">runs and fixes tests</span></div>
+      <div class="box green" style="flex:1 1 210px;"><span class="lab aG">doc-writer</span><span class="note">keeps docs in sync</span></div>
+      <div class="box orange" style="flex:1 1 210px;"><span class="lab aO">db-expert</span><span class="note">safe queries only</span></div>
+    </div>
+    <div class="cap">One AI doing <b>one thing really well</b> beats one AI doing everything okay. So you split the work across experts.</div>
+    <div class="box green t-s" style="max-width:1040px;">
+      <span class="lab aG">Better yet: borrow, don't build</span>
+      <span class="note">Whole collections of Claude Code subagents live on GitHub. Download the <b>.md</b>, drop it in <b>.claude/agents/</b>, and it just works.</span>
+    </div>
+  </div>
+</section>
+
+<!-- 10 — HOW CLAUDE PICKS ONE -->
+<section class="slide">
+  <div class="wrap">
+    <h2>How Claude <span class="aB">picks</span> one</h2>
+    <div class="row" style="align-items:stretch; max-width:1040px;">
+      <div class="box blue" style="flex:1 1 320px;">
+        <span class="lab aB">Automatic</span>
+        <span class="note">Claude matches your task to an agent's description. The default.</span>
+      </div>
+      <div class="box green" style="flex:1 1 320px;">
+        <span class="lab aG">Proactive</span>
+        <span class="note">Put "use proactively" in the description and it fires on its own.</span>
+      </div>
+      <div class="box purple" style="flex:1 1 320px;">
+        <span class="lab aP">By name</span>
+        <span class="note">@agent-name, or just "use the X subagent".</span>
+      </div>
+      <div class="box orange" style="flex:1 1 320px;">
+        <span class="lab aO">Whole session</span>
+        <span class="note">claude --agent name runs as the entire session.</span>
+      </div>
+    </div>
+    <div class="box blue t-s" style="max-width:1000px;">Most of the time you don't choose. Claude reads each agent's <b class="aB">description</b> and routes for you.</div>
+  </div>
+</section>
+
+<!-- 11 — TOOLS / LOCK IT DOWN -->
+<section class="slide">
+  <div class="wrap">
+    <div class="eyebrow">Give it only what it needs</div>
+    <h2>A read-only agent <span class="aR">cannot</span> break things</h2>
+    <div class="box neutral t-s" style="border-color:var(--purple); background:var(--purple-fill); max-width:520px;">
+      <span class="lab aP">code-reviewer</span>
+      <span class="note">an agent that only looks, never touches</span>
+    </div>
+    <div class="row" style="gap:1rem; margin-top:.4rem;">
+      <span class="chip g">✓ Read</span>
+      <span class="chip g">✓ Grep</span>
+      <span class="chip g">✓ Glob</span>
+      <span class="chip r">✕ Write</span>
+      <span class="chip r">✕ Edit</span>
+    </div>
+    <div class="cap">Strip the Write tool and it is not a rule the agent <i>chooses</i> to follow. It is a thing it physically <b>cannot do</b>.</div>
+  </div>
+</section>
+
+<!-- 12 — SAVE MONEY: MODEL LADDER -->
+<section class="slide">
+  <div class="wrap">
+    <h2>Save money: <span class="aB">match model to job</span></h2>
+    <svg class="diagram" viewBox="0 0 1000 340" role="img">
+      <g filter="url(#rough)" fill="none">
+        <path d="M40,310 L960,90" stroke="#74c0fc" stroke-width="2.5" stroke-dasharray="9 9"/>
+        <rect x="60"  y="250" width="250" height="64" rx="13" stroke="#69db7c" stroke-width="3" fill="#16271a"/>
+        <rect x="375" y="170" width="250" height="64" rx="13" stroke="#74c0fc" stroke-width="3" fill="#16222e"/>
+        <rect x="690" y="86"  width="250" height="64" rx="13" stroke="#ffa94d" stroke-width="3" fill="#332112"/>
+      </g>
+      <g class="lbl">
+        <text class="b" x="185" y="282" style="fill:#69db7c">Haiku</text>
+        <text class="sm" x="185" y="304">$ · scan, search, docs</text>
+        <text class="b" x="500" y="202" style="fill:#74c0fc">Sonnet</text>
+        <text class="sm" x="500" y="224">$$ · build, review</text>
+        <text class="b" x="815" y="118" style="fill:#ffa94d">Opus</text>
+        <text class="sm" x="815" y="140">$$$ · deep reasoning, security</text>
+      </g>
+    </svg>
+    <div class="box red t-s" style="max-width:1000px;">
+      The trap: a subagent starts <b>blank</b> and re-gathers context. Worth it for big jobs. <b class="aR">Wasteful for a 30-second task.</b>
+    </div>
+  </div>
+</section>
+
+<!-- 13 - PRO MONEY: SMART BOSS, CHEAP WORKERS -->
+<section class="slide">
+  <div class="wrap">
+    <div class="eyebrow">Where the real savings hide</div>
+    <h2>Smart boss, <span class="aB">cheap workers</span></h2>
+    <svg class="diagram narrow" viewBox="0 0 840 260" role="img">
+      <g filter="url(#rough)" fill="none">
+        <rect x="30" y="90" width="220" height="80" rx="14" stroke="#b197fc" stroke-width="3" fill="#221a33"/>
+        <rect x="580" y="8"   width="230" height="56" rx="12" stroke="#69db7c" stroke-width="2.8" fill="#16271a"/>
+        <rect x="580" y="102" width="230" height="56" rx="12" stroke="#69db7c" stroke-width="2.8" fill="#16271a"/>
+        <rect x="580" y="196" width="230" height="56" rx="12" stroke="#69db7c" stroke-width="2.8" fill="#16271a"/>
+        <path d="M250,126 L576,40"  stroke="#b197fc" stroke-width="2.4" marker-end="url(#ah-p)"/>
+        <path d="M250,130 L576,130" stroke="#b197fc" stroke-width="2.4" marker-end="url(#ah-p)"/>
+        <path d="M250,134 L576,222" stroke="#b197fc" stroke-width="2.4" marker-end="url(#ah-p)"/>
+      </g>
+      <g class="lbl">
+        <text class="b" x="140" y="123" style="fill:#b197fc">THE LEAD</text>
+        <text class="sm" x="140" y="148">Sonnet / Opus · $$</text>
+        <text class="b sm" x="695" y="32"  style="fill:#69db7c">scan files</text>
+        <text class="sm" x="695" y="52">Haiku · $</text>
+        <text class="b sm" x="695" y="126" style="fill:#69db7c">search code</text>
+        <text class="sm" x="695" y="146">Haiku · $</text>
+        <text class="b sm" x="695" y="220" style="fill:#69db7c">summarize logs</text>
+        <text class="sm" x="695" y="240">Haiku · $</text>
+      </g>
+    </svg>
+    <div style="max-width:760px; width:100%;">
+      <ul class="hand">
+        <li>The <b>mix</b> beats raw spend: one smart lead, a fleet of cheap workers</li>
+        <li><b class="aB">CLAUDE_CODE_SUBAGENT_MODEL</b> forces every subagent onto a cheap model</li>
+        <li><b class="aB">maxTurns</b> caps a wandering agent before it burns tokens</li>
+      </ul>
+    </div>
+    <div class="box red t-s" style="max-width:900px;">A multi-agent run can cost <b class="aR">~15x</b> a plain chat. Big, noisy jobs only.</div>
+  </div>
+</section>
+
+<!-- 14 — THE ONE QUESTION -->
+<section class="slide">
+  <div class="wrap">
+    <div class="eyebrow">The most important section</div>
+    <h2>When do you <span class="aB">actually</span> use one?</h2>
+    <div class="box blue t-s" style="font-size:clamp(1.4rem,3.2vw,2.3rem); line-height:1.25; max-width:1020px; padding:1.4rem 2rem;">
+      "Is this about to dump a pile of stuff into my chat that I'll <b>never read again</b>?"
+    </div>
+    <div class="row" style="gap:1.4rem; margin-top:.6rem;">
+      <span class="chip g" style="font-size:clamp(1.1rem,2.2vw,1.5rem);"><b>Yes</b> &rarr; subagent</span>
+      <span class="chip r" style="font-size:clamp(1.1rem,2.2vw,1.5rem);"><b>No</b> &rarr; just do it inline</span>
+    </div>
+    <div class="cap">Almost every "should I?" is really this question. It always comes back to protecting your context.</div>
+  </div>
+</section>
+
+<!-- 15 — USE IT VS SKIP IT -->
+<section class="slide">
+  <div class="wrap">
+    <h2>The signals</h2>
+    <div class="row" style="align-items:stretch;">
+      <div class="panel">
+        <div class="box green" style="width:100%;">
+          <span class="lab aG">Reach for one</span>
+          <ul class="hand good" style="margin-top:.5rem;">
+            <li>It'll read a LOT of files</li>
+            <li>It'll spit out a wall of output</li>
+            <li>It's a job you keep repeating</li>
+            <li>Independent jobs, run in parallel</li>
+            <li>You want an unbiased reviewer</li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="box red" style="width:100%;">
+          <span class="lab aR">Skip it</span>
+          <ul class="hand bad" style="margin-top:.5rem;">
+            <li>It's one quick edit</li>
+            <li>Steps depend on each other</li>
+            <li>The agents would need to talk</li>
+            <li>It needs the whole conversation</li>
+            <li>It needs to ask you a question</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="box blue t-z" style="max-width:1040px;">Rule of thumb: <b>10+ files, or output you'll never re-read = subagent.</b>
+      <span class="note" style="margin-top:.4rem;">Now scale the signal: <b>dozens of parallel jobs, or a codebase-wide pass</b> = a <b class="aG">dynamic workflow</b>.</span>
+    </div>
+  </div>
+</section>
+
+<!-- 16 — CHAINING -->
+<section class="slide">
+  <div class="wrap">
+    <div class="eyebrow">Putting them together</div>
+    <h2>The main chat is the <span class="aB">conductor</span></h2>
+    <svg class="diagram narrow" viewBox="0 0 760 220" role="img">
+      <g filter="url(#rough)" fill="none">
+        <rect x="300" y="14" width="160" height="56" rx="12" stroke="#74c0fc" stroke-width="3" fill="#16222e"/>
+        <rect x="40"  y="150" width="150" height="52" rx="11" stroke="#b197fc" stroke-width="2.6" fill="#221a33"/>
+        <rect x="305" y="150" width="150" height="52" rx="11" stroke="#b197fc" stroke-width="2.6" fill="#221a33"/>
+        <rect x="570" y="150" width="150" height="52" rx="11" stroke="#b197fc" stroke-width="2.6" fill="#221a33"/>
+        <path d="M340,70 L130,148"  stroke="#74c0fc" stroke-width="2.4" marker-end="url(#ah-p)"/>
+        <path d="M380,70 L380,148"  stroke="#74c0fc" stroke-width="2.4" marker-end="url(#ah-p)"/>
+        <path d="M420,70 L630,148"  stroke="#74c0fc" stroke-width="2.4" marker-end="url(#ah-p)"/>
+      </g>
+      <g class="lbl">
+        <text class="b" x="380" y="48" style="fill:#74c0fc">MAIN CHAT</text>
+        <text class="b sm" x="115" y="181" style="fill:#b197fc">agent A</text>
+        <text class="b sm" x="380" y="181" style="fill:#b197fc">agent B</text>
+        <text class="b sm" x="645" y="181" style="fill:#b197fc">agent C</text>
+      </g>
+    </svg>
+    <div class="row" style="gap:1rem;">
+      <span class="chip g">✓ Skills can call agents</span>
+      <span class="chip g">✓ Agents can call skills</span>
+      <span class="chip r">✕ Agents can't call agents</span>
+    </div>
+    <div class="cap">Need a chain? The main chat runs it: call A, use the result, call B.</div>
+    <div class="box green t-s" style="max-width:1040px;">
+      <span class="lab aG">Scale it up → dynamic workflows</span>
+      <span class="note">Fanning out a few by hand is easy. For a <b>big</b> parallel job, a dynamic workflow writes the script that runs <b>dozens of subagents at once</b>, then merges the results.</span>
+    </div>
+  </div>
+</section>
+
+<!-- 17 - UNBIASED REVIEWER -->
+<section class="slide">
+  <div class="wrap">
+    <div class="eyebrow">The biggest results unlock</div>
+    <h2>The reviewer that <span class="aG">can't be biased</span></h2>
+    <svg class="diagram narrow" viewBox="0 0 820 190" role="img">
+      <g filter="url(#rough)" fill="none">
+        <rect x="30" y="68" width="200" height="66" rx="13" stroke="#74c0fc" stroke-width="3" fill="#16222e"/>
+        <rect x="318" y="68" width="200" height="66" rx="13" stroke="#69db7c" stroke-width="3" fill="#16271a"/>
+        <rect x="612" y="68" width="178" height="66" rx="13" stroke="#ffd43b" stroke-width="3" fill="#2e2814"/>
+        <path d="M230,101 L315,101" stroke="#69db7c" stroke-width="2.5" marker-end="url(#ah-g)"/>
+        <path d="M518,101 L609,101" stroke="#ffd43b" stroke-width="2.5" marker-end="url(#ah-y)"/>
+      </g>
+      <g class="lbl">
+        <text class="b sm" x="130" y="96" style="fill:#74c0fc">you build it</text>
+        <text class="sm" x="130" y="118">invested in it</text>
+        <text class="b sm" x="418" y="96" style="fill:#69db7c">reviewer agent</text>
+        <text class="sm" x="418" y="118">blank, never saw it</text>
+        <text class="b sm" x="701" y="96" style="fill:#ffd43b">honest verdict</text>
+      </g>
+    </svg>
+    <div class="cap">Because the reviewer starts <b>blank</b>, it can't be swayed by how you built it. It judges the result cold, the way an outside engineer would. Builder writes, validator checks.</div>
+    <div class="box green t-s" style="max-width:1000px;">Same trick for research and planning: one agent does the work, a fresh one pressure-tests it.</div>
+  </div>
+</section>
+
+<!-- 18 — CHEAT SHEET -->
+<section class="slide">
+  <div class="wrap">
+    <h2>The whole thing on <span class="aB">one slide</span></h2>
+    <div class="map">
+      <div class="r"><span class="k">One quick thing</span><span class="a">→</span><span class="v">just do it inline</span></div>
+      <div class="r"><span class="k">A heavy or noisy side task</span><span class="a">→</span><span class="v aP">Subagent</span></div>
+      <div class="r"><span class="k">Share it with the team</span><span class="a">→</span><span class="v aB">.claude/agents/</span> <span class="k">(in the repo)</span></div>
+      <div class="r"><span class="k">Keep it just for you</span><span class="a">→</span><span class="v aG">~/.claude/agents/</span> <span class="k">(home folder)</span></div>
+      <div class="r"><span class="k">Save money</span><span class="a">→</span><span class="v">cheap workers, one smart lead</span></div>
+      <div class="r"><span class="k">Better results</span><span class="a">→</span><span class="v">let a fresh agent review your work</span></div>
+      <div class="r"><span class="k">A giant parallel job</span><span class="a">→</span><span class="v aG">dynamic workflow</span> <span class="k">(watch the bill)</span></div>
+      <div class="r"><span class="k">Not sure?</span><span class="a">→</span><span class="v">"a pile I'll never re-read?"</span> <span class="k">yes = subagent</span></div>
+    </div>
+    <div class="cap" style="margin-top:1rem;">Build your first one in seconds: type <b class="aB">/agents</b>.</div>
+  </div>
+</section>
+
+<!-- chrome -->
+<div id="counter">1 / 18</div>
+<div id="hint">← → to move</div>
+<div class="nav">
+  <button id="prev" aria-label="previous">‹</button>
+  <button id="next" aria-label="next">›</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const bar = document.getElementById('bar');
+  const counter = document.getElementById('counter');
+  let i = 0;
+
+  function show(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    counter.textContent = (i + 1) + ' / ' + slides.length;
+    bar.style.width = (i / (slides.length - 1) * 100) + '%';
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)) { show(i + 1); e.preventDefault(); }
+    else if (['ArrowLeft','ArrowUp','PageUp'].includes(e.key)) { show(i - 1); e.preventDefault(); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+  });
+
+  document.getElementById('next').addEventListener('click', () => show(i + 1));
+  document.getElementById('prev').addEventListener('click', () => show(i - 1));
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.nav') || e.target.closest('button')) return;
+    if (e.clientX < window.innerWidth * 0.33) show(i - 1);
+    else show(i + 1);
+  });
+
+  show(0);
+</script>
+</body>
+</html>

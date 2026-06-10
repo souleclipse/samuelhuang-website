@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
 <title>Samuel OS</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -436,6 +438,83 @@
   .pin-error.visible { display: block; }
   .app-shell.locked { display: none; }
 
+  .tabbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .tab-btn {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    color: var(--ink-mute);
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: -1px;
+    padding: 10px 12px;
+  }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .persona-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .persona-card h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    margin-bottom: 20px;
+  }
+  .persona-grid {
+    display: grid;
+    gap: 14px;
+  }
+  .persona-row {
+    border-top: 1px dashed var(--line);
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 14px;
+    padding-top: 14px;
+  }
+  .persona-row:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .persona-label {
+    color: var(--ink-mute);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .persona-value {
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .auth-note {
+    color: var(--ink-mute);
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 14px;
+  }
+
   .session-card.is-due { border-color: var(--orange); }
   .session-card.is-due::before { background: var(--orange); }
   .session-card.is-due .session-time { color: var(--orange); }
@@ -476,6 +555,8 @@
     .pin-form input, .pin-form .btn-set { width: 100%; }
     .topbar { align-items: flex-start; gap: 16px; }
     .supplement-list { margin-left: 0; }
+    .tabbar { overflow-x: auto; }
+    .persona-row { grid-template-columns: 1fr; gap: 6px; }
   }
 </style>
 </head>
@@ -498,15 +579,22 @@
 
 <div class="wrap">
   <div class="auth-card" id="authCard">
-    <h2>Samuel OS PIN</h2>
+    <h2>Dashboard password</h2>
     <div class="pin-form">
-      <input id="pinInput" type="password" inputmode="numeric" autocomplete="current-password">
+      <input id="pinInput" type="password" autocomplete="current-password">
       <button class="btn-set" id="unlockBtn" onclick="unlockDashboard()">Unlock</button>
     </div>
-    <div class="pin-error" id="pinError">PIN required.</div>
+    <div class="pin-error" id="pinError">Password required.</div>
+    <div class="auth-note">Your saved session uses an HTTP-only cookie. Your allowed IP skips this screen.</div>
   </div>
 
   <div class="app-shell locked" id="appShell">
+    <div class="tabbar" role="tablist" aria-label="Dashboard sections">
+      <button class="tab-btn active" id="scheduleTab" type="button" role="tab" aria-selected="true" aria-controls="schedulePanel" onclick="showTab('schedule')">Schedule</button>
+      <button class="tab-btn" id="personaTab" type="button" role="tab" aria-selected="false" aria-controls="personaPanel" onclick="showTab('persona')">Persona Info</button>
+    </div>
+
+    <section class="tab-panel active" id="schedulePanel" role="tabpanel" aria-labelledby="scheduleTab">
     <div class="wake-card">
       <h2>Wake-up time</h2>
       <div class="wake-form">
@@ -535,6 +623,16 @@
       <div class="big-emoji">🌅</div>
       <p>Set your wake-up time above<br>to generate today's supplement schedule.</p>
     </div>
+    </section>
+
+    <section class="tab-panel" id="personaPanel" role="tabpanel" aria-labelledby="personaTab">
+      <div class="persona-card">
+        <h2>Persona Info</h2>
+        <div class="persona-grid" id="personaInfo">
+          <div class="loading">Loading...</div>
+        </div>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -542,11 +640,11 @@
 
 <script>
   const TZ = 'Asia/Bangkok'
-  const PIN_KEY = 'samuel-os-pin'
   const EMOJIS = { 1: '🌅', 2: '☕', 3: '🥗', 4: '🏋️', 5: '🥩', 6: '🥤', 7: '🌙' }
 
   let latestSchedule = []
   let latestSessions = []
+  let personaLoaded = false
 
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
@@ -634,15 +732,9 @@
     return session.emoji || EMOJIS[session.session_number] || '💊'
   }
 
-  function getPin() {
-    return localStorage.getItem(PIN_KEY) || ''
-  }
-
   function apiFetch(url, options = {}) {
     const headers = new Headers(options.headers || {})
-    const pin = getPin()
-    if (pin) headers.set('x-samuel-os-pin', pin)
-    return fetch(url, { ...options, headers })
+    return fetch(url, { ...options, headers, credentials: 'same-origin' })
   }
 
   function showApp() {
@@ -650,7 +742,7 @@
     document.getElementById('appShell').classList.remove('locked')
   }
 
-  function showAuth(message = 'PIN required.') {
+  function showAuth(message = 'Password required.') {
     document.getElementById('appShell').classList.add('locked')
     document.getElementById('authCard').classList.add('visible')
     const err = document.getElementById('pinError')
@@ -660,9 +752,88 @@
   }
 
   async function unlockDashboard() {
-    const pin = document.getElementById('pinInput').value.trim()
-    localStorage.setItem(PIN_KEY, pin)
-    await loadSchedule()
+    const password = document.getElementById('pinInput').value
+    const btn = document.getElementById('unlockBtn')
+    btn.disabled = true
+    btn.textContent = 'Checking...'
+
+    try {
+      const res = await fetch('/api/dashboard-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ password }),
+      })
+      if (!res.ok) {
+        showAuth('Incorrect password.')
+        return
+      }
+      document.getElementById('pinInput').value = ''
+      showApp()
+      await Promise.all([loadSchedule(), loadPersona()])
+    } catch {
+      showAuth('Could not unlock dashboard.')
+    } finally {
+      btn.disabled = false
+      btn.textContent = 'Unlock'
+    }
+  }
+
+  async function checkAuth() {
+    try {
+      const res = await fetch('/api/dashboard-auth', { credentials: 'same-origin' })
+      const data = await res.json()
+      if (!data.authenticated) {
+        showAuth('Enter your dashboard password.')
+        return false
+      }
+      showApp()
+      return true
+    } catch {
+      showAuth('Could not check dashboard access.')
+      return false
+    }
+  }
+
+  function showTab(name) {
+    const isPersona = name === 'persona'
+    document.getElementById('schedulePanel').classList.toggle('active', !isPersona)
+    document.getElementById('personaPanel').classList.toggle('active', isPersona)
+    document.getElementById('scheduleTab').classList.toggle('active', !isPersona)
+    document.getElementById('personaTab').classList.toggle('active', isPersona)
+    document.getElementById('scheduleTab').setAttribute('aria-selected', String(!isPersona))
+    document.getElementById('personaTab').setAttribute('aria-selected', String(isPersona))
+    if (isPersona) loadPersona()
+  }
+
+  async function loadPersona() {
+    if (personaLoaded) return
+    const target = document.getElementById('personaInfo')
+    try {
+      const res = await apiFetch('/api/persona-info')
+      if (res.status === 401) {
+        showAuth('Enter your dashboard password.')
+        return
+      }
+      const data = await res.json()
+      target.innerHTML = `
+        <div class="persona-row">
+          <div class="persona-label">Name</div>
+          <div class="persona-value">${escapeHtml(data.name || '-')}</div>
+        </div>
+        <div class="persona-row">
+          <div class="persona-label">Phone</div>
+          <div class="persona-value">${escapeHtml(data.phone || '-')}</div>
+        </div>
+        <div class="persona-row">
+          <div class="persona-label">Address</div>
+          <div class="persona-value">${escapeHtml(data.address || '-')}</div>
+        </div>
+      `
+      personaLoaded = true
+    } catch {
+      target.innerHTML = '<div class="loading">Could not load persona info.</div>'
+    }
   }
 
   function normalizeSchedule(schedule = [], sessions = latestSessions) {
@@ -695,8 +866,7 @@
         body: JSON.stringify({ source: 'web', time: input, timeZone: TZ }),
       })
       if (res.status === 401) {
-        localStorage.removeItem(PIN_KEY)
-        showAuth('Enter your Samuel OS PIN.')
+        showAuth('Enter your dashboard password.')
         return
       }
       const data = await res.json()
@@ -715,8 +885,7 @@
     try {
       const res = await apiFetch('/api/dashboard')
       if (res.status === 401) {
-        localStorage.removeItem(PIN_KEY)
-        showAuth('Enter your Samuel OS PIN.')
+        showAuth('Enter your dashboard password.')
         return
       }
       const data = await res.json()
@@ -746,8 +915,7 @@
         body: JSON.stringify({ id, taken }),
       })
       if (res.status === 401) {
-        localStorage.removeItem(PIN_KEY)
-        showAuth('Enter your Samuel OS PIN.')
+        showAuth('Enter your dashboard password.')
         return
       }
       const data = await res.json()
@@ -871,7 +1039,12 @@
   setWakeToNow()
   tickClock()
   setInterval(tickClock, 1000)
-  loadSchedule()
+  checkAuth().then((allowed) => {
+    if (allowed) {
+      loadSchedule()
+      loadPersona()
+    }
+  })
 </script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { requireDashboardAuth } from './_dashboard-auth.js'
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -6,18 +7,6 @@ const supabase = createClient(
 )
 
 const TIME_ZONE = process.env.APP_TIME_ZONE || 'Asia/Bangkok'
-
-function getPin(req) {
-  return req.headers['x-samuel-os-pin'] || req.headers['x-dashboard-pin'] || req.query?.pin || ''
-}
-
-function requireDashboardPin(req, res) {
-  const expected = process.env.SAMUEL_OS_PIN || process.env.DASHBOARD_PIN || ''
-  if (!expected) return true
-  if (getPin(req) === expected) return true
-  res.status(401).json({ error: 'PIN required' })
-  return false
-}
 
 function datePartsInTimeZone(date, timeZone) {
   const parts = new Intl.DateTimeFormat('en-US', {
@@ -37,7 +26,7 @@ function dateKeyInTimeZone(date, timeZone) {
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).send('Method not allowed')
-  if (!requireDashboardPin(req, res)) return
+  if (!requireDashboardAuth(req, res)) return
 
   const today = dateKeyInTimeZone(new Date(), TIME_ZONE)
 

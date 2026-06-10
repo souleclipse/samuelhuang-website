@@ -33,6 +33,7 @@ references/             # Shared knowledge (read by any agent)
 2. **Read the relevant workflow** — every task has a corresponding SOP in `workflows/`
 3. **Fix and learn** — when a tool fails, diagnose it, fix it, verify the fix, update the workflow
 4. **Deliverables go to cloud** — final outputs to Google Sheets, Slides, etc. `.tmp/` is disposable
+5. **Pages go in the glossary** — when creating or converting any page under `site/`, add it to `site/glossary/index.html` with clickable page title, visible URL, and open action
 
 ## Skills
 

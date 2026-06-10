@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Skill Store Map</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1B1F27;
+    --line: #2A2E38;
+    --ink: #F2F3F5;
+    --ink-soft: #B8BBC5;
+    --ink-mute: #777C89;
+    --green: #2BC79A;
+    --green-bg: #11271F;
+    --blue: #8FB7FF;
+    --blue-bg: #142033;
+    --amber: #F0B35E;
+    --amber-bg: #2C2214;
+    --purple: #A6A0FF;
+    --purple-bg: #1D1B35;
+    --code-bg: #07080C;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--green); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(11, 12, 16, 0.94);
+    backdrop-filter: blur(14px);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 750;
+  }
+  .brand-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+  .nav-link {
+    color: var(--ink-mute);
+    font-size: 13px;
+  }
+  .nav-link:hover { color: var(--ink); }
+
+  .wrap {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 42px 24px 88px;
+  }
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px;
+    align-items: end;
+    padding: 22px 0 34px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  h1 {
+    max-width: 850px;
+    font-size: 58px;
+    line-height: 1;
+    letter-spacing: 0;
+    overflow-wrap: break-word;
+  }
+  .hero-copy {
+    max-width: 790px;
+    margin-top: 18px;
+    color: var(--ink-soft);
+    font-size: 17px;
+    line-height: 1.65;
+  }
+  .meta {
+    display: grid;
+    gap: 8px;
+    justify-items: end;
+    color: var(--ink-mute);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .meta strong { color: var(--ink); font-size: 13px; }
+
+  .section-nav {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 22px 0 8px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 7px 13px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+  .chip:hover {
+    color: var(--ink);
+    border-color: var(--green);
+    text-decoration: none;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 28px;
+  }
+  .stat {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    min-width: 0;
+    padding: 18px;
+  }
+  .stat strong {
+    display: block;
+    color: var(--ink);
+    font-size: 28px;
+    line-height: 1;
+    margin-bottom: 7px;
+  }
+  .stat span {
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .stat p {
+    margin-top: 8px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  section.block { margin-top: 42px; }
+  .section-head {
+    display: grid;
+    gap: 8px;
+    max-width: 860px;
+    margin-bottom: 18px;
+  }
+  .section-kicker {
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  h2 {
+    font-size: 28px;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+  .section-head p {
+    color: var(--ink-soft);
+    font-size: 15px;
+  }
+
+  .lens-grid,
+  .comparison {
+    display: grid;
+    gap: 16px;
+  }
+  .lens-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .comparison {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .lens-card,
+  .compare-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .lens-card {
+    padding: 18px;
+    border-top: 3px solid var(--green);
+    min-width: 0;
+  }
+  .lens-card:nth-child(2) { border-top-color: var(--blue); }
+  .lens-card:nth-child(3) { border-top-color: var(--amber); }
+  .lens-count {
+    color: var(--ink);
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .lens-card h3 {
+    font-size: 18px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .lens-card p {
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+  .mini-counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .mini-counts span {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink-mute);
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  .compare-head {
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+    padding: 18px;
+  }
+  .compare-head h3 {
+    font-size: 20px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .compare-head p {
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .compare-list {
+    display: grid;
+    gap: 10px;
+    padding: 18px;
+  }
+  .compare-list div {
+    border-left: 3px solid var(--green);
+    padding-left: 12px;
+  }
+  .compare-list strong {
+    display: block;
+    font-size: 13px;
+  }
+  .compare-list span {
+    color: var(--ink-soft);
+    display: block;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-top: 3px;
+  }
+
+  .filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .filters input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+    padding: 12px 14px;
+  }
+  .filters input:focus { border-color: var(--green); }
+  .filters button {
+    border: 1px solid #1C5A48;
+    border-radius: 8px;
+    background: var(--green-bg);
+    color: var(--green);
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 750;
+    padding: 0 14px;
+  }
+  .filters button:hover { color: var(--ink); border-color: var(--green); }
+
+  .skill-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+  }
+  .skill-column { min-width: 0; }
+  .column-head {
+    position: sticky;
+    top: 57px;
+    z-index: 10;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(20, 22, 28, 0.96);
+    backdrop-filter: blur(12px);
+    margin-bottom: 12px;
+    padding: 16px;
+  }
+  .column-head.cloud { border-top: 3px solid var(--blue); }
+  .column-head.agent { border-top: 3px solid var(--amber); }
+  .column-head h3 {
+    font-size: 19px;
+    line-height: 1.2;
+  }
+  .column-head p {
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.55;
+    margin-top: 6px;
+  }
+  .column-head .count {
+    color: var(--ink-mute);
+    font-size: 12px;
+    margin-top: 10px;
+  }
+  .skill-list {
+    display: grid;
+    gap: 10px;
+  }
+  .skill-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    min-width: 0;
+    padding: 16px;
+  }
+  .skill-card.hidden { display: none; }
+  .skill-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .badge,
+  .source,
+  .runtime,
+  .origin {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    min-height: 22px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    text-transform: uppercase;
+    white-space: normal;
+  }
+  .badge {
+    border: 1px solid #274A78;
+    background: var(--blue-bg);
+    color: var(--blue);
+  }
+  .source {
+    border: 1px solid #5A3C18;
+    background: var(--amber-bg);
+    color: var(--amber);
+  }
+  .runtime {
+    border: 1px solid #1C5A48;
+    background: var(--green-bg);
+    color: var(--green);
+  }
+  .origin {
+    border: 1px solid #3B3670;
+    background: var(--purple-bg);
+    color: var(--purple);
+  }
+  .skill-card h3 {
+    font-size: 17px;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+  .skill-card p {
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    line-height: 1.62;
+  }
+  .skill-path {
+    border-top: 1px solid var(--line);
+    color: var(--ink-mute);
+    font-size: 11.5px;
+    margin-top: 12px;
+    padding-top: 10px;
+  }
+
+  .category-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .category-cloud span {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+  .table-wrap {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    max-width: 100%;
+    overflow: auto;
+  }
+  table {
+    width: 100%;
+    min-width: 820px;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  thead th {
+    background: var(--surface-2);
+    color: var(--ink-mute);
+    text-align: left;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-soft);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody td:nth-child(2),
+  tbody td:nth-child(5),
+  tbody td:nth-child(6),
+  tbody td:nth-child(7) {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .empty {
+    display: none;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink-mute);
+    font-size: 14px;
+    padding: 18px;
+    text-align: center;
+  }
+  .empty.visible { display: block; }
+
+  footer {
+    margin-top: 42px;
+    border-top: 1px solid var(--line);
+    padding-top: 24px;
+    color: var(--ink-mute);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  @media (max-width: 960px) {
+    .hero,
+    .stat-grid,
+    .lens-grid,
+    .comparison,
+    .skill-columns {
+      grid-template-columns: 1fr;
+    }
+    .meta { justify-items: start; }
+    .column-head { position: static; }
+  }
+  @media (max-width: 760px) {
+    .topbar { padding: 16px 20px; }
+    .wrap { padding: 30px 18px 72px; }
+    h1 {
+      max-width: calc(100vw - 36px);
+      font-size: 38px;
+    }
+    .hero-copy,
+    .section-head {
+      max-width: calc(100vw - 36px);
+    }
+    h2 { font-size: 24px; }
+    .filters { grid-template-columns: 1fr; }
+    .filters button { min-height: 40px; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="brand-dot"></span>Samuel Huang</div>
+    <a class="nav-link" href="/">Home</a>
+  </div>
+
+  <main class="wrap">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">Skill Store Map</div>
+        <h1>All Available Agent Skills</h1>
+        <p class="hero-copy">A plain-English inventory of the local, Codex, OpenAI connector/runtime, GitHub, Notion, and Claude Cowork skills currently installed for this workspace. Every card now separates what the skill is for from where it came from.</p>
+      </div>
+      <div class="meta">
+        <strong>135 unique skills</strong>
+        <span>58 cloud + technical</span>
+        <span>77 agent + workflow</span>
+        <span>6 origin types</span>
+      </div>
+    </header>
+
+    <nav class="section-nav" aria-label="Guide sections">
+      <a class="chip" href="#runtime">Claude vs Codex</a>
+      <a class="chip" href="#comparison">Cloud vs Agent</a>
+      <a class="chip" href="#inventory">Skill inventory</a>
+      <a class="chip" href="#sources">Sources</a>
+      <a class="chip" href="#origins">Origins</a>
+      <a class="chip" href="#categories">Categories</a>
+    </nav>
+
+    <section class="stat-grid" aria-label="Skill counts">
+      <div class="stat"><strong>135</strong><span>Total skills</span><p>Deduped from 153 installed skill files across local folders and plugin caches.</p></div>
+      <div class="stat"><strong>100</strong><span>Claude Cowork</span><p>Claude-side plugin skills available here through the enabled claude-cowork cache.</p></div>
+      <div class="stat"><strong>27</strong><span>Codex</span><p>Codex system, OpenAI runtime, connector, browser, and local ~/.codex skill entries.</p></div>
+      <div class="stat"><strong>17</strong><span>Self-installed</span><p>Your local custom skills from ~/.agents/skills and ~/.codex/skills.</p></div>
+    </section>
+
+    <section class="block" id="runtime">
+      <div class="section-head">
+        <div class="section-kicker">Claude vs Codex</div>
+        <h2>Which Runtime Each Skill Belongs To</h2>
+        <p>Use the "For" label when deciding whether a skill is Claude/Cowork, Codex, or locally installed for this agent setup. Use the "Origin" label when deciding whether it came from a plugin, connector, runtime pack, system bundle, or your own install.</p>
+      </div>
+      <div class="lens-grid">
+
+        <article class="lens-card">
+          <div class="lens-count">100</div>
+          <h3>For Claude Cowork</h3>
+          <p>Claude/Cowork skill packs. Codex can still see them here because the plugin cache is enabled in this workspace.</p>
+          <div class="mini-counts">
+            <span>27 cloud + technical</span>
+            <span>73 agent + workflow</span>
+          </div>
+        </article>
+        <article class="lens-card">
+          <div class="lens-count">27</div>
+          <h3>For Codex</h3>
+          <p>Codex-side system, connector, browser, runtime, and local ~/.codex/skills entries.</p>
+          <div class="mini-counts">
+            <span>23 cloud + technical</span>
+            <span>4 agent + workflow</span>
+          </div>
+        </article>
+        <article class="lens-card">
+          <div class="lens-count">8</div>
+          <h3>For Local Agent</h3>
+          <p>Local agent skills in ~/.agents/skills. These are self-installed for this agent setup rather than from a vendor plugin.</p>
+          <div class="mini-counts">
+            <span>8 cloud + technical</span>
+            <span>0 agent + workflow</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="block" id="comparison">
+      <div class="section-head">
+        <div class="section-kicker">Side-by-side</div>
+        <h2>Cloud Skills vs. Agent Skills</h2>
+        <p>This is a second lens. It groups skills by what they do: technical build work versus repeatable business or specialist workflows.</p>
+      </div>
+      <div class="comparison">
+        <article class="compare-card">
+          <div class="compare-head">
+            <h3>Cloud + Technical Skills</h3>
+            <p>Use these when the work touches infrastructure, code, automation, data, files, browser control, or developer tooling.</p>
+          </div>
+          <div class="compare-list">
+            <div><strong>What they are for</strong><span>Building, debugging, deploying, reviewing, automating, and operating technical systems.</span></div>
+            <div><strong>Typical examples</strong><span>Cloudflare, Agents SDK, Wrangler, Durable Objects, GitHub, browser control, engineering review, data analysis, n8n, spreadsheets, documents, and presentations.</span></div>
+            <div><strong>Plain-English value</strong><span>They turn product docs, command-line details, and setup steps into a guided checklist the agent can follow.</span></div>
+          </div>
+        </article>
+        <article class="compare-card">
+          <div class="compare-head">
+            <h3>Agent + Workflow Skills</h3>
+            <p>Use these when the work is a repeatable business process, research task, communication task, or specialist operating procedure.</p>
+          </div>
+          <div class="compare-list">
+            <div><strong>What they are for</strong><span>Planning campaigns, researching accounts, drafting outreach, triaging support, handling legal reviews, writing specs, and organizing team workflows.</span></div>
+            <div><strong>Typical examples</strong><span>Sales, marketing, finance, legal, HR, operations, product management, customer support, Common Room, Apollo, Notion, Slack, and productivity skills.</span></div>
+            <div><strong>Plain-English value</strong><span>They give the agent a reusable way to do the task like a specialist instead of improvising from a blank prompt.</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="block" id="inventory">
+      <div class="section-head">
+        <div class="section-kicker">Inventory</div>
+        <h2>Every Installed Skill, In Plain English</h2>
+        <p>Search by skill name, category, source, runtime, origin, or install family. GitHub connector skills, local custom skills, Claude Cowork skills, and Codex system skills are now searchable as separate labels.</p>
+      </div>
+      <div class="filters">
+        <input id="skillSearch" type="search" placeholder="Search skills, sources, origins, runtime labels, or install families..." aria-label="Search skills">
+        <button type="button" id="clearSearch">Clear</button>
+      </div>
+      <div class="skill-columns">
+        <section class="skill-column" aria-label="Cloud and technical skills">
+          <div class="column-head cloud">
+            <h3>Cloud + Technical</h3>
+            <p>Specialists for software, platforms, data, documents, automation, and developer workflows.</p>
+            <div class="count"><span id="cloudVisible">58</span> of 58 visible</div>
+          </div>
+          <div class="skill-list" id="cloudList">
+
+          <article class="skill-card" data-name="n8n-code-javascript" data-category="automation" data-source="local agent" data-runtime="local agent" data-origin="custom / self-installed" data-install="~/.agents/skills">
+            <div class="skill-meta">
+              <span class="badge">Automation</span>
+              <span class="source">Local Agent</span>
+              <span class="runtime">For Local Agent</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>n8n Code Javascript</h3>
+            <p>Write JavaScript code in n8n Code nodes. Use when writing JavaScript in n8n, using $input/$json/$node syntax, making HTTP requests with $helpers, working with dates using DateTime, troubleshooting Code node errors, or choosing between Code node modes. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.agents/skills</div>
+          </article>
+          <article class="skill-card" data-name="n8n-code-python" data-category="automation" data-source="local agent" data-runtime="local agent" data-origin="custom / self-installed" data-install="~/.agents/skills">
+            <div class="skill-meta">
+              <span class="badge">Automation</span>
+              <span class="source">Local Agent</span>
+              <span class="runtime">For Local Agent</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>n8n Code Python</h3>
+            <p>Write Python code in n8n Code nodes. Use when writing Python in n8n, using _input/_json/_node syntax, working with standard library, or need to understand Python limitations in n8n Code nodes. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.agents/skills</div>
+          </article>
+          <article class="skill-card" data-name="n8n-expression-syntax" data-category="automation" data-source="local agent" data-runtime="local agent" data-origin="custom / self-installed" data-install="~/.agents/skills">
+            <div class="skill-meta">
+              <span class="badge">Automation</span>
+              <span class="source">Local Agent</span>
+              <span class="runtime">For Local Agent</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>n8n Expression Syntax</h3>
+            <p>Validate n8n expression syntax and fix common errors. Use when writing n8n expressions, using {{}} syntax, accessing $json/$node variables, troubleshooting expression errors, or working with webhook data in workflows. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.agents/skills</div>
+          </article>
+          <article class="skill-card" data-name="n8n-mcp-tools-expert" data-category="automation" data-source="local agent" data-runtime="local agent" data-origin="custom / self-installed" data-install="~/.agents/skills">
+            <div class="skill-meta">
+              <span class="badge">Automation</span>
+              <span class="source">Local Agent</span>
+              <span class="runtime">For Local Agent</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>n8n Mcp Tools Expert</h3>
+            <p>Expert guide for using n8n-mcp MCP tools effectively. Use when searching for nodes, validating configurations, accessing templates, managing workflows, or using any n8n-mcp tool. Provides tool selection guidance, parameter formats, and common patterns. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.agents/skills</div>
+          </article>
+          <article class="skill-card" data-name="n8n-node-configuration" data-category="automation" data-source="local agent" data-runtime="local agent" data-origin="custom / self-installed" data-install="~/.agents/skills">
+            <div class="skill-meta">
+              <span class="badge">Automation</span>
+              <span class="source">Local Agent</span>
+              <span class="runtime">For Local Agent</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>n8n Node Configuration</h3>
+            <p>Operation-aware node configuration guidance. Use when configuring nodes, understanding property dependencies, determining required fields, choosing between get_node detail levels, or learning common configuration patterns by node type. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.agents/skills</div>
+          </article>
+          <article class="skill-card" data-name="n8n-validation-expert" data-category="automation" data-source="local agent" data-runtime="local agent" data-origin="custom / self-installed" data-install="~/.agents/skills">
+            <div class="skill-meta">
+              <span class="badge">Automation</span>
+              <span class="source">Local Agent</span>
+              <span class="runtime">For Local Agent</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>n8n Validation Expert</h3>
+            <p>Interpret validation errors and guide fixing them. Use when encountering validation errors, validation warnings, false positives, operator structure issues, or need help understanding validation results. Also use when asking about validation profiles,... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.agents/skills</div>
+          </article>
+          <article class="skill-card" data-name="n8n-workflow-patterns" data-category="automation" data-source="local agent" data-runtime="local agent" data-origin="custom / self-installed" data-install="~/.agents/skills">
+            <div class="skill-meta">
+              <span class="badge">Automation</span>
+              <span class="source">Local Agent</span>
+              <span class="runtime">For Local Agent</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>n8n Workflow Patterns</h3>
+            <p>Proven workflow architectural patterns from real n8n workflows. Use when building new workflows, designing workflow structure, choosing workflow patterns, planning workflow architecture, or asking about webhook processing, HTTP API integration, database... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.agents/skills</div>
+          </article>
+          <article class="skill-card" data-name="instrument-data-to-allotrope" data-category="bio research" data-source="bio research" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/bio-research">
+            <div class="skill-meta">
+              <span class="badge">Bio Research</span>
+              <span class="source">Bio Research</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Instrument Data To Allotrope</h3>
+            <p>Convert laboratory instrument output files (PDF, CSV, Excel, TXT) to Allotrope Simple Model (ASM) JSON format or flattened 2D CSV. Use this skill when scientists need to standardize instrument data for LIMS systems, data lakes, or downstream analysis.... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/bio-research</div>
+          </article>
+          <article class="skill-card" data-name="nextflow-development" data-category="bio research" data-source="bio research" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/bio-research">
+            <div class="skill-meta">
+              <span class="badge">Bio Research</span>
+              <span class="source">Bio Research</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Nextflow Development</h3>
+            <p>Run nf-core bioinformatics pipelines (rnaseq, sarek, atacseq) on sequencing data. Use when analyzing RNA-seq, WGS/WES, or ATAC-seq data-either local FASTQs or public datasets from GEO/SRA. Triggers on nf-core, Nextflow, FASTQ analysis, variant calling,... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/bio-research</div>
+          </article>
+          <article class="skill-card" data-name="scientific-problem-selection" data-category="bio research" data-source="bio research" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/bio-research">
+            <div class="skill-meta">
+              <span class="badge">Bio Research</span>
+              <span class="source">Bio Research</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Scientific Problem Selection</h3>
+            <p>Use this when scientists need help with research problem selection, project ideation, troubleshooting stuck projects, or strategic scientific decisions. Use this skill when users ask to pitch a new research idea, work through a project problem, evaluate... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/bio-research</div>
+          </article>
+          <article class="skill-card" data-name="scvi-tools" data-category="bio research" data-source="bio research" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/bio-research">
+            <div class="skill-meta">
+              <span class="badge">Bio Research</span>
+              <span class="source">Bio Research</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Scvi Tools</h3>
+            <p>Deep learning for single-cell analysis using scvi-tools. This skill should be used when users need (1) data integration and batch correction with scVI/scANVI, (2) ATAC-seq analysis with PeakVI, (3) CITE-seq multi-modal analysis with totalVI, (4) multiome... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/bio-research</div>
+          </article>
+          <article class="skill-card" data-name="single-cell-rna-qc" data-category="bio research" data-source="bio research" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/bio-research">
+            <div class="skill-meta">
+              <span class="badge">Bio Research</span>
+              <span class="source">Bio Research</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Single Cell RNA QC</h3>
+            <p>Performs quality control on single-cell RNA-seq data (.h5ad or .h5 files) using scverse best practices with MAD-based filtering and comprehensive visualizations. Use when users request QC analysis, filtering low-quality cells, assessing data quality, or... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/bio-research</div>
+          </article>
+          <article class="skill-card" data-name="control-in-app-browser" data-category="browser control" data-source="browser" data-runtime="codex" data-origin="openai bundled plugin" data-install="openai-bundled/browser">
+            <div class="skill-meta">
+              <span class="badge">Browser Control</span>
+              <span class="source">Browser</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI bundled plugin</span>
+            </div>
+            <h3>Control In App Browser</h3>
+            <p>Control the in-app Browser. Use to open, navigate, inspect, test, click, type, screenshot, or verify local targets such as localhost, 127.0.0.1, ::1, file://, the current in-app browser tab, and websites shown side by side inside Codex. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-bundled/browser</div>
+          </article>
+          <article class="skill-card" data-name="control-chrome" data-category="browser control" data-source="chrome" data-runtime="codex" data-origin="openai bundled plugin" data-install="openai-bundled/chrome">
+            <div class="skill-meta">
+              <span class="badge">Browser Control</span>
+              <span class="source">Chrome</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI bundled plugin</span>
+            </div>
+            <h3>Control Chrome</h3>
+            <p>Control the user's Chrome browser. Use for browser tasks that require the user's cookies, logged-in sessions, existing tabs, extensions, or remote authenticated sites. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-bundled/chrome</div>
+          </article>
+          <article class="skill-card" data-name="agents-sdk" data-category="cloud platform" data-source="local codex" data-runtime="codex" data-origin="custom / self-installed" data-install="~/.codex/skills">
+            <div class="skill-meta">
+              <span class="badge">Cloud Platform</span>
+              <span class="source">Local Codex</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>Agents SDK</h3>
+            <p>Build AI agents on Cloudflare Workers using the Agents SDK. Load when creating stateful agents, durable workflows, real-time WebSocket apps, scheduled tasks, MCP servers, chat applications, voice agents, or browser automation. Covers Agent class, state... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills</div>
+          </article>
+          <article class="skill-card" data-name="cloudflare" data-category="cloud platform" data-source="local codex" data-runtime="codex" data-origin="custom / self-installed" data-install="~/.codex/skills">
+            <div class="skill-meta">
+              <span class="badge">Cloud Platform</span>
+              <span class="source">Local Codex</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>Cloudflare</h3>
+            <p>Comprehensive Cloudflare platform skill covering Workers, Pages, storage (KV, D1, R2), AI (Workers AI, Vectorize, Agents SDK), feature flags (Flagship), networking (Tunnel, Spectrum), security (WAF, DDoS), and infrastructure-as-code (Terraform, Pulumi).... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills</div>
+          </article>
+          <article class="skill-card" data-name="cloudflare-email-service" data-category="cloud platform" data-source="local codex" data-runtime="codex" data-origin="custom / self-installed" data-install="~/.codex/skills">
+            <div class="skill-meta">
+              <span class="badge">Cloud Platform</span>
+              <span class="source">Local Codex</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>Cloudflare Email Service</h3>
+            <p>Send and receive transactional emails with Cloudflare Email Service (Email Sending + Email Routing). Use when building email sending (Workers binding or REST API), email routing, Agents SDK email handling, or integrating email into any app - Workers,... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills</div>
+          </article>
+          <article class="skill-card" data-name="durable-objects" data-category="cloud platform" data-source="local codex" data-runtime="codex" data-origin="custom / self-installed" data-install="~/.codex/skills">
+            <div class="skill-meta">
+              <span class="badge">Cloud Platform</span>
+              <span class="source">Local Codex</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>Durable Objects</h3>
+            <p>Create and review Cloudflare Durable Objects. Use when building stateful coordination (chat rooms, multiplayer games, booking systems), implementing RPC methods, SQLite storage, alarms, WebSockets, or reviewing DO code for best practices. Covers Workers... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills</div>
+          </article>
+          <article class="skill-card" data-name="sandbox-sdk" data-category="cloud platform" data-source="local codex" data-runtime="codex" data-origin="custom / self-installed" data-install="~/.codex/skills">
+            <div class="skill-meta">
+              <span class="badge">Cloud Platform</span>
+              <span class="source">Local Codex</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>Sandbox SDK</h3>
+            <p>Build sandboxed applications for secure code execution. Load when building AI code execution, code interpreters, CI/CD systems, interactive dev environments, or executing untrusted code. Covers Sandbox SDK lifecycle, commands, files, code interpreter, and... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills</div>
+          </article>
+          <article class="skill-card" data-name="web-perf" data-category="cloud platform" data-source="local codex" data-runtime="codex" data-origin="custom / self-installed" data-install="~/.codex/skills">
+            <div class="skill-meta">
+              <span class="badge">Cloud Platform</span>
+              <span class="source">Local Codex</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>Web Perf</h3>
+            <p>Analyzes web performance using Chrome DevTools MCP. Measures Core Web Vitals (LCP, INP, CLS) and supplementary metrics (FCP, TBT, Speed Index), identifies render-blocking resources, network dependency chains, layout shifts, caching issues, and... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills</div>
+          </article>
+          <article class="skill-card" data-name="workers-best-practices" data-category="cloud platform" data-source="local codex" data-runtime="codex" data-origin="custom / self-installed" data-install="~/.codex/skills">
+            <div class="skill-meta">
+              <span class="badge">Cloud Platform</span>
+              <span class="source">Local Codex</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>Workers Best Practices</h3>
+            <p>Reviews and authors Cloudflare Workers code against production best practices. Load when writing new Workers, reviewing Worker code, configuring wrangler.jsonc, or checking for common Workers anti-patterns (streaming, floating promises, global state,... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills</div>
+          </article>
+          <article class="skill-card" data-name="wrangler" data-category="cloud platform" data-source="local codex" data-runtime="codex" data-origin="custom / self-installed" data-install="~/.codex/skills">
+            <div class="skill-meta">
+              <span class="badge">Cloud Platform</span>
+              <span class="source">Local Codex</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>Wrangler</h3>
+            <p>Cloudflare Workers CLI for deploying, developing, and managing Workers, KV, R2, D1, Vectorize, Hyperdrive, Workers AI, Containers, Queues, Workflows, Pipelines, and Secrets Store. Load before running wrangler commands to ensure correct syntax and best... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills</div>
+          </article>
+          <article class="skill-card" data-name="imagegen" data-category="core tooling" data-source="codex system" data-runtime="codex" data-origin="codex system" data-install="~/.codex/skills/.system">
+            <div class="skill-meta">
+              <span class="badge">Core Tooling</span>
+              <span class="source">Codex System</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Codex system</span>
+            </div>
+            <h3>Imagegen</h3>
+            <p>Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image,... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills/.system</div>
+          </article>
+          <article class="skill-card" data-name="openai-docs" data-category="core tooling" data-source="codex system" data-runtime="codex" data-origin="codex system" data-install="~/.codex/skills/.system">
+            <div class="skill-meta">
+              <span class="badge">Core Tooling</span>
+              <span class="source">Codex System</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Codex system</span>
+            </div>
+            <h3>Openai Docs</h3>
+            <p>Use when the user asks how to build with OpenAI products or APIs, asks about Codex itself or choosing Codex surfaces, needs up-to-date official documentation with citations, help choosing the latest model for a use case, or model upgrade and prompt-upgrade... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills/.system</div>
+          </article>
+          <article class="skill-card" data-name="plugin-creator" data-category="core tooling" data-source="codex system" data-runtime="codex" data-origin="codex system" data-install="~/.codex/skills/.system">
+            <div class="skill-meta">
+              <span class="badge">Core Tooling</span>
+              <span class="source">Codex System</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Codex system</span>
+            </div>
+            <h3>Plugin Creator</h3>
+            <p>Create and scaffold plugin directories for Codex with a required `.codex-plugin/plugin.json`, optional plugin folders/files, valid manifest defaults, and personal-marketplace entries by default. Use when Codex needs to create a new personal plugin, add... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills/.system</div>
+          </article>
+          <article class="skill-card" data-name="skill-creator" data-category="core tooling" data-source="codex system" data-runtime="codex" data-origin="codex system" data-install="~/.codex/skills/.system">
+            <div class="skill-meta">
+              <span class="badge">Core Tooling</span>
+              <span class="source">Codex System</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Codex system</span>
+            </div>
+            <h3>Skill Creator</h3>
+            <p>Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills/.system</div>
+          </article>
+          <article class="skill-card" data-name="skill-installer" data-category="core tooling" data-source="codex system" data-runtime="codex" data-origin="codex system" data-install="~/.codex/skills/.system">
+            <div class="skill-meta">
+              <span class="badge">Core Tooling</span>
+              <span class="source">Codex System</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Codex system</span>
+            </div>
+            <h3>Skill Installer</h3>
+            <p>Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills/.system</div>
+          </article>
+          <article class="skill-card" data-name="frontend-design" data-category="core tooling" data-source="local agent" data-runtime="local agent" data-origin="custom / self-installed" data-install="~/.agents/skills">
+            <div class="skill-meta">
+              <span class="badge">Core Tooling</span>
+              <span class="source">Local Agent</span>
+              <span class="runtime">For Local Agent</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>Frontend Design</h3>
+            <p>Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, or applications. Generates creative, polished code that avoids generic AI aesthetics. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.agents/skills</div>
+          </article>
+          <article class="skill-card" data-name="session-handoff" data-category="core tooling" data-source="local codex" data-runtime="codex" data-origin="custom / self-installed" data-install="~/.codex/skills">
+            <div class="skill-meta">
+              <span class="badge">Core Tooling</span>
+              <span class="source">Local Codex</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">Custom / self-installed</span>
+            </div>
+            <h3>Session Handoff</h3>
+            <p>Use when the user says &quot;session handoff&quot;, &quot;wrap up session&quot;, &quot;hand off&quot;, &quot;handoff summary&quot;, or wants a structured end-of-session summary before clearing context. Produces a chat-only handoff covering decisions, shipped changes, key files, running state,... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: ~/.codex/skills</div>
+          </article>
+          <article class="skill-card" data-name="data-context-extractor" data-category="data" data-source="data" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/data">
+            <div class="skill-meta">
+              <span class="badge">Data</span>
+              <span class="source">Data</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Data Context Extractor</h3>
+            <p>&gt; In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/data</div>
+          </article>
+          <article class="skill-card" data-name="data-exploration" data-category="data" data-source="data" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/data">
+            <div class="skill-meta">
+              <span class="badge">Data</span>
+              <span class="source">Data</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Data Exploration</h3>
+            <p>Profile and explore datasets to understand their shape, quality, and patterns before analysis. Use when encountering a new dataset, assessing data quality, discovering column distributions, identifying nulls and outliers, or deciding which dimensions to... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/data</div>
+          </article>
+          <article class="skill-card" data-name="data-validation" data-category="data" data-source="data" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/data">
+            <div class="skill-meta">
+              <span class="badge">Data</span>
+              <span class="source">Data</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Data Validation</h3>
+            <p>QA an analysis before sharing with stakeholders - methodology checks, accuracy verification, and bias detection. Use when reviewing an analysis for errors, checking for survivorship bias, validating aggregation logic, or preparing documentation for... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/data</div>
+          </article>
+          <article class="skill-card" data-name="data-visualization" data-category="data" data-source="data" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/data">
+            <div class="skill-meta">
+              <span class="badge">Data</span>
+              <span class="source">Data</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Data Visualization</h3>
+            <p>Create effective data visualizations with Python (matplotlib, seaborn, plotly). Use when building charts, choosing the right chart type for a dataset, creating publication-quality figures, or applying design principles like accessibility and color theory. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/data</div>
+          </article>
+          <article class="skill-card" data-name="interactive-dashboard-builder" data-category="data" data-source="data" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/data">
+            <div class="skill-meta">
+              <span class="badge">Data</span>
+              <span class="source">Data</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Interactive Dashboard Builder</h3>
+            <p>Build self-contained interactive HTML dashboards with Chart.js, dropdown filters, and professional styling. Use when creating dashboards, building interactive reports, or generating shareable HTML files with charts and filters that work without a server. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/data</div>
+          </article>
+          <article class="skill-card" data-name="sql-queries" data-category="data" data-source="data" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/data">
+            <div class="skill-meta">
+              <span class="badge">Data</span>
+              <span class="source">Data</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>SQL Queries</h3>
+            <p>Write correct, performant SQL across all major data warehouse dialects (Snowflake, BigQuery, Databricks, PostgreSQL, etc.). Use when writing queries, optimizing slow SQL, translating between dialects, or building complex analytical queries with CTEs,... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/data</div>
+          </article>
+          <article class="skill-card" data-name="statistical-analysis" data-category="data" data-source="data" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/data">
+            <div class="skill-meta">
+              <span class="badge">Data</span>
+              <span class="source">Data</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Statistical Analysis</h3>
+            <p>Apply statistical methods including descriptive stats, trend analysis, outlier detection, and hypothesis testing. Use when analyzing distributions, testing for significance, detecting anomalies, computing correlations, or interpreting statistical results. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/data</div>
+          </article>
+          <article class="skill-card" data-name="canvas-design" data-category="documents" data-source="anthropic skills" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/anthropic-skills">
+            <div class="skill-meta">
+              <span class="badge">Documents</span>
+              <span class="source">Anthropic Skills</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Canvas Design</h3>
+            <p>No description was provided for this skill. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/anthropic-skills</div>
+          </article>
+          <article class="skill-card" data-name="consolidate-memory" data-category="documents" data-source="anthropic skills" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/anthropic-skills">
+            <div class="skill-meta">
+              <span class="badge">Documents</span>
+              <span class="source">Anthropic Skills</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Consolidate Memory</h3>
+            <p>Reflective pass over your memory files - merge duplicates, fix stale facts, prune the index. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/anthropic-skills</div>
+          </article>
+          <article class="skill-card" data-name="docx" data-category="documents" data-source="anthropic skills" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/anthropic-skills">
+            <div class="skill-meta">
+              <span class="badge">Documents</span>
+              <span class="source">Anthropic Skills</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>DOCX</h3>
+            <p>Use this when the user wants to create, read, edit, or manipulate Word documents (.docx files). Triggers include: any mention of 'Word doc', 'word document', '.docx', or requests to produce professional documents with formatting like tables of contents,... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/anthropic-skills</div>
+          </article>
+          <article class="skill-card" data-name="pdf" data-category="documents" data-source="anthropic skills" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/anthropic-skills">
+            <div class="skill-meta">
+              <span class="badge">Documents</span>
+              <span class="source">Anthropic Skills</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Pdf</h3>
+            <p>Use this when the user wants to do anything with PDF files. This includes reading or extracting text/tables from PDFs, combining or merging multiple PDFs into one, splitting PDFs apart, rotating pages, adding watermarks, creating new PDFs, filling PDF... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/anthropic-skills</div>
+          </article>
+          <article class="skill-card" data-name="pptx" data-category="documents" data-source="anthropic skills" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/anthropic-skills">
+            <div class="skill-meta">
+              <span class="badge">Documents</span>
+              <span class="source">Anthropic Skills</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>PPTX</h3>
+            <p>Use this skill any time a .pptx file is involved in any way - as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/anthropic-skills</div>
+          </article>
+          <article class="skill-card" data-name="schedule" data-category="documents" data-source="anthropic skills" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/anthropic-skills">
+            <div class="skill-meta">
+              <span class="badge">Documents</span>
+              <span class="source">Anthropic Skills</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Schedule</h3>
+            <p>Create or update a scheduled task that runs automatically. Use when the user says things like &quot;every day&quot;, &quot;each morning&quot;, &quot;remind me in an hour&quot;, &quot;run this at noon&quot;, or wants to reschedule an existing task. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/anthropic-skills</div>
+          </article>
+          <article class="skill-card" data-name="setup-cowork" data-category="documents" data-source="anthropic skills" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/anthropic-skills">
+            <div class="skill-meta">
+              <span class="badge">Documents</span>
+              <span class="source">Anthropic Skills</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Setup Cowork</h3>
+            <p>Guided Cowork setup - install role-matched plugins, connect your tools, try a skill. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/anthropic-skills</div>
+          </article>
+          <article class="skill-card" data-name="skill-creator" data-category="documents" data-source="anthropic skills" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/anthropic-skills">
+            <div class="skill-meta">
+              <span class="badge">Documents</span>
+              <span class="source">Anthropic Skills</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Skill Creator</h3>
+            <p>Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, edit, or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/anthropic-skills</div>
+          </article>
+          <article class="skill-card" data-name="xlsx" data-category="documents" data-source="anthropic skills" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/anthropic-skills">
+            <div class="skill-meta">
+              <span class="badge">Documents</span>
+              <span class="source">Anthropic Skills</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>XLSX</h3>
+            <p>Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting,... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/anthropic-skills</div>
+          </article>
+          <article class="skill-card" data-name="documents" data-category="documents" data-source="documents" data-runtime="codex" data-origin="openai primary runtime" data-install="openai-primary-runtime/documents">
+            <div class="skill-meta">
+              <span class="badge">Documents</span>
+              <span class="source">Documents</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI primary runtime</span>
+            </div>
+            <h3>Documents</h3>
+            <p>Create, edit, redline, and comment on `.docx`, Word, and Google Docs-targeted document artifacts inside the container, with a strict render-and-verify workflow. Use `render_docx.py` to generate page PNGs (and optional PDF) for visual QA, then iterate until... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-primary-runtime/documents</div>
+          </article>
+          <article class="skill-card" data-name="Presentations" data-category="documents" data-source="presentations" data-runtime="codex" data-origin="openai primary runtime" data-install="openai-primary-runtime/presentations">
+            <div class="skill-meta">
+              <span class="badge">Documents</span>
+              <span class="source">Presentations</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI primary runtime</span>
+            </div>
+            <h3>Presentations</h3>
+            <p>Build PowerPoint PPTX decks with artifact-tool presentation JSX In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-primary-runtime/presentations</div>
+          </article>
+          <article class="skill-card" data-name="Spreadsheets" data-category="documents" data-source="spreadsheets" data-runtime="codex" data-origin="openai primary runtime" data-install="openai-primary-runtime/spreadsheets">
+            <div class="skill-meta">
+              <span class="badge">Documents</span>
+              <span class="source">Spreadsheets</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI primary runtime</span>
+            </div>
+            <h3>Spreadsheets</h3>
+            <p>Use this skill when a user requests to create, modify, analyze, visualize, or work with spreadsheet files (`.xlsx`, `.xls`, `.csv`, `.tsv`) or Google Sheets-targeted spreadsheet artifacts with formulas, formatting, charts, tables, and recalculation. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-primary-runtime/spreadsheets</div>
+          </article>
+          <article class="skill-card" data-name="code-review" data-category="engineering" data-source="engineering" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/engineering">
+            <div class="skill-meta">
+              <span class="badge">Engineering</span>
+              <span class="source">Engineering</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Code Review</h3>
+            <p>Review code for bugs, security vulnerabilities, performance issues, and maintainability. Trigger with &quot;review this code&quot;, &quot;check this PR&quot;, &quot;look at this diff&quot;, &quot;is this code safe?&quot;, or when the user shares code and asks for feedback. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/engineering</div>
+          </article>
+          <article class="skill-card" data-name="documentation" data-category="engineering" data-source="engineering" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/engineering">
+            <div class="skill-meta">
+              <span class="badge">Engineering</span>
+              <span class="source">Engineering</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Documentation</h3>
+            <p>Write and maintain technical documentation. Trigger with &quot;write docs for&quot;, &quot;document this&quot;, &quot;create a README&quot;, &quot;write a runbook&quot;, &quot;onboarding guide&quot;, or when the user needs help with any form of technical writing - API docs, architecture docs, or... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/engineering</div>
+          </article>
+          <article class="skill-card" data-name="incident-response" data-category="engineering" data-source="engineering" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/engineering">
+            <div class="skill-meta">
+              <span class="badge">Engineering</span>
+              <span class="source">Engineering</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Incident Response</h3>
+            <p>Triage and manage production incidents. Trigger with &quot;we have an incident&quot;, &quot;production is down&quot;, &quot;something is broken&quot;, &quot;there's an outage&quot;, &quot;SEV1&quot;, or when the user describes a production issue needing immediate response. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/engineering</div>
+          </article>
+          <article class="skill-card" data-name="system-design" data-category="engineering" data-source="engineering" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/engineering">
+            <div class="skill-meta">
+              <span class="badge">Engineering</span>
+              <span class="source">Engineering</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>System Design</h3>
+            <p>Design systems, services, and architectures. Trigger with &quot;design a system for&quot;, &quot;how should we architect&quot;, &quot;system design for&quot;, &quot;what's the right architecture for&quot;, or when the user needs help with API design, data modeling, or service boundaries. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/engineering</div>
+          </article>
+          <article class="skill-card" data-name="tech-debt" data-category="engineering" data-source="engineering" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/engineering">
+            <div class="skill-meta">
+              <span class="badge">Engineering</span>
+              <span class="source">Engineering</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Tech Debt</h3>
+            <p>Identify, categorize, and prioritize technical debt. Trigger with &quot;tech debt&quot;, &quot;technical debt audit&quot;, &quot;what should we refactor&quot;, &quot;code health&quot;, or when the user asks about code quality, refactoring priorities, or maintenance backlog. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/engineering</div>
+          </article>
+          <article class="skill-card" data-name="testing-strategy" data-category="engineering" data-source="engineering" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/engineering">
+            <div class="skill-meta">
+              <span class="badge">Engineering</span>
+              <span class="source">Engineering</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Testing Strategy</h3>
+            <p>Design test strategies and test plans. Trigger with &quot;how should we test&quot;, &quot;test strategy for&quot;, &quot;write tests for&quot;, &quot;test plan&quot;, &quot;what tests do we need&quot;, or when the user needs help with testing approaches, coverage, or test architecture. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/engineering</div>
+          </article>
+          <article class="skill-card" data-name="gh-address-comments" data-category="engineering" data-source="github" data-runtime="codex" data-origin="openai curated connector" data-install="openai-curated/github">
+            <div class="skill-meta">
+              <span class="badge">Engineering</span>
+              <span class="source">GitHub</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI curated connector</span>
+            </div>
+            <h3>Gh Address Comments</h3>
+            <p>Address actionable GitHub pull request review feedback. Use when the user wants to inspect unresolved review threads, requested changes, or inline review comments on a PR, then implement selected fixes. Use the GitHub app for PR metadata and flat comment... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-curated/github</div>
+          </article>
+          <article class="skill-card" data-name="gh-fix-ci" data-category="engineering" data-source="github" data-runtime="codex" data-origin="openai curated connector" data-install="openai-curated/github">
+            <div class="skill-meta">
+              <span class="badge">Engineering</span>
+              <span class="source">GitHub</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI curated connector</span>
+            </div>
+            <h3>Gh Fix Ci</h3>
+            <p>Use when a user asks to debug or fix failing GitHub PR checks that run in GitHub Actions. Use the GitHub app from this plugin for PR metadata and patch context, and use `gh` for Actions check and log inspection before implementing any approved fix. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-curated/github</div>
+          </article>
+          <article class="skill-card" data-name="github" data-category="engineering" data-source="github" data-runtime="codex" data-origin="openai curated connector" data-install="openai-curated/github">
+            <div class="skill-meta">
+              <span class="badge">Engineering</span>
+              <span class="source">GitHub</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI curated connector</span>
+            </div>
+            <h3>GitHub</h3>
+            <p>Triage and orient GitHub repository, pull request, and issue work through the connected GitHub app. Use when the user asks for general GitHub help, wants PR or issue summaries, or needs repository context before choosing a more specific GitHub workflow. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-curated/github</div>
+          </article>
+          <article class="skill-card" data-name="yeet" data-category="engineering" data-source="github" data-runtime="codex" data-origin="openai curated connector" data-install="openai-curated/github">
+            <div class="skill-meta">
+              <span class="badge">Engineering</span>
+              <span class="source">GitHub</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI curated connector</span>
+            </div>
+            <h3>Yeet</h3>
+            <p>Publish local changes to GitHub by confirming scope, committing intentionally, pushing the branch, and opening a draft PR through the GitHub app from this plugin, with `gh` used only as a fallback where connector coverage is insufficient. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-curated/github</div>
+          </article>
+          </div>
+        </section>
+        <section class="skill-column" aria-label="Agent and workflow skills">
+          <div class="column-head agent">
+            <h3>Agent + Workflow</h3>
+            <p>Specialists for business processes, research, communication, planning, and operations.</p>
+            <div class="count"><span id="agentVisible">77</span> of 77 visible</div>
+          </div>
+          <div class="skill-list" id="agentList">
+
+          <article class="skill-card" data-name="enrich-lead" data-category="apollo" data-source="apollo" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/apollo">
+            <div class="skill-meta">
+              <span class="badge">Apollo</span>
+              <span class="source">Apollo</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Enrich Lead</h3>
+            <p>Instant lead enrichment. Drop a name, company, LinkedIn URL, or email and get the full contact card with email, phone, title, company intel, and next actions. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/apollo</div>
+          </article>
+          <article class="skill-card" data-name="prospect" data-category="apollo" data-source="apollo" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/apollo">
+            <div class="skill-meta">
+              <span class="badge">Apollo</span>
+              <span class="source">Apollo</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Prospect</h3>
+            <p>Full ICP-to-leads pipeline. Describe your ideal customer in plain English and get a ranked table of enriched decision-maker leads with emails and phone numbers. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/apollo</div>
+          </article>
+          <article class="skill-card" data-name="sequence-load" data-category="apollo" data-source="apollo" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/apollo">
+            <div class="skill-meta">
+              <span class="badge">Apollo</span>
+              <span class="source">Apollo</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Sequence Load</h3>
+            <p>Find leads matching criteria and bulk-add them to an Apollo outreach sequence. Handles enrichment, contact creation, deduplication, and enrollment in one flow. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/apollo</div>
+          </article>
+          <article class="skill-card" data-name="brand-voice-enforcement" data-category="brand voice" data-source="brand voice" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/brand-voice">
+            <div class="skill-meta">
+              <span class="badge">Brand Voice</span>
+              <span class="source">Brand Voice</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Brand Voice Enforcement</h3>
+            <p>&gt; In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/brand-voice</div>
+          </article>
+          <article class="skill-card" data-name="discover-brand" data-category="brand voice" data-source="brand voice" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/brand-voice">
+            <div class="skill-meta">
+              <span class="badge">Brand Voice</span>
+              <span class="source">Brand Voice</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Discover Brand</h3>
+            <p>&gt; In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/brand-voice</div>
+          </article>
+          <article class="skill-card" data-name="guideline-generation" data-category="brand voice" data-source="brand voice" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/brand-voice">
+            <div class="skill-meta">
+              <span class="badge">Brand Voice</span>
+              <span class="source">Brand Voice</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Guideline Generation</h3>
+            <p>&gt; In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/brand-voice</div>
+          </article>
+          <article class="skill-card" data-name="account-research" data-category="common room" data-source="common room" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/common-room">
+            <div class="skill-meta">
+              <span class="badge">Common Room</span>
+              <span class="source">Common Room</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Account Research</h3>
+            <p>Research a company using Common Room data. Triggers on 'research [company]', 'tell me about [domain]', 'pull up signals for [account]', 'what's going on with [company]', or any account-level question. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/common-room</div>
+          </article>
+          <article class="skill-card" data-name="call-prep" data-category="common room" data-source="common room" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/common-room">
+            <div class="skill-meta">
+              <span class="badge">Common Room</span>
+              <span class="source">Common Room</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Call Prep</h3>
+            <p>Prepare for a customer or prospect call using Common Room signals. Triggers on 'prep me for my call with [company]', 'prepare for a meeting with [company]', 'what should I know before talking to [company]', or any call preparation request. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/common-room</div>
+          </article>
+          <article class="skill-card" data-name="compose-outreach" data-category="common room" data-source="common room" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/common-room">
+            <div class="skill-meta">
+              <span class="badge">Common Room</span>
+              <span class="source">Common Room</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Compose Outreach</h3>
+            <p>Generate personalized outreach messages using Common Room signals. Triggers on 'draft outreach to [person]', 'write an email to [name]', 'compose a message for [contact]', or any outreach drafting request. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/common-room</div>
+          </article>
+          <article class="skill-card" data-name="contact-research" data-category="common room" data-source="common room" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/common-room">
+            <div class="skill-meta">
+              <span class="badge">Common Room</span>
+              <span class="source">Common Room</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Contact Research</h3>
+            <p>Research a specific person using Common Room data. Triggers on 'who is [name]', 'look up [email]', 'research [contact]', 'is [name] a warm lead', or any contact-level question. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/common-room</div>
+          </article>
+          <article class="skill-card" data-name="prospect" data-category="common room" data-source="common room" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/common-room">
+            <div class="skill-meta">
+              <span class="badge">Common Room</span>
+              <span class="source">Common Room</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Prospect</h3>
+            <p>Build targeted account or contact lists using Common Room's Prospector. Triggers on 'find companies that match [criteria]', 'build a prospect list', 'find contacts at [type of company]', 'show me companies hiring [role]', or any list-building request. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/common-room</div>
+          </article>
+          <article class="skill-card" data-name="weekly-prep-brief" data-category="common room" data-source="common room" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/common-room">
+            <div class="skill-meta">
+              <span class="badge">Common Room</span>
+              <span class="source">Common Room</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Weekly Prep Brief</h3>
+            <p>Generate a comprehensive weekly briefing for all external calls in the next 7 days. Triggers on 'weekly prep brief', 'prepare my week', 'what calls do I have this week', 'Monday prep', or any weekly planning request. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/common-room</div>
+          </article>
+          <article class="skill-card" data-name="cowork-plugin-customizer" data-category="cowork plugin management" data-source="cowork plugin management" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/cowork-plugin-management">
+            <div class="skill-meta">
+              <span class="badge">Cowork Plugin Management</span>
+              <span class="source">Cowork Plugin Management</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Cowork Plugin Customizer</h3>
+            <p>&gt; In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/cowork-plugin-management</div>
+          </article>
+          <article class="skill-card" data-name="create-cowork-plugin" data-category="cowork plugin management" data-source="cowork plugin management" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/cowork-plugin-management">
+            <div class="skill-meta">
+              <span class="badge">Cowork Plugin Management</span>
+              <span class="source">Cowork Plugin Management</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Create Cowork Plugin</h3>
+            <p>&gt; In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/cowork-plugin-management</div>
+          </article>
+          <article class="skill-card" data-name="customer-research" data-category="customer support" data-source="customer support" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/customer-support">
+            <div class="skill-meta">
+              <span class="badge">Customer Support</span>
+              <span class="source">Customer Support</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Customer Research</h3>
+            <p>Research customer questions by searching across documentation, knowledge bases, and connected sources, then synthesize a confidence-scored answer. Use when a customer asks a question you need to investigate, when building background on a customer... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/customer-support</div>
+          </article>
+          <article class="skill-card" data-name="escalation" data-category="customer support" data-source="customer support" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/customer-support">
+            <div class="skill-meta">
+              <span class="badge">Customer Support</span>
+              <span class="source">Customer Support</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Escalation</h3>
+            <p>Structure and package support escalations for engineering, product, or leadership with full context, reproduction steps, and business impact. Use when an issue needs to go beyond support, when writing an escalation brief, or when assessing whether an issue... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/customer-support</div>
+          </article>
+          <article class="skill-card" data-name="knowledge-management" data-category="customer support" data-source="customer support" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/customer-support">
+            <div class="skill-meta">
+              <span class="badge">Customer Support</span>
+              <span class="source">Customer Support</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Knowledge Management</h3>
+            <p>Write and maintain knowledge base articles from resolved support issues. Use when a ticket has been resolved and the solution should be documented, when updating existing KB articles, or when creating how-to guides, troubleshooting docs, or FAQ entries. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/customer-support</div>
+          </article>
+          <article class="skill-card" data-name="response-drafting" data-category="customer support" data-source="customer support" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/customer-support">
+            <div class="skill-meta">
+              <span class="badge">Customer Support</span>
+              <span class="source">Customer Support</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Response Drafting</h3>
+            <p>Draft professional, empathetic customer-facing responses adapted to the situation, urgency, and channel. Use when responding to customer tickets, escalations, outage notifications, bug reports, feature requests, or any customer-facing communication. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/customer-support</div>
+          </article>
+          <article class="skill-card" data-name="ticket-triage" data-category="customer support" data-source="customer support" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/customer-support">
+            <div class="skill-meta">
+              <span class="badge">Customer Support</span>
+              <span class="source">Customer Support</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Ticket Triage</h3>
+            <p>Triage incoming support tickets by categorizing issues, assigning priority (P1-P4), and recommending routing. Use when a new ticket or customer issue comes in, when assessing severity, or when deciding which team should handle an issue. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/customer-support</div>
+          </article>
+          <article class="skill-card" data-name="accessibility-review" data-category="design" data-source="design" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/design">
+            <div class="skill-meta">
+              <span class="badge">Design</span>
+              <span class="source">Design</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Accessibility Review</h3>
+            <p>Audit designs and code for WCAG 2.1 AA compliance. Trigger with &quot;is this accessible&quot;, &quot;accessibility check&quot;, &quot;WCAG audit&quot;, &quot;can screen readers use this&quot;, &quot;color contrast&quot;, or when the user asks about making designs or code accessible to all users. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/design</div>
+          </article>
+          <article class="skill-card" data-name="design-critique" data-category="design" data-source="design" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/design">
+            <div class="skill-meta">
+              <span class="badge">Design</span>
+              <span class="source">Design</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Design Critique</h3>
+            <p>Evaluate designs for usability, visual hierarchy, consistency, and adherence to design principles. Trigger with &quot;what do you think of this design&quot;, &quot;give me feedback on&quot;, &quot;critique this&quot;, &quot;review this mockup&quot;, or when the user shares a design and asks for... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/design</div>
+          </article>
+          <article class="skill-card" data-name="design-handoff" data-category="design" data-source="design" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/design">
+            <div class="skill-meta">
+              <span class="badge">Design</span>
+              <span class="source">Design</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Design Handoff</h3>
+            <p>Create comprehensive developer handoff documentation from designs. Trigger with &quot;handoff to engineering&quot;, &quot;developer specs&quot;, &quot;implementation notes&quot;, &quot;design specs for developers&quot;, or when a design needs to be translated into detailed implementation guidance. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/design</div>
+          </article>
+          <article class="skill-card" data-name="design-system-management" data-category="design" data-source="design" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/design">
+            <div class="skill-meta">
+              <span class="badge">Design</span>
+              <span class="source">Design</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Design System Management</h3>
+            <p>Manage design tokens, component libraries, and pattern documentation. Trigger with &quot;design system&quot;, &quot;component library&quot;, &quot;design tokens&quot;, &quot;style guide&quot;, or when the user asks about maintaining consistency across designs. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/design</div>
+          </article>
+          <article class="skill-card" data-name="user-research" data-category="design" data-source="design" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/design">
+            <div class="skill-meta">
+              <span class="badge">Design</span>
+              <span class="source">Design</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>User Research</h3>
+            <p>Plan, conduct, and synthesize user research. Trigger with &quot;user research plan&quot;, &quot;interview guide&quot;, &quot;usability test&quot;, &quot;survey design&quot;, &quot;research questions&quot;, or when the user needs help with any aspect of understanding their users through research. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/design</div>
+          </article>
+          <article class="skill-card" data-name="ux-writing" data-category="design" data-source="design" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/design">
+            <div class="skill-meta">
+              <span class="badge">Design</span>
+              <span class="source">Design</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Ux Writing</h3>
+            <p>Write effective microcopy for user interfaces. Trigger with &quot;write copy for&quot;, &quot;help with UX copy&quot;, &quot;what should this button say&quot;, &quot;error message for&quot;, &quot;empty state copy&quot;, or when the user needs help with any interface text. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/design</div>
+          </article>
+          <article class="skill-card" data-name="knowledge-synthesis" data-category="enterprise search" data-source="enterprise search" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/enterprise-search">
+            <div class="skill-meta">
+              <span class="badge">Enterprise Search</span>
+              <span class="source">Enterprise Search</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Knowledge Synthesis</h3>
+            <p>Combines search results from multiple sources into coherent, deduplicated answers with source attribution. Handles confidence scoring based on freshness and authority, and summarizes large result sets effectively. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/enterprise-search</div>
+          </article>
+          <article class="skill-card" data-name="search-strategy" data-category="enterprise search" data-source="enterprise search" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/enterprise-search">
+            <div class="skill-meta">
+              <span class="badge">Enterprise Search</span>
+              <span class="source">Enterprise Search</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Search Strategy</h3>
+            <p>Query decomposition and multi-source search orchestration. Breaks natural language questions into targeted searches per source, translates queries into source-specific syntax, ranks results by relevance, and handles ambiguity and fallback strategies. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/enterprise-search</div>
+          </article>
+          <article class="skill-card" data-name="source-management" data-category="enterprise search" data-source="enterprise search" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/enterprise-search">
+            <div class="skill-meta">
+              <span class="badge">Enterprise Search</span>
+              <span class="source">Enterprise Search</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Source Management</h3>
+            <p>Manages connected MCP sources for enterprise search. Detects available sources, guides users to connect new ones, handles source priority ordering, and manages rate limiting awareness. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/enterprise-search</div>
+          </article>
+          <article class="skill-card" data-name="audit-support" data-category="finance" data-source="finance" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/finance">
+            <div class="skill-meta">
+              <span class="badge">Finance</span>
+              <span class="source">Finance</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Audit Support</h3>
+            <p>Support SOX 404 compliance with control testing methodology, sample selection, and documentation standards. Use when generating testing workpapers, selecting audit samples, classifying control deficiencies, or preparing for internal or external audits. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/finance</div>
+          </article>
+          <article class="skill-card" data-name="close-management" data-category="finance" data-source="finance" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/finance">
+            <div class="skill-meta">
+              <span class="badge">Finance</span>
+              <span class="source">Finance</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Close Management</h3>
+            <p>Manage the month-end close process with task sequencing, dependencies, and status tracking. Use when planning the close calendar, tracking close progress, identifying blockers, or sequencing close activities by day. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/finance</div>
+          </article>
+          <article class="skill-card" data-name="financial-statements" data-category="finance" data-source="finance" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/finance">
+            <div class="skill-meta">
+              <span class="badge">Finance</span>
+              <span class="source">Finance</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Financial Statements</h3>
+            <p>Generate income statements, balance sheets, and cash flow statements with GAAP presentation and period-over-period comparison. Use when preparing financial statements, running flux analysis, or creating P&amp;L reports with variance commentary. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/finance</div>
+          </article>
+          <article class="skill-card" data-name="journal-entry-prep" data-category="finance" data-source="finance" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/finance">
+            <div class="skill-meta">
+              <span class="badge">Finance</span>
+              <span class="source">Finance</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Journal Entry Prep</h3>
+            <p>Prepare journal entries with proper debits, credits, and supporting documentation for month-end close. Use when booking accruals, prepaid amortization, fixed asset depreciation, payroll entries, revenue recognition, or any manual journal entry. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/finance</div>
+          </article>
+          <article class="skill-card" data-name="reconciliation" data-category="finance" data-source="finance" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/finance">
+            <div class="skill-meta">
+              <span class="badge">Finance</span>
+              <span class="source">Finance</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Reconciliation</h3>
+            <p>Reconcile accounts by comparing GL balances to subledgers, bank statements, or third-party data. Use when performing bank reconciliations, GL-to-subledger recs, intercompany reconciliations, or identifying and categorizing reconciling items. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/finance</div>
+          </article>
+          <article class="skill-card" data-name="variance-analysis" data-category="finance" data-source="finance" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/finance">
+            <div class="skill-meta">
+              <span class="badge">Finance</span>
+              <span class="source">Finance</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Variance Analysis</h3>
+            <p>Decompose financial variances into drivers with narrative explanations and waterfall analysis. Use when analyzing budget vs. actual, period-over-period changes, revenue or expense variances, or preparing variance commentary for leadership. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/finance</div>
+          </article>
+          <article class="skill-card" data-name="compensation-benchmarking" data-category="human resources" data-source="human resources" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/human-resources">
+            <div class="skill-meta">
+              <span class="badge">Human Resources</span>
+              <span class="source">Human Resources</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Compensation Benchmarking</h3>
+            <p>Benchmark compensation against market data. Trigger with &quot;what should we pay&quot;, &quot;comp benchmark&quot;, &quot;market rate for&quot;, &quot;salary range for&quot;, &quot;is this offer competitive&quot;, or when the user needs help evaluating or setting compensation levels. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/human-resources</div>
+          </article>
+          <article class="skill-card" data-name="employee-handbook" data-category="human resources" data-source="human resources" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/human-resources">
+            <div class="skill-meta">
+              <span class="badge">Human Resources</span>
+              <span class="source">Human Resources</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Employee Handbook</h3>
+            <p>Answer questions about company policies, benefits, and procedures. Trigger with &quot;what's our policy on&quot;, &quot;how does PTO work&quot;, &quot;benefits question&quot;, &quot;expense policy&quot;, &quot;remote work policy&quot;, or any question about company rules, perks, or procedures. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/human-resources</div>
+          </article>
+          <article class="skill-card" data-name="interview-prep" data-category="human resources" data-source="human resources" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/human-resources">
+            <div class="skill-meta">
+              <span class="badge">Human Resources</span>
+              <span class="source">Human Resources</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Interview Prep</h3>
+            <p>Create structured interview plans with competency-based questions and scorecards. Trigger with &quot;interview plan for&quot;, &quot;interview questions for&quot;, &quot;how should we interview&quot;, &quot;scorecard for&quot;, or when the user is preparing to interview candidates. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/human-resources</div>
+          </article>
+          <article class="skill-card" data-name="org-planning" data-category="human resources" data-source="human resources" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/human-resources">
+            <div class="skill-meta">
+              <span class="badge">Human Resources</span>
+              <span class="source">Human Resources</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Org Planning</h3>
+            <p>Headcount planning, org design, and team structure optimization. Trigger with &quot;org planning&quot;, &quot;headcount plan&quot;, &quot;team structure&quot;, &quot;reorg&quot;, &quot;who should we hire next&quot;, or when the user is thinking about team size, reporting structure, or organizational design. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/human-resources</div>
+          </article>
+          <article class="skill-card" data-name="people-analytics" data-category="human resources" data-source="human resources" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/human-resources">
+            <div class="skill-meta">
+              <span class="badge">Human Resources</span>
+              <span class="source">Human Resources</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>People Analytics</h3>
+            <p>Analyze workforce data - attrition, engagement, diversity, and productivity. Trigger with &quot;attrition rate&quot;, &quot;turnover analysis&quot;, &quot;diversity metrics&quot;, &quot;engagement data&quot;, &quot;retention risk&quot;, or when the user wants to understand workforce trends from HR data. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/human-resources</div>
+          </article>
+          <article class="skill-card" data-name="recruiting-pipeline" data-category="human resources" data-source="human resources" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/human-resources">
+            <div class="skill-meta">
+              <span class="badge">Human Resources</span>
+              <span class="source">Human Resources</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Recruiting Pipeline</h3>
+            <p>Track and manage recruiting pipeline stages. Trigger with &quot;recruiting update&quot;, &quot;candidate pipeline&quot;, &quot;how many candidates&quot;, &quot;hiring status&quot;, or when the user discusses sourcing, screening, interviewing, or extending offers. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/human-resources</div>
+          </article>
+          <article class="skill-card" data-name="canned-responses" data-category="legal" data-source="legal" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/legal">
+            <div class="skill-meta">
+              <span class="badge">Legal</span>
+              <span class="source">Legal</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Canned Responses</h3>
+            <p>Generate templated responses for common legal inquiries and identify when situations require individualized attention. Use when responding to routine legal questions - data subject requests, vendor inquiries, NDA requests, discovery holds - or when... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/legal</div>
+          </article>
+          <article class="skill-card" data-name="compliance" data-category="legal" data-source="legal" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/legal">
+            <div class="skill-meta">
+              <span class="badge">Legal</span>
+              <span class="source">Legal</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Compliance</h3>
+            <p>Navigate privacy regulations (GDPR, CCPA), review DPAs, and handle data subject requests. Use when reviewing data processing agreements, responding to data subject access or deletion requests, assessing cross-border data transfer requirements, or... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/legal</div>
+          </article>
+          <article class="skill-card" data-name="contract-review" data-category="legal" data-source="legal" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/legal">
+            <div class="skill-meta">
+              <span class="badge">Legal</span>
+              <span class="source">Legal</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Contract Review</h3>
+            <p>Review contracts against your organization's negotiation playbook, flagging deviations and generating redline suggestions. Use when reviewing vendor contracts, customer agreements, or any commercial agreement where you need clause-by-clause analysis... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/legal</div>
+          </article>
+          <article class="skill-card" data-name="legal-risk-assessment" data-category="legal" data-source="legal" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/legal">
+            <div class="skill-meta">
+              <span class="badge">Legal</span>
+              <span class="source">Legal</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Legal Risk Assessment</h3>
+            <p>Assess and classify legal risks using a severity-by-likelihood framework with escalation criteria. Use when evaluating contract risk, assessing deal exposure, classifying issues by severity, or determining whether a matter needs senior counsel or outside... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/legal</div>
+          </article>
+          <article class="skill-card" data-name="meeting-briefing" data-category="legal" data-source="legal" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/legal">
+            <div class="skill-meta">
+              <span class="badge">Legal</span>
+              <span class="source">Legal</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Meeting Briefing</h3>
+            <p>Prepare structured briefings for meetings with legal relevance and track resulting action items. Use when preparing for contract negotiations, board meetings, compliance reviews, or any meeting where legal context, background research, or action tracking... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/legal</div>
+          </article>
+          <article class="skill-card" data-name="nda-triage" data-category="legal" data-source="legal" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/legal">
+            <div class="skill-meta">
+              <span class="badge">Legal</span>
+              <span class="source">Legal</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Nda Triage</h3>
+            <p>Screen incoming NDAs and classify them as GREEN (standard), YELLOW (needs review), or RED (significant issues). Use when a new NDA comes in from sales or business development, when assessing NDA risk level, or when deciding whether an NDA needs full... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/legal</div>
+          </article>
+          <article class="skill-card" data-name="brand-voice" data-category="marketing" data-source="marketing" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/marketing">
+            <div class="skill-meta">
+              <span class="badge">Marketing</span>
+              <span class="source">Marketing</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Brand Voice</h3>
+            <p>Apply and enforce brand voice, style guide, and messaging pillars across content. Use when reviewing content for brand consistency, documenting a brand voice, adapting tone for different audiences, or checking terminology and style guide compliance. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/marketing</div>
+          </article>
+          <article class="skill-card" data-name="campaign-planning" data-category="marketing" data-source="marketing" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/marketing">
+            <div class="skill-meta">
+              <span class="badge">Marketing</span>
+              <span class="source">Marketing</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Campaign Planning</h3>
+            <p>Plan marketing campaigns with objectives, audience segmentation, channel strategy, content calendars, and success metrics. Use when launching a campaign, planning a product launch, building a content calendar, allocating budget across channels, or defining... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/marketing</div>
+          </article>
+          <article class="skill-card" data-name="competitive-analysis" data-category="marketing" data-source="marketing" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/marketing">
+            <div class="skill-meta">
+              <span class="badge">Marketing</span>
+              <span class="source">Marketing</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Competitive Analysis</h3>
+            <p>Research competitors and compare positioning, messaging, content strategy, and market presence. Use when analyzing a competitor, building battlecards, identifying content gaps, comparing feature messaging, or preparing competitive positioning recommendations. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/marketing</div>
+          </article>
+          <article class="skill-card" data-name="content-creation" data-category="marketing" data-source="marketing" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/marketing">
+            <div class="skill-meta">
+              <span class="badge">Marketing</span>
+              <span class="source">Marketing</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Content Creation</h3>
+            <p>Draft marketing content across channels - blog posts, social media, email newsletters, landing pages, press releases, and case studies. Use when writing any marketing content, when you need channel-specific formatting, SEO-optimized copy, headline options,... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/marketing</div>
+          </article>
+          <article class="skill-card" data-name="performance-analytics" data-category="marketing" data-source="marketing" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/marketing">
+            <div class="skill-meta">
+              <span class="badge">Marketing</span>
+              <span class="source">Marketing</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Performance Analytics</h3>
+            <p>Analyze marketing performance with key metrics, trend analysis, and optimization recommendations. Use when building performance reports, reviewing campaign results, analyzing channel metrics (email, social, paid, SEO), or identifying what's working and... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/marketing</div>
+          </article>
+          <article class="skill-card" data-name="notion-knowledge-capture" data-category="notion" data-source="notion" data-runtime="codex" data-origin="openai curated connector" data-install="openai-curated/notion">
+            <div class="skill-meta">
+              <span class="badge">Notion</span>
+              <span class="source">Notion</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI curated connector</span>
+            </div>
+            <h3>Notion Knowledge Capture</h3>
+            <p>Capture conversations and decisions into structured Notion pages; use when turning chats/notes into wiki entries, how-tos, decisions, or FAQs with proper linking. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-curated/notion</div>
+          </article>
+          <article class="skill-card" data-name="notion-meeting-intelligence" data-category="notion" data-source="notion" data-runtime="codex" data-origin="openai curated connector" data-install="openai-curated/notion">
+            <div class="skill-meta">
+              <span class="badge">Notion</span>
+              <span class="source">Notion</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI curated connector</span>
+            </div>
+            <h3>Notion Meeting Intelligence</h3>
+            <p>Prepare meeting materials with Notion context and Codex research; use when gathering context, drafting agendas/pre-reads, and tailoring materials to attendees. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-curated/notion</div>
+          </article>
+          <article class="skill-card" data-name="notion-research-documentation" data-category="notion" data-source="notion" data-runtime="codex" data-origin="openai curated connector" data-install="openai-curated/notion">
+            <div class="skill-meta">
+              <span class="badge">Notion</span>
+              <span class="source">Notion</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI curated connector</span>
+            </div>
+            <h3>Notion Research Documentation</h3>
+            <p>Research across Notion and synthesize into structured documentation; use when gathering info from multiple Notion sources to produce briefs, comparisons, or reports with citations. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-curated/notion</div>
+          </article>
+          <article class="skill-card" data-name="notion-spec-to-implementation" data-category="notion" data-source="notion" data-runtime="codex" data-origin="openai curated connector" data-install="openai-curated/notion">
+            <div class="skill-meta">
+              <span class="badge">Notion</span>
+              <span class="source">Notion</span>
+              <span class="runtime">For Codex</span>
+              <span class="origin">OpenAI curated connector</span>
+            </div>
+            <h3>Notion Spec To Implementation</h3>
+            <p>Turn Notion specs into implementation plans, tasks, and progress tracking; use when implementing PRDs/feature specs and creating Notion plans + tasks from them. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: openai-curated/notion</div>
+          </article>
+          <article class="skill-card" data-name="change-management" data-category="operations" data-source="operations" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/operations">
+            <div class="skill-meta">
+              <span class="badge">Operations</span>
+              <span class="source">Operations</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Change Management</h3>
+            <p>Plan and execute organizational or technical changes. Trigger with &quot;we're changing&quot;, &quot;rolling out&quot;, &quot;migration plan&quot;, &quot;how do we communicate this change&quot;, &quot;change management plan&quot;, or when the user is planning a change that affects people, processes, or... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/operations</div>
+          </article>
+          <article class="skill-card" data-name="compliance-tracking" data-category="operations" data-source="operations" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/operations">
+            <div class="skill-meta">
+              <span class="badge">Operations</span>
+              <span class="source">Operations</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Compliance Tracking</h3>
+            <p>Track compliance requirements and audit readiness. Trigger with &quot;compliance&quot;, &quot;audit prep&quot;, &quot;SOC 2&quot;, &quot;ISO 27001&quot;, &quot;GDPR&quot;, &quot;regulatory requirement&quot;, or when the user needs help tracking, preparing for, or documenting compliance activities. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/operations</div>
+          </article>
+          <article class="skill-card" data-name="process-optimization" data-category="operations" data-source="operations" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/operations">
+            <div class="skill-meta">
+              <span class="badge">Operations</span>
+              <span class="source">Operations</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Process Optimization</h3>
+            <p>Analyze and improve business processes. Trigger with &quot;this process is slow&quot;, &quot;how can we improve&quot;, &quot;streamline this workflow&quot;, &quot;too many steps&quot;, &quot;bottleneck&quot;, or when the user describes an inefficient process they want to fix. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/operations</div>
+          </article>
+          <article class="skill-card" data-name="resource-planning" data-category="operations" data-source="operations" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/operations">
+            <div class="skill-meta">
+              <span class="badge">Operations</span>
+              <span class="source">Operations</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Resource Planning</h3>
+            <p>Plan and optimize resource allocation. Trigger with &quot;resource planning&quot;, &quot;capacity&quot;, &quot;utilization&quot;, &quot;staffing plan&quot;, &quot;who should work on what&quot;, &quot;we're stretched thin&quot;, or when the user needs help allocating people, budget, or time across projects and teams. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/operations</div>
+          </article>
+          <article class="skill-card" data-name="risk-assessment" data-category="operations" data-source="operations" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/operations">
+            <div class="skill-meta">
+              <span class="badge">Operations</span>
+              <span class="source">Operations</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Risk Assessment</h3>
+            <p>Identify, assess, and mitigate operational risks. Trigger with &quot;what are the risks&quot;, &quot;risk assessment&quot;, &quot;risk register&quot;, &quot;what could go wrong&quot;, or when the user is evaluating risks associated with a project, vendor, process, or decision. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/operations</div>
+          </article>
+          <article class="skill-card" data-name="vendor-management" data-category="operations" data-source="operations" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/operations">
+            <div class="skill-meta">
+              <span class="badge">Operations</span>
+              <span class="source">Operations</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Vendor Management</h3>
+            <p>Evaluate, compare, and manage vendor relationships. Trigger with &quot;evaluate this vendor&quot;, &quot;compare vendors&quot;, &quot;vendor review&quot;, &quot;should we renew&quot;, &quot;RFP&quot;, or when the user is making procurement or vendor decisions. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/operations</div>
+          </article>
+          <article class="skill-card" data-name="competitive-analysis" data-category="product management" data-source="product management" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/product-management">
+            <div class="skill-meta">
+              <span class="badge">Product Management</span>
+              <span class="source">Product Management</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Competitive Analysis</h3>
+            <p>Analyze competitors with feature comparison matrices, positioning analysis, and strategic implications. Use when researching a competitor, comparing product capabilities, assessing competitive positioning, or preparing a competitive brief for product strategy. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/product-management</div>
+          </article>
+          <article class="skill-card" data-name="feature-spec" data-category="product management" data-source="product management" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/product-management">
+            <div class="skill-meta">
+              <span class="badge">Product Management</span>
+              <span class="source">Product Management</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Feature Spec</h3>
+            <p>Write structured product requirements documents (PRDs) with problem statements, user stories, requirements, and success metrics. Use when speccing a new feature, writing a PRD, defining acceptance criteria, prioritizing requirements, or documenting product... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/product-management</div>
+          </article>
+          <article class="skill-card" data-name="metrics-tracking" data-category="product management" data-source="product management" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/product-management">
+            <div class="skill-meta">
+              <span class="badge">Product Management</span>
+              <span class="source">Product Management</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Metrics Tracking</h3>
+            <p>Define, track, and analyze product metrics with frameworks for goal setting and dashboard design. Use when setting up OKRs, building metrics dashboards, running weekly metrics reviews, identifying trends, or choosing the right metrics for a product area. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/product-management</div>
+          </article>
+          <article class="skill-card" data-name="roadmap-management" data-category="product management" data-source="product management" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/product-management">
+            <div class="skill-meta">
+              <span class="badge">Product Management</span>
+              <span class="source">Product Management</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Roadmap Management</h3>
+            <p>Plan and prioritize product roadmaps using frameworks like RICE, MoSCoW, and ICE. Use when creating a roadmap, reprioritizing features, mapping dependencies, choosing between Now/Next/Later or quarterly formats, or presenting roadmap tradeoffs to stakeholders. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/product-management</div>
+          </article>
+          <article class="skill-card" data-name="stakeholder-comms" data-category="product management" data-source="product management" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/product-management">
+            <div class="skill-meta">
+              <span class="badge">Product Management</span>
+              <span class="source">Product Management</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Stakeholder Comms</h3>
+            <p>Draft stakeholder updates tailored to audience - executives, engineering, customers, or cross-functional partners. Use when writing weekly status updates, monthly reports, launch announcements, risk communications, or decision documentation. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/product-management</div>
+          </article>
+          <article class="skill-card" data-name="user-research-synthesis" data-category="product management" data-source="product management" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/product-management">
+            <div class="skill-meta">
+              <span class="badge">Product Management</span>
+              <span class="source">Product Management</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>User Research Synthesis</h3>
+            <p>Synthesize qualitative and quantitative user research into structured insights and opportunity areas. Use when analyzing interview notes, survey responses, support tickets, or behavioral data to identify themes, build personas, or prioritize opportunities. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/product-management</div>
+          </article>
+          <article class="skill-card" data-name="memory-management" data-category="productivity" data-source="productivity" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/productivity">
+            <div class="skill-meta">
+              <span class="badge">Productivity</span>
+              <span class="source">Productivity</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Memory Management</h3>
+            <p>Two-tier memory system that makes Claude a true workplace collaborator. Decodes shorthand, acronyms, nicknames, and internal language so Claude understands requests like a colleague would. CLAUDE.md for working memory, memory/ directory for the full... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/productivity</div>
+          </article>
+          <article class="skill-card" data-name="task-management" data-category="productivity" data-source="productivity" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/productivity">
+            <div class="skill-meta">
+              <span class="badge">Productivity</span>
+              <span class="source">Productivity</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Task Management</h3>
+            <p>Simple task management using a shared TASKS.md file. Reference this when the user asks about their tasks, wants to add/complete tasks, or needs help tracking commitments. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/productivity</div>
+          </article>
+          <article class="skill-card" data-name="account-research" data-category="sales" data-source="sales" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/sales">
+            <div class="skill-meta">
+              <span class="badge">Sales</span>
+              <span class="source">Sales</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Account Research</h3>
+            <p>Research a company or person and get actionable sales intel. Works standalone with web search, supercharged when you connect enrichment tools or your CRM. Trigger with &quot;research [company]&quot;, &quot;look up [person]&quot;, &quot;intel on [prospect]&quot;, &quot;who is [name] at... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/sales</div>
+          </article>
+          <article class="skill-card" data-name="call-prep" data-category="sales" data-source="sales" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/sales">
+            <div class="skill-meta">
+              <span class="badge">Sales</span>
+              <span class="source">Sales</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Call Prep</h3>
+            <p>Prepare for a sales call with account context, attendee research, and suggested agenda. Works standalone with user input and web research, supercharged when you connect your CRM, email, chat, or transcripts. Trigger with &quot;prep me for my call with... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/sales</div>
+          </article>
+          <article class="skill-card" data-name="competitive-intelligence" data-category="sales" data-source="sales" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/sales">
+            <div class="skill-meta">
+              <span class="badge">Sales</span>
+              <span class="source">Sales</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Competitive Intelligence</h3>
+            <p>Research your competitors and build an interactive battlecard. Outputs an HTML artifact with clickable competitor cards and a comparison matrix. Trigger with &quot;competitive intel&quot;, &quot;research competitors&quot;, &quot;how do we compare to [competitor]&quot;, &quot;battlecard for... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/sales</div>
+          </article>
+          <article class="skill-card" data-name="create-an-asset" data-category="sales" data-source="sales" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/sales">
+            <div class="skill-meta">
+              <span class="badge">Sales</span>
+              <span class="source">Sales</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Create An Asset</h3>
+            <p>Generate tailored sales assets (landing pages, decks, one-pagers, workflow demos) from your deal context. Describe your prospect, audience, and goal - get a polished, branded asset ready to share with customers. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/sales</div>
+          </article>
+          <article class="skill-card" data-name="daily-briefing" data-category="sales" data-source="sales" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/sales">
+            <div class="skill-meta">
+              <span class="badge">Sales</span>
+              <span class="source">Sales</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Daily Briefing</h3>
+            <p>Start your day with a prioritized sales briefing. Works standalone when you tell me your meetings and priorities, supercharged when you connect your calendar, CRM, and email. Trigger with &quot;morning briefing&quot;, &quot;daily brief&quot;, &quot;what's on my plate today&quot;, &quot;prep... In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/sales</div>
+          </article>
+          <article class="skill-card" data-name="draft-outreach" data-category="sales" data-source="sales" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/sales">
+            <div class="skill-meta">
+              <span class="badge">Sales</span>
+              <span class="source">Sales</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Draft Outreach</h3>
+            <p>Research a prospect then draft personalized outreach. Uses web research by default, supercharged with enrichment and CRM. Trigger with &quot;draft outreach to [person/company]&quot;, &quot;write cold email to [prospect]&quot;, &quot;reach out to [name]&quot;. In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/sales</div>
+          </article>
+          <article class="skill-card" data-name="slack-messaging" data-category="slack by salesforce" data-source="slack by salesforce" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/slack-by-salesforce">
+            <div class="skill-meta">
+              <span class="badge">Slack By Salesforce</span>
+              <span class="source">Slack By Salesforce</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Slack Messaging</h3>
+            <p>Guidance for composing well-formatted, effective Slack messages using mrkdwn syntax In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/slack-by-salesforce</div>
+          </article>
+          <article class="skill-card" data-name="slack-search" data-category="slack by salesforce" data-source="slack by salesforce" data-runtime="claude cowork" data-origin="claude cowork plugin" data-install="claude-cowork/slack-by-salesforce">
+            <div class="skill-meta">
+              <span class="badge">Slack By Salesforce</span>
+              <span class="source">Slack By Salesforce</span>
+              <span class="runtime">For Claude Cowork</span>
+              <span class="origin">Claude Cowork plugin</span>
+            </div>
+            <h3>Slack Search</h3>
+            <p>Guidance for effectively searching Slack to find messages, files, channels, and people In plain terms, it gives the agent a focused playbook for this kind of work so it can move faster, ask better questions, and avoid missing the usual steps.</p>
+            <div class="skill-path">Install family: claude-cowork/slack-by-salesforce</div>
+          </article>
+          </div>
+        </section>
+      </div>
+      <div class="empty" id="emptyState">No skills match that search.</div>
+    </section>
+
+    <section class="block" id="sources">
+      <div class="section-head">
+        <div class="section-kicker">Sources</div>
+        <h2>Where The Skills Come From</h2>
+        <p>This table separates visible source names from runtime and origin. For example, GitHub is a Codex connector source, while Sales and Legal are Claude Cowork plugin sources.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Source</th><th>For</th><th>Origin</th><th>Install family</th><th>Total</th><th>Cloud + Technical</th><th>Agent + Workflow</th></tr>
+          </thead>
+          <tbody>
+
+              <tr>
+                <td>Anthropic Skills</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/anthropic-skills</td>
+                <td>9</td>
+                <td>9</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Apollo</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/apollo</td>
+                <td>3</td>
+                <td>0</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>Bio Research</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/bio-research</td>
+                <td>5</td>
+                <td>5</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Brand Voice</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/brand-voice</td>
+                <td>3</td>
+                <td>0</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>Browser</td>
+                <td>Codex</td>
+                <td>OpenAI bundled plugin</td>
+                <td>openai-bundled/browser</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Chrome</td>
+                <td>Codex</td>
+                <td>OpenAI bundled plugin</td>
+                <td>openai-bundled/chrome</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Codex System</td>
+                <td>Codex</td>
+                <td>Codex system</td>
+                <td>~/.codex/skills/.system</td>
+                <td>5</td>
+                <td>5</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Common Room</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/common-room</td>
+                <td>6</td>
+                <td>0</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td>Cowork Plugin Management</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/cowork-plugin-management</td>
+                <td>2</td>
+                <td>0</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>Customer Support</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/customer-support</td>
+                <td>5</td>
+                <td>0</td>
+                <td>5</td>
+              </tr>
+              <tr>
+                <td>Data</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/data</td>
+                <td>7</td>
+                <td>7</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Design</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/design</td>
+                <td>6</td>
+                <td>0</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td>Documents</td>
+                <td>Codex</td>
+                <td>OpenAI primary runtime</td>
+                <td>openai-primary-runtime/documents</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Engineering</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/engineering</td>
+                <td>6</td>
+                <td>6</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Enterprise Search</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/enterprise-search</td>
+                <td>3</td>
+                <td>0</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>Finance</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/finance</td>
+                <td>6</td>
+                <td>0</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td>GitHub</td>
+                <td>Codex</td>
+                <td>OpenAI curated connector</td>
+                <td>openai-curated/github</td>
+                <td>4</td>
+                <td>4</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Human Resources</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/human-resources</td>
+                <td>6</td>
+                <td>0</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td>Legal</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/legal</td>
+                <td>6</td>
+                <td>0</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td>Local Agent</td>
+                <td>Local Agent</td>
+                <td>Custom / self-installed</td>
+                <td>~/.agents/skills</td>
+                <td>8</td>
+                <td>8</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Local Codex</td>
+                <td>Codex</td>
+                <td>Custom / self-installed</td>
+                <td>~/.codex/skills</td>
+                <td>9</td>
+                <td>9</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Marketing</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/marketing</td>
+                <td>5</td>
+                <td>0</td>
+                <td>5</td>
+              </tr>
+              <tr>
+                <td>Notion</td>
+                <td>Codex</td>
+                <td>OpenAI curated connector</td>
+                <td>openai-curated/notion</td>
+                <td>4</td>
+                <td>0</td>
+                <td>4</td>
+              </tr>
+              <tr>
+                <td>Operations</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/operations</td>
+                <td>6</td>
+                <td>0</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td>Presentations</td>
+                <td>Codex</td>
+                <td>OpenAI primary runtime</td>
+                <td>openai-primary-runtime/presentations</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Product Management</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/product-management</td>
+                <td>6</td>
+                <td>0</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td>Productivity</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/productivity</td>
+                <td>2</td>
+                <td>0</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>Sales</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/sales</td>
+                <td>6</td>
+                <td>0</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td>Slack By Salesforce</td>
+                <td>Claude Cowork</td>
+                <td>Claude Cowork plugin</td>
+                <td>claude-cowork/slack-by-salesforce</td>
+                <td>2</td>
+                <td>0</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>Spreadsheets</td>
+                <td>Codex</td>
+                <td>OpenAI primary runtime</td>
+                <td>openai-primary-runtime/spreadsheets</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="block" id="origins">
+      <div class="section-head">
+        <div class="section-kicker">Origins</div>
+        <h2>Origin Types Covered</h2>
+        <p>These are the installation families this workspace currently has. They show whether a skill is self-installed, Codex system, OpenAI connector/runtime, or Claude Cowork.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Origin</th><th>Total</th><th>What it means</th></tr>
+          </thead>
+          <tbody>
+
+              <tr>
+                <td>Claude Cowork plugin</td>
+                <td>100</td>
+                <td>Packaged by a Claude Cowork plugin and surfaced through the enabled plugin cache. These are the Claude-side workflow packs.</td>
+              </tr>
+              <tr>
+                <td>Custom / self-installed</td>
+                <td>17</td>
+                <td>Installed locally by you in ~/.agents/skills or ~/.codex/skills. These are the custom/self-managed skills.</td>
+              </tr>
+              <tr>
+                <td>OpenAI curated connector</td>
+                <td>8</td>
+                <td>Curated connector skills from OpenAI, such as GitHub and Notion.</td>
+              </tr>
+              <tr>
+                <td>Codex system</td>
+                <td>5</td>
+                <td>Bundled with the local Codex skill system for core Codex operations.</td>
+              </tr>
+              <tr>
+                <td>OpenAI primary runtime</td>
+                <td>3</td>
+                <td>Runtime document skills from OpenAI for files such as docs, decks, and sheets.</td>
+              </tr>
+              <tr>
+                <td>OpenAI bundled plugin</td>
+                <td>2</td>
+                <td>Bundled by OpenAI for browser-style runtime control in Codex.</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="block" id="categories">
+      <div class="section-head">
+        <div class="section-kicker">Categories</div>
+        <h2>Skill Categories Covered</h2>
+        <p>These labels are derived from the installed skill source, plugin, connector, runtime, or local domain.</p>
+      </div>
+      <div class="category-cloud"><span>Apollo</span><span>Automation</span><span>Bio Research</span><span>Brand Voice</span><span>Browser Control</span><span>Cloud Platform</span><span>Common Room</span><span>Core Tooling</span><span>Cowork Plugin Management</span><span>Customer Support</span><span>Data</span><span>Design</span><span>Documents</span><span>Engineering</span><span>Enterprise Search</span><span>Finance</span><span>Human Resources</span><span>Legal</span><span>Marketing</span><span>Notion</span><span>Operations</span><span>Product Management</span><span>Productivity</span><span>Sales</span><span>Slack By Salesforce</span></div>
+    </section>
+
+    <footer>
+      Skill Store Map - generated from installed SKILL.md files in the local Codex environment.
+    </footer>
+  </main>
+
+<script>
+  const search = document.getElementById('skillSearch')
+  const clear = document.getElementById('clearSearch')
+  const empty = document.getElementById('emptyState')
+  const cards = [...document.querySelectorAll('.skill-card')]
+
+  function updateSearch() {
+    const query = search.value.trim().toLowerCase()
+    let cloudVisible = 0
+    let agentVisible = 0
+
+    cards.forEach((card) => {
+      const haystack = [
+        card.dataset.name,
+        card.dataset.category,
+        card.dataset.source,
+        card.dataset.runtime,
+        card.dataset.origin,
+        card.dataset.install,
+        card.textContent.toLowerCase(),
+      ].join(' ')
+      const visible = !query || haystack.includes(query)
+      card.classList.toggle('hidden', !visible)
+      if (visible && card.closest('#cloudList')) cloudVisible += 1
+      if (visible && card.closest('#agentList')) agentVisible += 1
+    })
+
+    document.getElementById('cloudVisible').textContent = cloudVisible
+    document.getElementById('agentVisible').textContent = agentVisible
+    empty.classList.toggle('visible', cloudVisible + agentVisible === 0)
+  }
+
+  search.addEventListener('input', updateSearch)
+  clear.addEventListener('click', () => {
+    search.value = ''
+    search.focus()
+    updateSearch()
+  })
+</script>
+</body>
+</html>
