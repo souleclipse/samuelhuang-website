@@ -1455,48 +1455,6 @@ You are a [role]. When invoked: [steps]. Return: [format]. Do not: [constraints]
     });
   });
 
-  const toast = document.getElementById('toast');
-  let toastTimer;
-
-  function showCopied(button) {
-    const original = button.dataset.originalText || button.textContent;
-    button.dataset.originalText = original;
-    document.querySelectorAll('.copy-btn').forEach(b => b.classList.remove('copied'));
-    button.classList.add('copied');
-    button.textContent = 'Copied';
-    toast.classList.add('visible');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      button.classList.remove('copied');
-      button.textContent = original;
-      toast.classList.remove('visible');
-    }, 1400);
-  }
-
-  async function writeClipboard(text) {
-    if (navigator.clipboard?.writeText) {
-      try { await navigator.clipboard.writeText(text); return; } catch {}
-    }
-    const fallback = document.createElement('textarea');
-    fallback.value = text;
-    fallback.setAttribute('readonly', '');
-    fallback.style.position = 'fixed';
-    fallback.style.left = '-9999px';
-    document.body.appendChild(fallback);
-    fallback.select();
-    document.execCommand('copy');
-    fallback.remove();
-  }
-
-  document.querySelectorAll('.copy-btn').forEach(button => {
-    button.addEventListener('click', async () => {
-      const target = document.getElementById(button.dataset.copy);
-      if (!target) return;
-      await writeClipboard(target.innerText.trim());
-      showCopied(button);
-    });
-  });
-
   /* ── Chat sidebar ── */
   const chatFab     = document.getElementById('chatFab');
   const chatSidebar = document.getElementById('chatSidebar');
