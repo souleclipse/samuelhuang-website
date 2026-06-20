@@ -54,6 +54,26 @@
     background: var(--bg);
     z-index: 30;
   }
+  .sidebar-toggle {
+    display: none;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    border-radius: 8px;
+    width: 34px; height: 34px;
+    font-size: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+  }
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: var(--topbar-h) 0 0 0;
+    background: rgba(0,0,0,.5);
+    z-index: 45;
+  }
   .logo {
     font-size: 14px;
     font-weight: 700;
@@ -91,6 +111,28 @@
     height: 36px;
   }
   .search-bar input:focus { border-color: var(--green); }
+  .search-bar input { padding-right: 120px; }
+  .search-clear {
+    position: absolute;
+    right: 90px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--ink-mute);
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color .12s, background .12s;
+  }
+  .search-clear.visible { display: flex; }
+  .search-clear:hover { color: var(--ink); background: var(--line); }
   .search-bar .search-icon {
     position: absolute;
     left: 10px;
@@ -100,6 +142,60 @@
     font-size: 14px;
     pointer-events: none;
   }
+  .ai-search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 28px;
+    padding: 0 11px;
+    border: 1px solid var(--purple);
+    background: var(--purple-bg);
+    color: var(--purple);
+    border-radius: 6px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .12s, opacity .12s;
+  }
+  .ai-search-btn:hover { background: #23244a; }
+  .ai-search-btn:disabled { opacity: .55; cursor: progress; }
+
+  /* AI answer banner */
+  .ai-answer {
+    margin: 0 0 14px;
+    padding: 13px 15px;
+    border: 1px solid var(--purple);
+    background: var(--purple-bg);
+    border-radius: 10px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .ai-answer .ai-answer-head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 6px;
+  }
+  .ai-answer .ai-answer-head .dismiss {
+    margin-left: auto;
+    background: none;
+    border: 0;
+    color: var(--ink-mute);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .ai-answer p { margin: 0; color: var(--ink); }
+  .ai-answer .ai-meta { margin-top: 7px; font-size: 11.5px; color: var(--ink-mute); }
 
   .topbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .view-toggle {
@@ -125,12 +221,18 @@
 
   /* ────── Add bar (persistent, always visible) ────── */
   .add-bar {
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto auto auto;
+    align-items: start;
     gap: 10px;
     padding: 10px 20px;
     border-bottom: 1px solid var(--line);
     background: var(--surface);
+  }
+  .add-bar-fields {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
   }
   .add-bar-input {
     flex: 1;
@@ -203,6 +305,23 @@
   }
   .add-bar-status.ok { color: var(--green); }
   .add-bar-status.err { color: var(--red); }
+  .add-context-input {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+    font: inherit;
+    font-size: 12.5px;
+    line-height: 1.4;
+    min-height: 34px;
+    max-height: 84px;
+    padding: 8px 12px;
+    resize: vertical;
+    outline: none;
+  }
+  .add-context-input:focus { border-color: var(--green); }
+  .add-context-input::placeholder { color: var(--ink-mute); }
 
   /* ────── Auth overlay ────── */
   .auth-overlay {
@@ -288,8 +407,31 @@
   .pin-error.visible { display: block; }
 
   /* ────── Shell ────── */
-  .app-shell { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: calc(100vh - var(--topbar-h)); }
+  .app-shell { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: calc(100vh - var(--topbar-h)); position: relative; }
   .app-shell.locked { display: none; }
+
+  .sidebar-resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--sidebar-w);
+    width: 9px;
+    margin-left: -5px;
+    cursor: col-resize;
+    z-index: 26;
+    touch-action: none;
+  }
+  .sidebar-resizer::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 4px;
+    width: 1px;
+    background: transparent;
+    transition: background .12s;
+  }
+  .sidebar-resizer:hover::after,
+  .sidebar-resizer.dragging::after { background: var(--green); width: 2px; }
+  body.col-resizing { cursor: col-resize; user-select: none; }
 
   /* ────── Sidebar ────── */
   .sidebar {
@@ -322,6 +464,7 @@
     position: relative;
   }
   .nav-item:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-item.drop-target { outline: 1px solid var(--green); background: var(--green-bg); color: var(--green); }
   .nav-item.active { background: var(--surface); color: var(--green); font-weight: 600; }
   .nav-item .icon { font-size: 14px; flex-shrink: 0; width: 18px; text-align: center; }
   .nav-item .label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -334,12 +477,82 @@
     flex-shrink: 0;
   }
   .nav-item.active .count { color: var(--green); }
+  .folder-actions {
+    display: none;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .nav-item:hover .folder-actions { display: flex; }
+  .folder-action {
+    width: 22px;
+    height: 22px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--ink-mute);
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+  }
+  .folder-action:hover { color: var(--ink); border-color: var(--line); background: var(--surface-2); }
+  .folder-action.danger:hover { color: var(--red); border-color: #4A2020; }
+
+  .nav-group { position: relative; }
+  .folder-drag, .folder-drag-sub {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    line-height: 1;
+    color: var(--ink-mute);
+    cursor: grab;
+    opacity: 0;
+    transition: opacity .12s;
+  }
+  .nav-item:hover .folder-drag,
+  .nav-item:hover .folder-drag-sub { opacity: .55; }
+  .folder-drag:hover, .folder-drag-sub:hover { opacity: 1 !important; color: var(--ink); }
+  .folder-drag:active, .folder-drag-sub:active { cursor: grabbing; }
+  .sortable-ghost { opacity: .4; }
 
   .sidebar-sep {
     height: 1px;
     background: var(--line);
     margin: 8px 4px;
   }
+
+  .folders-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 8px 4px 10px;
+  }
+  .folders-head-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .new-folder-btn {
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    border-radius: 6px;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: color .12s, border-color .12s, background .12s;
+  }
+  .new-folder-btn:hover { color: var(--green); border-color: var(--green); background: var(--green-bg); }
 
   /* Expand/collapse arrow */
   .nav-item .arrow {
@@ -420,11 +633,64 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    position: relative;
   }
   .subcol-card:hover { border-color: var(--green); background: var(--green-bg); }
   .subcol-card .sc-icon { font-size: 22px; }
   .subcol-card .sc-name { font-size: 13px; font-weight: 600; color: var(--ink); }
   .subcol-card .sc-count { font-size: 11.5px; color: var(--ink-mute); }
+  .sc-recent {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 4px;
+    min-height: 36px;
+  }
+  .sc-recent-item {
+    font-size: 11px;
+    color: var(--ink-mute);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sc-open {
+    margin-top: 4px;
+    font-size: 11.5px;
+    color: var(--green);
+  }
+  .sc-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: none;
+    gap: 4px;
+  }
+  .subcol-card:hover .sc-actions { display: flex; }
+  .home-quick {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    padding: 12px 20px 0;
+  }
+  .quick-card {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .quick-card:hover { border-color: var(--green); background: var(--green-bg); }
+  .quick-card-title { font-size: 13px; color: var(--ink); font-weight: 650; margin-bottom: 6px; }
+  .quick-card-meta { font-size: 11.5px; color: var(--ink-mute); }
+  .home-section-title {
+    padding: 16px 20px 0;
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
 
   .main-toolbar {
     display: flex;
@@ -442,6 +708,27 @@
     white-space: nowrap;
   }
   .toolbar-right { display: flex; align-items: center; gap: 8px; }
+  .enhance-blanks-btn {
+    border: 1px solid var(--purple);
+    background: var(--purple-bg);
+    color: var(--purple);
+    border-radius: 7px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .12s, opacity .12s;
+  }
+  .enhance-blanks-btn:hover { background: #23244a; }
+  .enhance-blanks-btn:disabled { opacity: .6; cursor: progress; }
+  .sync-status {
+    font-size: 11.5px;
+    color: var(--ink-mute);
+    white-space: nowrap;
+  }
+  .sync-status.warn { color: var(--orange); }
   .result-count {
     font-size: 12px;
     color: var(--ink-mute);
@@ -525,35 +812,57 @@
     padding: 1px 6px;
     white-space: nowrap;
   }
-  .bm-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .bm-tag.folder-tag {
+    color: var(--green);
+    border-color: rgba(43,199,154,.45);
+    background: var(--green-bg);
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bm-tag.folder-tag .fp-parent { opacity: .65; font-weight: 400; }
+  .bm-tag.folder-tag .fp-sep { opacity: .5; margin: 0 4px; }
+  .bm-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .bm-actions .icon-btn { opacity: 0; transition: color .12s, border-color .12s, background .12s, opacity .12s; }
+  .bm-card:hover .bm-actions .icon-btn { opacity: 1; }
+  .bm-actions .icon-btn.fav.starred { opacity: 1; }
   .icon-btn {
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    color: var(--ink-mute);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    color: var(--ink-soft);
     cursor: pointer;
     font: inherit;
-    font-size: 13px;
-    padding: 4px 6px;
-    transition: color .12s, border-color .12s, background .12s;
+    font-size: 12px;
+    min-width: 30px;
+    height: 28px;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color .12s, border-color .12s, background .12s, opacity .12s;
     line-height: 1;
   }
-  .icon-btn:hover { color: var(--ink); background: var(--surface-2); border-color: var(--line); }
+  .icon-btn:hover { color: var(--ink); background: #222631; border-color: #3A3F4E; }
   .icon-btn.fav.starred { color: var(--yellow); }
-  .icon-btn.danger:hover { color: var(--red); border-color: #4A2020; }
+  .icon-btn.danger:hover { color: var(--red); border-color: #6A2A2A; background: #2A1616; }
+  .icon-btn.edit { color: var(--green); border-color: rgba(43,199,154,.35); background: var(--green-bg); }
+  .icon-btn.edit:hover { color: #71f0cc; border-color: var(--green); }
 
   /* ────── List view ────── */
   .list-view { display: flex; flex-direction: column; padding-top: 4px; }
   .list-row {
     display: grid;
-    grid-template-columns: 16px 16px 18px minmax(0,1fr) 130px auto;
+    grid-template-columns: 30px 18px minmax(0,1fr) auto auto;
     align-items: start;
     gap: 10px;
-    padding: 10px 14px;
+    padding: 9px 14px;
     border-bottom: 1px solid var(--line);
     transition: background .1s;
+    cursor: pointer;
   }
   .list-row:hover { background: var(--surface); }
+  .row-gutter { display: flex; align-items: center; gap: 4px; align-self: center; }
   .list-row:last-child { border-bottom: 0; }
   .list-favicon {
     width: 16px; height: 16px;
@@ -589,16 +898,31 @@
   }
   .list-domain { font-size: 11.5px; color: var(--ink-mute); white-space: nowrap; }
   .list-tags { display: flex; gap: 4px; overflow: hidden; flex: 1; }
-  .list-collection {
-    font-size: 11.5px;
+  .list-actions { display: flex; gap: 6px; justify-content: flex-end; align-self: center; }
+  /* Calm by default: Edit/✕ reveal on row hover; a gold star stays if favorited. */
+  .list-actions .icon-btn { opacity: 0; }
+  .list-row:hover .list-actions .icon-btn { opacity: 1; }
+  .list-actions .icon-btn.fav.starred { opacity: 1; }
+  /* Ghost folder picker: reads as quiet text, becomes a control on hover/focus. */
+  .row-move-select {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
     color: var(--ink-mute);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-align: right;
-    padding-top: 3px;
+    font: inherit;
+    font-size: 11.5px;
+    height: 28px;
+    min-width: 0;
+    max-width: 150px;
+    padding: 0 4px;
+    cursor: pointer;
+    align-self: center;
+    opacity: .75;
+    transition: color .12s, border-color .12s, background .12s, opacity .12s;
   }
-  .list-actions { display: flex; gap: 3px; justify-content: flex-end; padding-top: 1px; }
+  .list-row:hover .row-move-select { opacity: 1; color: var(--ink-soft); }
+  .row-move-select:hover,
+  .row-move-select:focus { border-color: var(--line); background: var(--surface-2); color: var(--ink); outline: none; }
 
   /* ────── Move-to popover ────── */
   .move-select {
@@ -610,6 +934,17 @@
     font-size: 12px;
     padding: 4px 6px;
     cursor: pointer;
+  }
+  .multi-move-select {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink-soft);
+    font: inherit;
+    font-size: 13px;
+    height: 32px;
+    max-width: 180px;
+    padding: 0 8px;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -626,6 +961,39 @@
   .history-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--ink-mute); }
   .history-meta strong { color: var(--green); }
 
+  /* ────── Help panel ────── */
+  .help-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 4px 0 40px;
+    max-width: 820px;
+  }
+  .help-section {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .help-section h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+  .help-section ul {
+    padding-left: 18px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .help-section code {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: var(--green);
+  }
+
   /* ────── Empty / loading ────── */
   .empty-state {
     text-align: center;
@@ -637,6 +1005,26 @@
   .empty-state .emoji { font-size: 40px; margin-bottom: 12px; }
   .empty-state p { font-size: 14px; line-height: 1.6; }
   .loading { text-align: center; padding: 60px; color: var(--ink-mute); font-size: 14px; }
+  .error-panel {
+    border: 1px solid #4A2020;
+    background: #241414;
+    border-radius: 10px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+    padding: 16px;
+  }
+  .error-panel strong { color: var(--red); display: block; margin-bottom: 4px; }
+  .error-panel button {
+    margin-top: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: 7px;
+    padding: 7px 12px;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
 
   /* ────── Toast ────── */
   .toast {
@@ -656,6 +1044,145 @@
   }
   .toast.err { background: #2A1616; border-color: #4A2020; color: var(--red); }
   .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast .toast-undo {
+    margin-left: 12px;
+    background: transparent;
+    border: 1px solid currentColor;
+    color: inherit;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+  .toast .toast-undo:hover { background: rgba(255,255,255,.08); }
+
+  /* Recently deleted (trash) view */
+  .trash-info {
+    margin: 0 0 12px;
+    padding: 10px 14px;
+    border: 1px dashed var(--line);
+    border-radius: 9px;
+    background: var(--surface);
+    color: var(--ink-mute);
+    font-size: 12.5px;
+  }
+  .trash-row { grid-template-columns: 18px minmax(0,1fr) auto; }
+  .trash-row .trash-when { color: var(--ink-mute); }
+  .trash-row .list-actions .icon-btn { width: auto; padding: 5px 10px; font-size: 12px; opacity: 1; }
+
+  /* ────── Edit modal ────── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 180;
+    background: rgba(7,8,11,.82);
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+  }
+  .modal-overlay.visible { display: flex; }
+  .edit-modal {
+    width: min(720px, 100%);
+    max-height: min(820px, 92vh);
+    overflow: auto;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.55);
+  }
+  .edit-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .edit-head h2 { font-size: 15px; }
+  .edit-body { padding: 16px 18px; display: grid; gap: 12px; }
+  .field { display: grid; gap: 6px; }
+  .field label { font-size: 11.5px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    padding: 9px 10px;
+    outline: none;
+  }
+  .field textarea { min-height: 86px; resize: vertical; line-height: 1.5; }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--green); }
+
+  /* Folder modal: name + icon picker */
+  .folder-modal { width: min(460px, 100%); }
+  .folder-name-row { display: flex; align-items: center; gap: 8px; }
+  .folder-name-row input { flex: 1; }
+  .folder-icon-preview {
+    width: 38px; height: 38px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+  .folder-parent-chip {
+    display: inline-flex; align-items: center;
+    font-size: 12.5px; color: var(--ink-soft);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 7px 10px;
+  }
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 5px;
+  }
+  .icon-grid .icon-opt {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    background: var(--surface-2);
+    border: 1px solid transparent;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: border-color .1s, background .1s, transform .05s;
+  }
+  .icon-grid .icon-opt:hover { background: #222631; transform: translateY(-1px); }
+  .icon-grid .icon-opt.selected { border-color: var(--green); background: var(--green-bg); }
+  .icon-custom { max-width: 160px; margin-top: 8px; }
+  @media (max-width: 540px) { .icon-grid { grid-template-columns: repeat(7, 1fr); } }
+  .edit-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 18px 18px;
+  }
+  .edit-actions-left, .edit-actions-right { display: flex; gap: 8px; align-items: center; }
+  .modal-btn {
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .modal-btn.primary { background: var(--green); border-color: var(--green); color: #0B0C10; font-weight: 700; }
+  .modal-btn:hover { color: var(--ink); }
+  .modal-btn.primary:hover { color: #0B0C10; opacity: .88; }
+  .modal-status { font-size: 12px; color: var(--ink-mute); }
+  .modal-status.err { color: var(--red); }
+  .modal-status.ok { color: var(--green); }
 
   /* ────── Drag handle ────── */
   .drag-handle {
@@ -762,23 +1289,52 @@
   /* ────── Mobile ────── */
   @media (max-width: 820px) {
     :root { --sidebar-w: 0px; }
-    .sidebar { display: none; }
     .app-shell { grid-template-columns: 1fr; }
+    .sidebar-resizer { display: none; }
+    .sidebar-toggle { display: inline-flex; }
+
+    /* Sidebar becomes a slide-in drawer */
+    .sidebar {
+      display: block;
+      position: fixed;
+      top: var(--topbar-h); left: 0; bottom: 0;
+      width: 280px; max-width: 84vw;
+      transform: translateX(-100%);
+      transition: transform .25s ease;
+      z-index: 46;
+      background: var(--bg);
+      box-shadow: 0 0 40px rgba(0,0,0,.5);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-backdrop.show { display: block; }
+
     .sub-panel { padding: 8px 14px; }
-    .add-bar { padding: 8px 14px; gap: 6px; }
+    .add-bar { padding: 8px 14px; gap: 6px; grid-template-columns: minmax(0,1fr) auto auto; }
     .add-bar-select { max-width: 120px; }
     .add-bar-status { display: none; }
     .main-toolbar { padding: 10px 14px 6px; }
+    .toolbar-right { flex-wrap: wrap; justify-content: flex-end; }
+    .sync-status { display: none; }
     .main-body { padding: 0 14px 80px; }
     .grid-view { grid-template-columns: 1fr 1fr; }
-    .list-row { grid-template-columns: 16px 14px 16px minmax(0,1fr) auto; }
-    .list-row .list-collection { display: none; }
+
+    /* Touch has no hover: drop the drag/checkbox gutter + folder select,
+       and keep the row actions permanently visible. */
+    .list-row { grid-template-columns: 18px minmax(0,1fr) auto; }
+    .row-gutter, .row-move-select { display: none; }
+    .list-actions .icon-btn, .bm-actions .icon-btn { opacity: 1; }
     .subcol-grid { padding: 10px 14px 4px; }
   }
   @media (max-width: 540px) {
     .grid-view { grid-template-columns: 1fr; }
     .search-bar { max-width: none; }
     .add-bar-select { display: none; }
+    .add-bar { grid-template-columns: minmax(0,1fr) auto; }
+    /* Compact the Ask AI button to just the sparkle */
+    .ai-search-btn { font-size: 0; padding: 0 9px; }
+    .ai-search-btn::before { content: '✨'; font-size: 13px; }
+    .search-bar input { padding-right: 74px; }
+    .search-clear { right: 42px; }
   }
 </style>
 </head>
@@ -787,15 +1343,18 @@
 <div class="page-wrap">
 <!-- Topbar -->
 <header class="topbar">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Open menu" onclick="toggleMobileSidebar()">☰</button>
   <a class="logo" href="/glossary"><span class="logo-dot"></span>Bookmarks</a>
   <div class="search-bar">
     <span class="search-icon">⌕</span>
-    <input id="searchInput" type="text" placeholder="Search title, URL, tags…" autocomplete="off">
+    <input id="searchInput" type="text" placeholder="Search title, URL, tags…  (or ask AI)" autocomplete="off">
+    <button class="search-clear" id="searchClear" title="Clear search (Esc)" onclick="clearSearch()" aria-label="Clear search">✕</button>
+    <button class="ai-search-btn" id="aiSearchBtn" title="Ask AI to find bookmarks by meaning" onclick="runAiSearch()">✨ Ask AI</button>
   </div>
   <div class="topbar-actions">
     <div class="view-toggle" role="group" aria-label="View mode">
-      <button class="view-btn active" id="btnGrid" title="Card view" onclick="setView('grid')">⊞</button>
-      <button class="view-btn" id="btnList" title="List view" onclick="setView('list')">≡</button>
+      <button class="view-btn" id="btnGrid" title="Card view" onclick="setView('grid')">⊞</button>
+      <button class="view-btn active" id="btnList" title="List view" onclick="setView('list')">≡</button>
     </div>
   </div>
 </header>
@@ -822,6 +1381,12 @@
 <!-- App shell -->
 <div class="app-shell locked" id="appShell">
 
+  <!-- Mobile drawer backdrop -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeMobileSidebar()"></div>
+
+  <!-- Draggable divider to resize the sidebar -->
+  <div class="sidebar-resizer" id="sidebarResizer" title="Drag to resize sidebar"></div>
+
   <!-- Sidebar -->
   <nav class="sidebar" id="sidebar">
     <button class="nav-item active" data-filter="all" onclick="selectFilter('all')">
@@ -830,9 +1395,23 @@
     <button class="nav-item" data-filter="favorites" onclick="selectFilter('favorites')">
       <span class="icon">⭐</span><span class="label">Favorites</span><span class="count" id="countFav">–</span>
     </button>
+    <button class="nav-item" data-filter="recent" onclick="selectFilter('recent')">
+      <span class="icon">🕘</span><span class="label">Recently added</span><span class="count" id="countRecent">10</span>
+    </button>
     <div class="sidebar-sep"></div>
+    <div class="folders-head">
+      <span class="folders-head-label">Folders</span>
+      <button class="new-folder-btn" title="Create a new folder" onclick="createFolder()">＋ New</button>
+    </div>
     <div id="collectionNav"><div style="padding:8px 10px;font-size:12px;color:var(--ink-mute)">Loading…</div></div>
     <div class="sidebar-sep"></div>
+    <button class="nav-item" data-filter="help" onclick="selectFilter('help')">
+      <span class="icon">❔</span><span class="label">How to use</span>
+    </button>
+    <div class="sidebar-sep"></div>
+    <button class="nav-item" data-filter="trash" onclick="selectFilter('trash')">
+      <span class="icon">🗑️</span><span class="label">Recently deleted</span><span class="count" id="countTrash">–</span>
+    </button>
     <button class="nav-item" data-filter="history" onclick="selectFilter('history')">
       <span class="icon">🕘</span><span class="label">Sort history</span>
     </button>
@@ -843,9 +1422,12 @@
 
     <!-- Persistent add bar -->
     <div class="add-bar" id="addBar">
-      <input class="add-bar-input" id="addUrl" type="url" placeholder="Paste URL to add bookmark… (Enter to AI-sort)" autocomplete="off">
-      <select class="add-bar-select" id="addCollection" title="Collection (optional — overrides AI sort)">
-        <option value="">AI sort</option>
+      <div class="add-bar-fields">
+        <input class="add-bar-input" id="addUrl" type="url" placeholder="Paste URL to add bookmark… (Enter to AI-sort)" autocomplete="off">
+        <textarea class="add-context-input" id="addContext" placeholder="Optional: add context for AI sorting / saved description, e.g. login page for client reporting dashboard"></textarea>
+      </div>
+      <select class="add-bar-select" id="addCollection" title="Folder (optional). AI still writes the title, description & tags either way — this only sets where it's filed.">
+        <option value="">AI sort (auto folder)</option>
       </select>
       <button class="add-bar-btn" id="addBtn" onclick="addBookmark()">Add</button>
       <div class="add-bar-status" id="addStatus"></div>
@@ -864,6 +1446,8 @@
     <div class="main-toolbar" id="mainToolbar">
       <span class="main-title" id="mainTitle">All bookmarks</span>
       <div class="toolbar-right">
+        <span class="sync-status" id="syncStatus"></span>
+        <button class="enhance-blanks-btn" id="enhanceBlanksBtn" style="display:none" title="Use AI to write descriptions for bookmarks that have none" onclick="runEnhanceBlanks()"></button>
         <span class="result-count" id="resultCount"></span>
         <select class="sort-select" id="sortSelect" onchange="applyFilters()">
           <option value="manual">Manual order</option>
@@ -877,8 +1461,9 @@
 
     <!-- Bookmark content -->
     <div class="main-body" id="mainBody">
-      <div id="gridContainer" class="grid-view"><div class="loading">Loading…</div></div>
-      <div id="listContainer" class="list-view" style="display:none"></div>
+      <div class="ai-answer" id="aiAnswer" style="display:none"></div>
+      <div id="gridContainer" class="grid-view" style="display:none"></div>
+      <div id="listContainer" class="list-view"><div class="loading">Loading…</div></div>
       <div class="empty-state" id="emptyState">
         <div class="emoji">🔖</div>
         <p>No bookmarks here yet.<br>Paste a URL above to add your first one.</p>
@@ -895,11 +1480,98 @@
 <!-- Multi-select bar -->
 <div class="multi-bar" id="multiBar">
   <span class="multi-bar-count" id="multiCount">0 selected</span>
+  <select class="multi-move-select" id="multiMoveSelect" onchange="moveSelectedToCollection(this.value)">
+    <option value="">Move to…</option>
+  </select>
   <button class="multi-bar-btn" onclick="openSelected()">Open in tabs</button>
   <button class="multi-bar-clear" onclick="clearSelection()">Clear</button>
 </div>
 
 <div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="editOverlay" onclick="if(event.target===this) closeEditModal()">
+  <div class="edit-modal">
+    <div class="edit-head">
+      <h2>Edit bookmark</h2>
+      <button class="icon-btn" onclick="closeEditModal()" title="Close">✕</button>
+    </div>
+    <div class="edit-body">
+      <input type="hidden" id="editId">
+      <div class="field">
+        <label for="editUrl">URL</label>
+        <input id="editUrl" type="url">
+      </div>
+      <div class="field">
+        <label for="editTitle">Title</label>
+        <input id="editTitle" type="text">
+      </div>
+      <div class="field">
+        <label for="editDescription">Description</label>
+        <textarea id="editDescription"></textarea>
+      </div>
+      <div class="field">
+        <label for="editNotes">Notes</label>
+        <textarea id="editNotes"></textarea>
+      </div>
+      <div class="field">
+        <label for="editTags">Tags, comma separated</label>
+        <input id="editTags" type="text">
+      </div>
+      <div class="field">
+        <label for="editCollection">Folder</label>
+        <select id="editCollection"></select>
+      </div>
+    </div>
+    <div class="edit-actions">
+      <div class="edit-actions-left">
+        <button class="modal-btn" id="reresearchBtn" onclick="reresearchEdit()" title="Re-fetch the live page and rewrite the title, description and tags from scratch">✨ AI re-research</button>
+        <button class="modal-btn" id="proofreadBtn" onclick="proofreadEdit()" title="Clean up the current title, description, notes and tags without re-fetching the page">AI proofread</button>
+        <span class="modal-status" id="editStatus"></span>
+      </div>
+      <div class="edit-actions-right">
+        <button class="modal-btn" onclick="closeEditModal()">Cancel</button>
+        <button class="modal-btn primary" id="saveEditBtn" onclick="saveEditBookmark()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Folder create/rename modal -->
+<div class="modal-overlay" id="folderOverlay" onclick="if(event.target===this) closeFolderModal()">
+  <div class="edit-modal folder-modal">
+    <div class="edit-head">
+      <h2 id="folderModalTitle">New folder</h2>
+      <button class="icon-btn" onclick="closeFolderModal()" title="Close">✕</button>
+    </div>
+    <div class="edit-body">
+      <input type="hidden" id="folderMode">
+      <input type="hidden" id="folderId">
+      <div class="field" id="folderParentField">
+        <label for="folderParentSelect">Parent folder</label>
+        <select id="folderParentSelect"></select>
+      </div>
+      <div class="field">
+        <label for="folderName">Folder name</label>
+        <div class="folder-name-row">
+          <span class="folder-icon-preview" id="folderIconPreview">📁</span>
+          <input id="folderName" type="text" placeholder="e.g. Social Media Panel" autocomplete="off">
+        </div>
+      </div>
+      <div class="field">
+        <label>Icon</label>
+        <div class="icon-grid" id="iconGrid"></div>
+        <input id="folderIconCustom" type="text" class="icon-custom" placeholder="…or paste any emoji" maxlength="4" autocomplete="off">
+      </div>
+    </div>
+    <div class="edit-actions">
+      <div class="edit-actions-left"><span class="modal-status" id="folderStatus"></span></div>
+      <div class="edit-actions-right">
+        <button class="modal-btn" onclick="closeFolderModal()">Cancel</button>
+        <button class="modal-btn primary" id="folderSaveBtn" onclick="saveFolderModal()">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   let collections = []
@@ -907,12 +1579,22 @@
   let currentFilter = 'all'
   let currentSlug = null
   let currentTag = ''
-  let currentView = 'grid'
+  let currentView = 'list'
   let allBookmarks = []
   let searchTimer
   let selectedIds = new Set()
   let sortableGrid = null
   let sortableList = null
+  let draggedBookmarkId = null
+  let lastRenderedBookmarks = []
+  let aiResults = null
+  let aiSearching = false
+  let trashRetentionDays = 30
+  const CACHE_TTL_MS = 1000 * 60 * 60 * 12
+  const CACHE_KEYS = {
+    collections: 'samuel_bookmark_collections_v2',
+    bookmarks: 'samuel_bookmarks_all_v1',
+  }
 
   // ── Helpers ──────────────────────────────
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
@@ -928,8 +1610,102 @@
     t._timer = setTimeout(() => t.classList.remove('show'), 3000)
   }
 
+  function showUndoToast(msg, onUndo) {
+    const t = document.getElementById('toast')
+    t.textContent = ''
+    const span = document.createElement('span'); span.textContent = msg
+    const btn = document.createElement('button'); btn.className = 'toast-undo'; btn.textContent = 'Undo'
+    btn.addEventListener('click', () => {
+      clearTimeout(t._timer); t.classList.remove('show'); t.textContent = ''
+      onUndo()
+    })
+    t.appendChild(span); t.appendChild(btn)
+    t.className = 'toast show'
+    clearTimeout(t._timer)
+    t._timer = setTimeout(() => { t.classList.remove('show'); t.textContent = '' }, 6000)
+  }
+
   function apiFetch(url, opts={}) {
     return fetch(url, { ...opts, credentials: 'same-origin', headers: new Headers(opts.headers||{}) })
+  }
+
+  function readCache(key) {
+    try {
+      const cached = JSON.parse(localStorage.getItem(key) || 'null')
+      if (!cached || Date.now() - cached.savedAt > CACHE_TTL_MS) return null
+      return cached.value
+    } catch { return null }
+  }
+
+  function readCacheMeta(key) {
+    try {
+      const cached = JSON.parse(localStorage.getItem(key) || 'null')
+      return cached?.savedAt ? cached : null
+    } catch { return null }
+  }
+
+  function writeCache(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify({ savedAt: Date.now(), value }))
+    } catch {}
+  }
+
+  function cacheCurrentBookmarks() {
+    if (currentFilter === 'all' && !document.getElementById('searchInput').value.trim()) {
+      writeCache(CACHE_KEYS.bookmarks, { bookmarks: allBookmarks })
+    }
+  }
+
+  function mergeBookmark(bookmark) {
+    const index = allBookmarks.findIndex((b) => b.id === bookmark.id)
+    if (index === -1) allBookmarks = [bookmark, ...allBookmarks]
+    else allBookmarks = allBookmarks.map((b) => b.id === bookmark.id ? bookmark : b)
+    cacheCurrentBookmarks()
+  }
+
+  function setSyncStatus(msg, mode='') {
+    const el = document.getElementById('syncStatus')
+    el.textContent = msg || ''
+    el.className = 'sync-status' + (mode ? ' ' + mode : '')
+  }
+
+  function updateLastSynced(savedAt=Date.now()) {
+    const delta = Math.max(0, Date.now() - savedAt)
+    const mins = Math.floor(delta / 60000)
+    setSyncStatus(mins < 1 ? 'Synced just now' : `Synced ${mins}m ago`)
+  }
+
+  function showDataError(message, retryFn) {
+    const html = `<div class="error-panel"><strong>${esc(message)}</strong><span>Showing the last saved copy when available.</span><br><button type="button" id="retryLoadBtn">Retry</button></div>`
+    const target = currentView === 'grid' ? document.getElementById('gridContainer') : document.getElementById('listContainer')
+    if (!target.children.length) target.innerHTML = html
+    const btn = document.getElementById('retryLoadBtn')
+    if (btn) btn.onclick = retryFn
+    setSyncStatus('Sync failed', 'warn')
+  }
+
+  function hydrateFromCache() {
+    const cachedCollections = readCache(CACHE_KEYS.collections)
+    if (cachedCollections) {
+      collections = cachedCollections.collections || []
+      flatCollections = cachedCollections.flat || []
+      renderSidebar()
+      populateAddBarSelect()
+    }
+
+    const cachedBookmarks = readCache(CACHE_KEYS.bookmarks)
+    if (cachedBookmarks?.bookmarks?.length) {
+      allBookmarks = cachedBookmarks.bookmarks
+      document.getElementById('countFav').textContent = allBookmarks.filter((b) => b.is_favorite).length || 0
+      document.getElementById('countRecent').textContent = Math.min(10, allBookmarks.length)
+      populateMoveSelect()
+      renderSubColGrid()
+      buildSubPanel(allBookmarks)
+      applyFilters()
+      updateLastSynced(readCacheMeta(CACHE_KEYS.bookmarks)?.savedAt)
+      return true
+    }
+    return false
   }
 
   // ── Auth ──────────────────────────────────
@@ -966,12 +1742,26 @@
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ password: pass }),
       })
-      if (!res.ok) { showAuth('Incorrect password.'); return }
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        showAuth(data.error || 'Incorrect password.')
+        return
+      }
       document.getElementById('pinInput').value = ''
       document.getElementById('pinError').classList.remove('visible')
       showApp(); await bootstrap()
     } catch { showAuth('Could not unlock.') }
     finally { btn.disabled = false; btn.textContent = 'Unlock' }
+  }
+
+  // ── Mobile drawer ─────────────────────────
+  function toggleMobileSidebar() {
+    const open = document.getElementById('sidebar').classList.toggle('open')
+    document.getElementById('sidebarBackdrop').classList.toggle('show', open)
+  }
+  function closeMobileSidebar() {
+    document.getElementById('sidebar').classList.remove('open')
+    document.getElementById('sidebarBackdrop').classList.remove('show')
   }
 
   // ── View toggle ────────────────────────────
@@ -981,30 +1771,46 @@
     document.getElementById('btnList').classList.toggle('active', v === 'list')
     document.getElementById('gridContainer').style.display = v === 'grid' ? '' : 'none'
     document.getElementById('listContainer').style.display = v === 'list' ? '' : 'none'
-    renderBookmarks(allBookmarks)
+    applyFilters()
   }
 
   // ── Sidebar ────────────────────────────────
-  let openParentSlug = null  // track which parent is expanded
+  let openParentSlugs = new Set()  // which parent folders are expanded (persist across re-renders)
 
   function parentItemHtml(c) {
     const hasChildren = c.children && c.children.length > 0
     const arrow = hasChildren ? `<span class="arrow">▶</span>` : ''
+    const actions = c.id === '__inbox' ? '' : `
+        <span class="folder-actions">
+          <span class="folder-action" title="Add subfolder" data-folder-action="add-sub">＋</span>
+          <span class="folder-action" title="Edit folder" data-folder-action="edit">✎</span>
+          <span class="folder-action danger" title="Delete folder" data-folder-action="delete">×</span>
+        </span>`
+    const dragHandle = c.id === '__inbox' ? '' : `<span class="folder-drag" title="Drag to reorder folders">⠿</span>`
     return `
+      <div class="nav-group" data-slug="${esc(c.slug)}">
       <button class="nav-item" data-filter="collection" data-slug="${esc(c.slug)}" data-has-children="${hasChildren}">
+        ${dragHandle}
         <span class="icon">${esc(c.icon||'📁')}</span>
         <span class="label">${esc(c.name)}</span>
         ${arrow}
         <span class="count">${c.count}</span>
+        ${actions}
       </button>
-      ${hasChildren ? `<div class="sub-nav" id="sub-${esc(c.slug)}">
+      ${hasChildren ? `<div class="sub-nav" id="sub-${esc(c.slug)}" data-parent="${esc(c.slug)}">
         ${c.children.map((ch) => `
           <button class="nav-item" data-filter="collection" data-slug="${esc(ch.slug)}" data-parent="${esc(c.slug)}">
+            <span class="folder-drag-sub" title="Drag to reorder subfolders">⠿</span>
             <span class="icon">${esc(ch.icon||'📁')}</span>
             <span class="label">${esc(ch.name)}</span>
             <span class="count">${ch.count}</span>
+            <span class="folder-actions">
+              <span class="folder-action" title="Edit folder" data-folder-action="edit">✎</span>
+              <span class="folder-action danger" title="Delete folder" data-folder-action="delete">×</span>
+            </span>
           </button>`).join('')}
       </div>` : ''}
+      </div>
     `
   }
 
@@ -1012,27 +1818,119 @@
     const nav = document.getElementById('collectionNav')
     nav.innerHTML = collections.map(parentItemHtml).join('')
     document.getElementById('countAll').textContent = collections.reduce((s,c) => s+c.count, 0)
+    wireCollectionDropTargets(nav)
+
+    // Re-apply any folders the user had expanded, so a background refresh or a
+    // new folder doesn't collapse the tree.
+    openParentSlugs.forEach((slug) => {
+      const sub = document.getElementById(`sub-${slug}`)
+      const parentBtn = nav.querySelector(`.nav-item[data-slug="${slug}"]`)
+      if (sub) sub.classList.add('open')
+      if (parentBtn) parentBtn.classList.add('expanded')
+    })
 
     // Wire click handlers (parent items toggle expand + navigate; child items just navigate)
     nav.querySelectorAll('.nav-item').forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        if (e.target.closest('.folder-drag, .folder-drag-sub')) return
+        const action = e.target.closest('[data-folder-action]')
+        if (action) {
+          e.stopPropagation()
+          const folder = flatCollections.find((c) => c.slug === btn.dataset.slug)
+          if (action.dataset.folderAction === 'add-sub') createFolder(btn.dataset.slug)
+          if (action.dataset.folderAction === 'edit') editFolder(folder)
+          if (action.dataset.folderAction === 'delete') deleteFolder(folder)
+          return
+        }
         const slug = btn.dataset.slug
         const hasChildren = btn.dataset.hasChildren === 'true'
         if (hasChildren) {
+          // Independent toggle: this folder opens/closes on its own and stays
+          // open until clicked again — other expanded folders are left alone.
           const subNav = document.getElementById(`sub-${slug}`)
-          const isOpen = subNav.classList.contains('open')
-          // Collapse all, then open clicked
-          nav.querySelectorAll('.sub-nav').forEach((el) => el.classList.remove('open'))
-          nav.querySelectorAll('.nav-item').forEach((el) => el.classList.remove('expanded'))
-          if (!isOpen) {
-            subNav.classList.add('open')
-            btn.classList.add('expanded')
-            openParentSlug = slug
-          } else {
-            openParentSlug = null
-          }
+          const willOpen = !subNav.classList.contains('open')
+          subNav.classList.toggle('open', willOpen)
+          btn.classList.toggle('expanded', willOpen)
+          if (willOpen) openParentSlugs.add(slug)
+          else openParentSlugs.delete(slug)
         }
         selectFilter('collection', slug)
+        // Mobile: a folder with no subfolders is a final destination → close the
+        // drawer. A parent stays open so its subfolders can be reached.
+        if (!hasChildren) closeMobileSidebar()
+      })
+    })
+
+    initSidebarSortable(nav)
+  }
+
+  let sidebarSortables = []
+  function initSidebarSortable(nav) {
+    sidebarSortables.forEach((s) => { try { s.destroy() } catch {} })
+    sidebarSortables = []
+    if (typeof Sortable === 'undefined') return
+
+    // Reorder top-level folders.
+    sidebarSortables.push(Sortable.create(nav, {
+      handle: '.folder-drag',
+      draggable: '.nav-group',
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      onEnd() {
+        const slugs = [...nav.querySelectorAll(':scope > .nav-group')].map((g) => g.dataset.slug)
+        persistFolderOrder(slugs)
+      },
+    }))
+
+    // Reorder subfolders within each parent.
+    nav.querySelectorAll('.sub-nav').forEach((sub) => {
+      sidebarSortables.push(Sortable.create(sub, {
+        handle: '.folder-drag-sub',
+        draggable: '.nav-item',
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        onEnd() {
+          const slugs = [...sub.querySelectorAll('.nav-item')].map((b) => b.dataset.slug)
+          persistFolderOrder(slugs)
+        },
+      }))
+    })
+  }
+
+  function persistFolderOrder(slugs) {
+    const ids = slugs
+      .map((s) => flatCollections.find((c) => c.slug === s)?.id)
+      .filter((id) => id && id !== '__inbox')
+    if (!ids.length) return
+    // Update local sort_order so a background reload keeps the new order.
+    ids.forEach((id, i) => {
+      const f = flatCollections.find((c) => c.id === id); if (f) f.sort_order = (i + 1) * 10
+      const p = collections.find((c) => c.id === id); if (p) p.sort_order = (i + 1) * 10
+    })
+    apiFetch('/api/bookmark-collections', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ reorder: ids }),
+    }).then((r) => {
+      if (!r.ok) throw new Error('save failed')
+      writeCache(CACHE_KEYS.collections, { collections, flat: flatCollections })
+      showToast('Folder order saved')
+    }).catch(() => showToast('Could not save folder order', 'err'))
+  }
+
+  function wireCollectionDropTargets(root=document) {
+    root.querySelectorAll('.nav-item[data-filter="collection"]').forEach((btn) => {
+      btn.addEventListener('dragover', (e) => {
+        if (!draggedBookmarkId && !selectedIds.size) return
+        e.preventDefault()
+        btn.classList.add('drop-target')
+      })
+      btn.addEventListener('dragleave', () => btn.classList.remove('drop-target'))
+      btn.addEventListener('drop', async (e) => {
+        e.preventDefault()
+        btn.classList.remove('drop-target')
+        const ids = selectedIds.size ? [...selectedIds] : [draggedBookmarkId].filter(Boolean)
+        if (!ids.length) return
+        await moveBookmarksToCollection(ids, btn.dataset.slug)
       })
     })
   }
@@ -1052,6 +1950,7 @@
         if (subNav && !subNav.classList.contains('open')) {
           subNav.classList.add('open')
           parentBtn?.classList.add('expanded')
+          openParentSlugs.add(parentSlug)
         }
       }
     }
@@ -1084,7 +1983,36 @@
   // ── Filter / load ─────────────────────────
   async function selectFilter(filter, slug) {
     currentFilter = filter; currentSlug = slug||null; currentTag = ''
+    if (filter !== 'ai') { aiResults = null; clearAiAnswer() }
+    // On mobile, picking a non-folder destination closes the drawer (folder taps
+    // are handled in the nav click handler so parents can expand without closing).
+    if (filter !== 'collection') closeMobileSidebar()
     setSidebarActive(filter, slug)
+
+    if (filter === 'help') {
+      document.getElementById('mainTitle').textContent = 'How to use'
+      document.getElementById('resultCount').textContent = ''
+      document.getElementById('gridContainer').style.display = 'none'
+      document.getElementById('listContainer').style.display = 'none'
+      document.getElementById('emptyState').classList.remove('visible')
+      document.getElementById('subPanel').classList.remove('visible')
+      document.getElementById('subColGrid').style.display = 'none'
+      document.getElementById('historyPanel').style.display = 'flex'
+      document.getElementById('historyPanel').innerHTML = helpPanelHtml()
+      return
+    }
+
+    if (filter === 'trash') {
+      document.getElementById('mainTitle').textContent = '🗑️ Recently deleted'
+      document.getElementById('resultCount').textContent = ''
+      document.getElementById('historyPanel').style.display = 'none'
+      document.getElementById('subPanel').classList.remove('visible')
+      document.getElementById('subColGrid').style.display = 'none'
+      document.getElementById('mainToolbar').style.display = 'flex'
+      document.getElementById('gridContainer').style.display = 'none'
+      document.getElementById('listContainer').style.display = ''
+      loadTrash(); return
+    }
 
     if (filter === 'history') {
       document.getElementById('mainTitle').textContent = 'Sort history'
@@ -1103,7 +2031,42 @@
     await loadBookmarks()
   }
 
-  async function loadBookmarks() {
+  function helpPanelHtml() {
+    return `
+      <div class="help-panel">
+        <div class="help-section">
+          <h3>Daily workflow</h3>
+          <ul>
+            <li>Use this page as a Chrome new-tab command center. The home view shows folders first, plus Favorites and Recently added.</li>
+            <li>Paste a URL into the top bar. Add optional context when the page is a login screen or unclear URL; AI uses it for sorting and the saved description.</li>
+            <li>Press Enter in the URL field for AI sorting, or choose a folder first to skip AI sorting. Press <code>Cmd/Ctrl + Enter</code> from the context field to add.</li>
+            <li>Press <code>/</code> to search, <code>Enter</code> to open the top result, and <code>Esc</code> to clear search.</li>
+            <li>Drag a bookmark onto a sidebar folder, use the row folder dropdown, or bulk-select and use <code>Move to...</code>.</li>
+          </ul>
+        </div>
+        <div class="help-section">
+          <h3>Edit and proofread</h3>
+          <ul>
+            <li>Click the edit button on any bookmark to update URL, title, description, notes, tags, and folder.</li>
+            <li><code>AI proofread</code> rewrites title, description, notes, and tags for clarity while keeping the same meaning.</li>
+            <li>Proofreading uses OpenRouter with <code>openrouter/owl-alpha</code>, falling back to <code>deepseek/deepseek-v4-flash</code>.</li>
+          </ul>
+        </div>
+        <div class="help-section">
+          <h3>Backend infrastructure</h3>
+          <ul>
+            <li>Frontend: one private static page at <code>/bookmark</code>, deployed on Vercel.</li>
+            <li>Auth: private dashboard session cookie via <code>/api/dashboard-auth</code>.</li>
+            <li>Data: Supabase tables for bookmarks, folders, and AI sort history.</li>
+            <li>APIs: <code>/api/bookmarks</code>, <code>/api/bookmark-collections</code>, and <code>/api/bookmark-sort</code>.</li>
+            <li>AI: OpenRouter powers sorting and proofreading. Sorting records model and confidence in sort history.</li>
+            <li>Speed: browser <code>localStorage</code> cache renders folders/bookmarks first, then refreshes Supabase in the background.</li>
+          </ul>
+        </div>
+      </div>`
+  }
+
+  async function loadBookmarks({ background=false } = {}) {
     const params = new URLSearchParams()
     if (currentFilter === 'favorites') params.set('favorite','1')
     if (currentFilter === 'collection' && currentSlug) params.set('collection', currentSlug)
@@ -1112,25 +2075,51 @@
 
     const gridEl = document.getElementById('gridContainer')
     const listEl = document.getElementById('listContainer')
-    if (currentView === 'grid') gridEl.innerHTML = '<div class="loading">Loading…</div>'
-    else listEl.innerHTML = '<div class="loading">Loading…</div>'
-    document.getElementById('emptyState').classList.remove('visible')
+    if (!background) {
+      if (currentView === 'grid') gridEl.innerHTML = '<div class="loading">Loading…</div>'
+      else listEl.innerHTML = '<div class="loading">Loading…</div>'
+      document.getElementById('emptyState').classList.remove('visible')
+    }
 
     try {
       const res = await apiFetch(`/api/bookmarks?${params}`)
       if (res.status === 401) { showAuth('Enter your dashboard password.'); return }
+      if (!res.ok) throw new Error('Could not load bookmarks')
       const data = await res.json()
       allBookmarks = data.bookmarks || []
+      if (!params.toString()) writeCache(CACHE_KEYS.bookmarks, { bookmarks: allBookmarks })
       renderSubColGrid()
       buildSubPanel(allBookmarks)
       applyFilters()
-    } catch {
-      showToast('Could not load bookmarks', 'err')
+      updateLastSynced()
+    } catch (err) {
+      if (!background) {
+        showToast(err.message || 'Could not load bookmarks', 'err')
+        showDataError(err.message || 'Could not load bookmarks', () => loadBookmarks())
+      } else {
+        setSyncStatus('Sync failed', 'warn')
+      }
     }
   }
 
   function applyFilters() {
-    let items = allBookmarks
+    // Trash is a self-managed view; don't let search/sort/view-toggle clobber it.
+    if (currentFilter === 'trash') return
+    const q = document.getElementById('searchInput').value.trim()
+    if (currentFilter === 'ai') {
+      document.getElementById('subColGrid').style.display = 'none'
+      renderBookmarks(aiResults || [])
+      return
+    }
+    if (currentFilter === 'recent') {
+      document.getElementById('subColGrid').style.display = 'none'
+      let recent = [...allBookmarks].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      if (q) recent = recent.filter((b) => bookmarkMatchesQuery(b, q))
+      renderBookmarks(recent.slice(0, 10))
+      return
+    }
+    if (currentFilter === 'all') document.getElementById('subColGrid').style.display = 'none'
+    let items = getVisibleBookmarks()
     if (currentTag) items = items.filter((b) => (b.tags||[]).includes(currentTag))
     const sort = document.getElementById('sortSelect')?.value || 'manual'
     items = [...items].sort((a, b) => {
@@ -1143,8 +2132,450 @@
     renderBookmarks(items)
   }
 
+  function getVisibleBookmarks() {
+    const q = document.getElementById('searchInput').value.trim()
+    let items = allBookmarks
+    if (currentFilter === 'favorites') items = items.filter((b) => b.is_favorite)
+    if (currentFilter === 'collection' && currentSlug) {
+      if (currentSlug === '__inbox') items = items.filter((b) => !b.collection)
+      else items = items.filter((b) => b.collection?.slug === currentSlug)
+    }
+    if (q) items = items.filter((b) => bookmarkMatchesQuery(b, q))
+    return items
+  }
+
+  function bookmarkMatchesQuery(b, q) {
+    const folder = b.collection ? `${b.collection.name} ${b.collection.slug}` : 'inbox unsorted'
+    const text = [
+      b.title, b.url, b.description, b.notes, domain(b.url), folder, ...(b.tags || []),
+    ].join(' ').toLowerCase()
+    // Match every word in the query (AND), so "facebook account" matches a bookmark
+    // that contains both words even if they aren't adjacent.
+    const terms = q.toLowerCase().split(/\s+/).filter(Boolean)
+    return terms.every((t) => text.includes(t))
+  }
+
+  function renderHomeDashboard() {
+    setTitle()
+    destroySortables()
+    document.getElementById('subPanel').classList.remove('visible')
+    document.getElementById('subColGrid').style.display = 'none'
+    document.getElementById('gridContainer').innerHTML = ''
+    document.getElementById('listContainer').innerHTML = ''
+    document.getElementById('emptyState').classList.toggle('visible', !collections.length)
+    document.getElementById('resultCount').textContent = collections.length ? `${collections.length} folders` : ''
+
+    const body = document.getElementById('subColGrid')
+    body.style.display = ''
+    const favorites = allBookmarks.filter((b) => b.is_favorite).slice(0, 3)
+    const recent = [...allBookmarks].sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3)
+    const quick = `
+      <div class="home-quick">
+        <div class="quick-card" onclick="selectFilter('favorites')">
+          <div class="quick-card-title">⭐ Favorites</div>
+          <div class="quick-card-meta">${favorites.length ? favorites.map((b) => esc(b.title || domain(b.url) || b.url)).join(' · ') : 'No favorites yet'}</div>
+        </div>
+        <div class="quick-card" onclick="showRecentBookmarks()">
+          <div class="quick-card-title">Recently added</div>
+          <div class="quick-card-meta">${recent.length ? recent.map((b) => esc(b.title || domain(b.url) || b.url)).join(' · ') : 'No recent bookmarks'}</div>
+        </div>
+      </div>
+      <div class="home-section-title">Folders</div>
+    `
+    body.innerHTML = quick + `<div class="subcol-grid">${collections.map(folderCardHtml).join('')}</div>`
+  }
+
+  function folderCardHtml(c) {
+    const recent = folderRecentBookmarks(c).slice(0, 2)
+    const actions = c.id === '__inbox' ? '' : `
+        <div class="sc-actions">
+          <button class="folder-action" title="Edit folder" onclick="event.stopPropagation(); editFolderBySlug('${esc(c.slug)}')">✎</button>
+          <button class="folder-action danger" title="Delete folder" onclick="event.stopPropagation(); deleteFolderBySlug('${esc(c.slug)}')">×</button>
+        </div>`
+    return `
+      <div class="subcol-card" onclick="selectFilter('collection','${esc(c.slug)}')">
+        ${actions}
+        <div class="sc-icon">${esc(c.icon||'📁')}</div>
+        <div class="sc-name">${esc(c.name)}</div>
+        <div class="sc-count">${c.count} bookmark${c.count!==1?'s':''}</div>
+        <div class="sc-recent">${recent.length ? recent.map((b) => `<div class="sc-recent-item">${esc(b.title || domain(b.url) || b.url)}</div>`).join('') : '<div class="sc-recent-item">No recent items</div>'}</div>
+        <div class="sc-open">Open folder</div>
+      </div>`
+  }
+
+  function editFolderBySlug(slug) {
+    editFolder(flatCollections.find((c) => c.slug === slug))
+  }
+
+  function deleteFolderBySlug(slug) {
+    deleteFolder(flatCollections.find((c) => c.slug === slug))
+  }
+
+  // Insert a just-created folder into local state immediately so it's usable everywhere
+  // (sidebar + all folder dropdowns) without waiting on a reload — guards against
+  // read-replica lag where the refetch hasn't caught up yet.
+  function mergeOptimisticFolder(col) {
+    if (!col || !col.id) return
+    const c = { ...col, count: col.count || 0 }
+    if (!flatCollections.some((x) => x.id === c.id)) flatCollections = [...flatCollections, c]
+    if (c.parent_id) {
+      const p = collections.find((x) => x.id === c.parent_id)
+      if (p && !(p.children || []).some((x) => x.id === c.id)) p.children = [...(p.children || []), { ...c, children: [] }]
+    } else if (!collections.some((x) => x.id === c.id)) {
+      collections = [...collections, { ...c, children: [] }]
+    }
+    writeCache(CACHE_KEYS.collections, { collections, flat: flatCollections })
+    renderSidebar()
+    populateAddBarSelect()
+    populateMoveSelect()
+    refreshEditFolderSelect()
+  }
+
+  // ── Folder create/rename modal ────────────────
+  const FOLDER_ICONS = [
+    '📁','📂','🗂️','📌','🔖','⭐','💼','🧰','🛠️',
+    '⚙️','🤖','🔗','📊','📈','📷','🎬','🎨','✍️',
+    '📝','📚','🧠','💡','🔍','🌐','💻','🖥️','📱',
+    '💰','💳','🪙','🛒','✉️','📧','👥','🤝','🏷️',
+    '🔑','🔒','⚡','🔥','✅','🎯','🚀','🧪','🧩',
+    '📅','🏠','🌍','💪','🏋️','❤️','🍿','📺','🎵',
+  ]
+
+  function setFolderStatus(msg, mode='') {
+    const el = document.getElementById('folderStatus')
+    el.className = 'modal-status' + (mode ? ' ' + mode : '')
+    el.textContent = msg
+  }
+
+  function buildIconGrid(selected) {
+    document.getElementById('iconGrid').innerHTML = FOLDER_ICONS.map((ic) =>
+      `<button type="button" class="icon-opt${ic === selected ? ' selected' : ''}" data-icon="${ic}" onclick="setFolderIcon('${ic}')">${ic}</button>`
+    ).join('')
+  }
+
+  function setFolderIcon(icon) {
+    document.getElementById('folderIconPreview').textContent = icon || '📁'
+    document.getElementById('folderIconCustom').value = ''
+    document.querySelectorAll('#iconGrid .icon-opt').forEach((b) => b.classList.toggle('selected', b.dataset.icon === icon))
+  }
+
+  // Parent options = top-level folders only (the manager renders two levels:
+  // folder → subfolder), plus a "top level" choice.
+  function buildParentSelect(selectedSlug) {
+    const roots = flatCollections.filter((c) => !c.parent_id && c.slug !== '__inbox')
+    const opts = ['<option value="">— Top level (no parent) —</option>'].concat(
+      roots.map((c) => `<option value="${esc(c.slug)}" ${c.slug === selectedSlug ? 'selected' : ''}>${esc((c.icon ? c.icon + ' ' : '') + c.name)}</option>`)
+    )
+    document.getElementById('folderParentSelect').innerHTML = opts.join('')
+  }
+
+  function openFolderModal(mode, { parentSlug = null, folder = null } = {}) {
+    document.getElementById('folderMode').value = mode
+    document.getElementById('folderId').value = folder?.id || ''
+
+    const parentField = document.getElementById('folderParentField')
+    if (mode === 'create') {
+      parentField.style.display = ''
+      buildParentSelect(parentSlug || '')
+    } else {
+      parentField.style.display = 'none'
+    }
+
+    document.getElementById('folderModalTitle').textContent = mode === 'edit' ? 'Rename folder' : 'New folder'
+    document.getElementById('folderSaveBtn').textContent = mode === 'edit' ? 'Save' : 'Create'
+    document.getElementById('folderName').value = folder?.name || ''
+    const icon = folder?.icon || '📁'
+    buildIconGrid(icon)
+    setFolderIcon(icon)
+    setFolderStatus('')
+    document.getElementById('folderOverlay').classList.add('visible')
+    setTimeout(() => document.getElementById('folderName').focus(), 50)
+  }
+
+  function closeFolderModal() {
+    document.getElementById('folderOverlay').classList.remove('visible')
+  }
+
+  async function saveFolderModal() {
+    const mode = document.getElementById('folderMode').value
+    const name = document.getElementById('folderName').value.trim()
+    if (!name) { setFolderStatus('Folder name is required', 'err'); document.getElementById('folderName').focus(); return }
+    const custom = document.getElementById('folderIconCustom').value.trim()
+    const gridSel = document.querySelector('#iconGrid .icon-opt.selected')?.dataset.icon
+    const icon = custom || gridSel || '📁'
+    const btn = document.getElementById('folderSaveBtn')
+    btn.disabled = true
+    setFolderStatus(mode === 'edit' ? 'Saving…' : 'Creating…')
+
+    try {
+      if (mode === 'edit') {
+        const id = document.getElementById('folderId').value
+        const res = await apiFetch('/api/bookmark-collections', {
+          method: 'PATCH', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ id, name, icon }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Could not save folder')
+        closeFolderModal()
+        showToast('Folder updated')
+        await Promise.all([loadCollections({ background: true }), loadBookmarks({ background: true })])
+      } else {
+        const parentSlug = document.getElementById('folderParentSelect').value
+        const parent = parentSlug ? flatCollections.find((c) => c.slug === parentSlug) : null
+        const res = await apiFetch('/api/bookmark-collections', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ name, icon, parent: parent?.id || null }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Could not create folder')
+        closeFolderModal()
+        mergeOptimisticFolder(data.collection)
+        showToast('Folder created')
+        if (data.collection?.slug) selectFilter('collection', data.collection.slug)
+        await Promise.all([loadCollections({ background: true }), loadBookmarks({ background: true })])
+        if (data.collection?.id && !flatCollections.some((c) => c.id === data.collection.id)) {
+          mergeOptimisticFolder(data.collection)
+        }
+      }
+    } catch (err) {
+      setFolderStatus(err.message || 'Something went wrong', 'err')
+    } finally {
+      btn.disabled = false
+    }
+  }
+
+  function createFolder(parentSlug = null) {
+    openFolderModal('create', { parentSlug })
+  }
+
+  function editFolder(folder) {
+    if (!folder || folder.id === '__inbox') return
+    openFolderModal('edit', { folder })
+  }
+
+  async function deleteFolder(folder) {
+    if (!folder || folder.id === '__inbox') return
+    const msg = `Delete "${folder.name}"? Bookmarks in this folder${folder.children?.length ? ' and its subfolders' : ''} will move to Inbox.`
+    if (!confirm(msg)) return
+    try {
+      const res = await apiFetch('/api/bookmark-collections', {
+        method: 'DELETE',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ id: folder.id }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Could not delete folder')
+      if (currentFilter === 'collection' && (currentSlug === folder.slug || (folder.children || []).some((ch) => ch.slug === currentSlug))) {
+        currentFilter = 'all'
+        currentSlug = null
+        setSidebarActive('all')
+      }
+      await Promise.all([loadCollections({ background: true }), loadBookmarks({ background: true })])
+      showToast('Folder deleted')
+    } catch (err) {
+      showToast(err.message || 'Could not delete folder', 'err')
+    }
+  }
+
+  function folderRecentBookmarks(c) {
+    return allBookmarks
+      .filter((b) => {
+        if (c.slug === '__inbox') return !b.collection
+        if (b.collection?.slug === c.slug) return true
+        return (c.children || []).some((ch) => ch.slug === b.collection?.slug)
+      })
+      .sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
+  }
+
+  function showRecentBookmarks() {
+    currentFilter = 'all'
+    currentSlug = null
+    setSidebarActive('all')
+    document.getElementById('searchInput').value = ''
+    const items = [...allBookmarks].sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 25)
+    document.getElementById('subColGrid').style.display = 'none'
+    document.getElementById('mainTitle').textContent = 'Recently added'
+    renderBookmarks(items)
+  }
+
+  // ── AI search (OpenRouter owl-alpha) ──────────
+  function clearAiAnswer() {
+    const el = document.getElementById('aiAnswer')
+    el.style.display = 'none'
+    el.innerHTML = ''
+  }
+
+  function aiAnswerHead() {
+    return `<div class="ai-answer-head">✨ AI search<button class="dismiss" title="Close AI search" onclick="exitAiSearch()">✕</button></div>`
+  }
+
+  function exitAiSearch() {
+    aiResults = null
+    clearAiAnswer()
+    document.getElementById('searchInput').value = ''
+    toggleSearchClear()
+    selectFilter('all')
+  }
+
+  async function runAiSearch() {
+    if (aiSearching) return
+    const q = document.getElementById('searchInput').value.trim()
+    if (!q) { document.getElementById('searchInput').focus(); showToast('Type what you are looking for, then Ask AI', 'warn'); return }
+
+    aiSearching = true
+    currentFilter = 'ai'; currentSlug = null; currentTag = ''
+    setSidebarActive('ai')
+    const btn = document.getElementById('aiSearchBtn')
+    btn.disabled = true; btn.textContent = '✨ Thinking…'
+
+    document.getElementById('historyPanel').style.display = 'none'
+    document.getElementById('subColGrid').style.display = 'none'
+    document.getElementById('subPanel').classList.remove('visible')
+    setView(currentView)
+    document.getElementById('mainTitle').textContent = '✨ AI search'
+    document.getElementById('resultCount').textContent = ''
+    document.getElementById('emptyState').classList.remove('visible')
+    const target = currentView === 'grid' ? 'gridContainer' : 'listContainer'
+    document.getElementById(target).innerHTML = '<div class="loading">Asking owl-alpha…</div>'
+
+    const ai = document.getElementById('aiAnswer')
+    ai.style.display = 'block'
+    ai.innerHTML = `${aiAnswerHead()}<p>Searching “${esc(q)}” across ${allBookmarks.length} bookmarks…</p>`
+
+    try {
+      const res = await apiFetch('/api/bookmarks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ aiSearch: true, query: q }),
+      })
+      if (res.status === 401) { showAuth('Enter your dashboard password.'); return }
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}))
+        throw new Error(e.error || 'AI search failed')
+      }
+      const data = await res.json()
+      aiResults = data.bookmarks || []
+      const answer = data.answer || 'Here are the closest matches.'
+      ai.innerHTML = `${aiAnswerHead()}<p>${esc(answer)}</p>`
+        + `<div class="ai-meta">${aiResults.length} match${aiResults.length === 1 ? '' : 'es'} · ${esc(data.model_used || 'owl-alpha')} · query: “${esc(q)}”</div>`
+      if (currentFilter !== 'ai') return // user navigated away mid-request
+      renderBookmarks(aiResults)
+    } catch (err) {
+      ai.innerHTML = `${aiAnswerHead()}<p>${esc(err.message || 'AI search failed')}</p>`
+      document.getElementById('listContainer').innerHTML = ''
+      document.getElementById('gridContainer').innerHTML = ''
+      showToast(err.message || 'AI search failed', 'err')
+    } finally {
+      aiSearching = false
+      btn.disabled = false; btn.textContent = '✨ Ask AI'
+    }
+  }
+
+  // ── Recently deleted (trash) ──────────────────
+  function trashDaysLeft(deletedAt) {
+    const elapsedDays = (Date.now() - new Date(deletedAt).getTime()) / 86400000
+    return Math.max(0, Math.ceil(trashRetentionDays - elapsedDays))
+  }
+
+  async function loadTrash() {
+    const listEl = document.getElementById('listContainer')
+    document.getElementById('gridContainer').style.display = 'none'
+    listEl.style.display = ''
+    listEl.innerHTML = '<div class="loading">Loading…</div>'
+    document.getElementById('emptyState').classList.remove('visible')
+    try {
+      const res = await apiFetch('/api/bookmarks?trash=1')
+      if (res.status === 401) { showAuth('Enter your dashboard password.'); return }
+      if (!res.ok) throw new Error('Could not load Recently deleted')
+      const data = await res.json()
+      const items = data.bookmarks || []
+      if (data.retention_days) trashRetentionDays = data.retention_days
+      document.getElementById('countTrash').textContent = items.length
+      if (currentFilter === 'trash') renderTrash(items)
+    } catch (err) {
+      showToast(err.message || 'Could not load Recently deleted', 'err')
+      listEl.innerHTML = ''
+    }
+  }
+
+  function renderTrash(items) {
+    const listEl = document.getElementById('listContainer')
+    document.getElementById('gridContainer').innerHTML = ''
+    destroySortables()
+    document.getElementById('resultCount').textContent = items.length ? `${items.length} in trash` : ''
+    if (!items.length) {
+      listEl.innerHTML = `<div class="trash-info">Nothing here. Deleted bookmarks land in Recently deleted and are permanently removed after ${trashRetentionDays} days.</div>`
+      return
+    }
+    const banner = `<div class="trash-info">Items are permanently deleted ${trashRetentionDays} days after removal. Restore anything you still need.</div>`
+    listEl.innerHTML = banner + items.map(trashRowHtml).join('')
+    listEl.querySelectorAll('[data-trash-action]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        const row = btn.closest('[data-id]')
+        const id = row.dataset.id
+        if (btn.dataset.trashAction === 'restore') restoreBookmark(id, true)
+        if (btn.dataset.trashAction === 'purge') purgeBookmark(id, row)
+      })
+    })
+  }
+
+  function trashRowHtml(b) {
+    const left = trashDaysLeft(b.deleted_at)
+    return `
+      <div class="list-row trash-row" data-id="${b.id}" data-url="${esc(b.url)}">
+        <img class="list-favicon" src="${esc(favicon(b))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+        <div class="list-info">
+          <div class="list-title">${esc(b.title||b.url)}</div>
+          <div class="list-meta">
+            <span class="list-domain">${esc(domain(b.url))}</span>
+            <span class="trash-when">deleted ${esc(fmtDate(b.deleted_at))} · ${left} day${left===1?'':'s'} left</span>
+          </div>
+        </div>
+        <div class="list-actions">
+          <button class="icon-btn" data-trash-action="restore" title="Restore to your bookmarks">↩ Restore</button>
+          <button class="icon-btn danger" data-trash-action="purge" title="Permanently delete">Delete forever</button>
+        </div>
+      </div>`
+  }
+
+  async function restoreBookmark(id, fromTrash=false) {
+    try {
+      const res = await apiFetch('/api/bookmarks', {
+        method: 'PATCH', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ id, restore: true }),
+      })
+      if (!res.ok) throw new Error('Could not restore')
+      showToast('Restored')
+      await loadCollections({ background: true })
+      if (fromTrash && currentFilter === 'trash') loadTrash()
+      else loadBookmarks({ background: true })
+    } catch (err) {
+      showToast(err.message || 'Could not restore', 'err')
+    }
+  }
+
+  async function purgeBookmark(id, row) {
+    if (!confirm('Permanently delete this bookmark? This cannot be undone.')) return
+    try {
+      const res = await apiFetch('/api/bookmarks', {
+        method: 'DELETE', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ id, purge: true }),
+      })
+      if (!res.ok) throw new Error('Could not delete')
+      if (row) row.remove()
+      const countEl = document.getElementById('countTrash')
+      countEl.textContent = Math.max(0, (parseInt(countEl.textContent, 10) || 1) - 1)
+      showToast('Permanently deleted')
+    } catch (err) {
+      showToast(err.message || 'Could not delete', 'err')
+    }
+  }
+
   function setTitle() {
     if (currentFilter === 'favorites') { document.getElementById('mainTitle').textContent = 'Favorites'; return }
+    if (currentFilter === 'recent') { document.getElementById('mainTitle').textContent = '🕘 Recently added'; return }
+    if (currentFilter === 'ai') { document.getElementById('mainTitle').textContent = '✨ AI search'; return }
     if (currentFilter === 'collection') {
       const c = flatCollections.find((x) => x.slug === currentSlug) || collections.find((x) => x.slug === currentSlug)
       document.getElementById('mainTitle').textContent = c ? `${c.icon||''} ${c.name}`.trim() : 'Collection'
@@ -1153,8 +2584,59 @@
     document.getElementById('mainTitle').textContent = 'All bookmarks'
   }
 
+  // ── Bulk "enhance blank descriptions" ─────────
+  function isBlankDesc(b) {
+    const d = (b.description || '').trim()
+    return !d || /^unable to crawl/i.test(d)
+  }
+
+  function updateBlanksButton() {
+    const btn = document.getElementById('enhanceBlanksBtn')
+    if (!btn || btn.disabled) return
+    const n = (allBookmarks || []).filter(isBlankDesc).length
+    const show = n > 0 && currentFilter !== 'trash'
+    btn.style.display = show ? '' : 'none'
+    btn.textContent = `✨ Enhance ${n} blank${n === 1 ? '' : 's'}`
+  }
+
+  async function runEnhanceBlanks() {
+    const btn = document.getElementById('enhanceBlanksBtn')
+    btn.disabled = true
+    btn.textContent = 'Finding blanks…'
+    let all = []
+    try {
+      const r = await apiFetch('/api/bookmarks')
+      if (r.status === 401) { showAuth('Enter your dashboard password.'); btn.disabled = false; return }
+      const d = await r.json()
+      all = d.bookmarks || []
+    } catch { /* ignore */ }
+    const blanks = all.filter(isBlankDesc)
+    if (!blanks.length) {
+      showToast('No blank descriptions to fix')
+      btn.disabled = false; updateBlanksButton(); return
+    }
+    let done = 0, failed = 0
+    for (const b of blanks) {
+      btn.textContent = `Enhancing ${done + failed + 1}/${blanks.length}…`
+      try {
+        const r = await apiFetch('/api/bookmark-sort', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ refresh: true, save: true, id: b.id, url: b.url, context: b.notes || '' }),
+        })
+        if (!r.ok) throw new Error('failed')
+        done++
+      } catch { failed++ }
+    }
+    showToast(`Enhanced ${done} description${done === 1 ? '' : 's'}${failed ? `, ${failed} failed` : ''}`)
+    btn.disabled = false
+    await Promise.all([loadCollections({ background: true }), loadBookmarks({ background: true })])
+    updateBlanksButton()
+  }
+
   function renderBookmarks(items) {
+    lastRenderedBookmarks = items
     setTitle()
+    updateBlanksButton()
     document.getElementById('resultCount').textContent = items.length ? `${items.length} bookmarks` : ''
     const gridEl = document.getElementById('gridContainer')
     const listEl = document.getElementById('listContainer')
@@ -1198,7 +2680,11 @@
       animation: 150,
       ghostClass: 'sortable-ghost',
       dragClass: 'sortable-drag',
+      onStart(evt) {
+        draggedBookmarkId = evt.item?.dataset?.id || null
+      },
       onEnd() {
+        draggedBookmarkId = null
         // Switch to manual sort mode
         const sel = document.getElementById('sortSelect')
         if (sel) sel.value = 'manual'
@@ -1222,10 +2708,10 @@
 
   // ── Card HTML ─────────────────────────────
   function cardHtml(b) {
-    const tags = (b.tags||[]).slice(0,4).map((t) => `<span class="bm-tag">${esc(t)}</span>`).join('')
+    const tags = bookmarkTagsHtml(b, 4)
     const sel = selectedIds.has(b.id)
     return `
-      <div class="bm-card${sel?' selected':''}" data-id="${b.id}" data-url="${esc(b.url)}">
+      <div class="bm-card${sel?' selected':''}" data-id="${b.id}" data-url="${esc(b.url)}" draggable="true">
         <div class="bm-card-head">
           <span class="drag-handle" title="Drag to reorder">⠿</span>
           <input type="checkbox" class="bm-check" data-action="check" ${sel?'checked':''} title="Select">
@@ -1239,8 +2725,9 @@
         <div class="bm-footer">
           <div class="bm-tags">${tags}</div>
           <div class="bm-actions">
-            <button class="icon-btn fav ${b.is_favorite?'starred':''}" title="Favorite" data-action="fav">${b.is_favorite?'★':'☆'}</button>
+            <button class="icon-btn edit" title="Edit bookmark" data-action="edit">Edit</button>
             <button class="icon-btn danger" title="Delete" data-action="del">✕</button>
+            <button class="icon-btn fav ${b.is_favorite?'starred':''}" title="Favorite" data-action="fav">${b.is_favorite?'★':'☆'}</button>
           </div>
         </div>
       </div>`
@@ -1248,40 +2735,81 @@
 
   // ── List row HTML ─────────────────────────
   function rowHtml(b) {
-    const tags = (b.tags||[]).slice(0,3).map((t) => `<span class="bm-tag">${esc(t)}</span>`).join('')
-    const cname = b.collection ? `${esc(b.collection.icon||'')} ${esc(b.collection.name)}`.trim() : ''
+    const tags = bookmarkTagsHtml(b, 3)
     const desc = b.description && b.description !== 'Unable to crawl' ? b.description : ''
     const sel = selectedIds.has(b.id)
     return `
-      <div class="list-row${sel?' selected':''}" data-id="${b.id}" data-url="${esc(b.url)}">
-        <span class="drag-handle" title="Drag to reorder">⠿</span>
-        <input type="checkbox" class="bm-check" data-action="check" ${sel?'checked':''} title="Select">
+      <div class="list-row${sel?' selected':''}" data-id="${b.id}" data-url="${esc(b.url)}" draggable="true">
+        <span class="row-gutter">
+          <span class="drag-handle" title="Drag to reorder">⠿</span>
+          <input type="checkbox" class="bm-check" data-action="check" ${sel?'checked':''} title="Select">
+        </span>
         <img class="list-favicon" src="${esc(favicon(b))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
         <div class="list-info">
           <div class="list-title">${esc(b.title||b.url)}</div>
           ${desc ? `<div class="list-desc">${esc(desc)}</div>` : ''}
           <div class="list-meta">
             <span class="list-domain">${esc(domain(b.url))}</span>
-            <div class="list-tags">${tags}</div>
+            ${tags ? `<div class="list-tags">${tags}</div>` : ''}
           </div>
         </div>
-        <span class="list-collection">${cname}</span>
+        <select class="row-move-select" data-action="move" title="Folder — click to move">
+          ${collectionOptions(b.collection_id)}
+        </select>
         <div class="list-actions">
-          <button class="icon-btn fav ${b.is_favorite?'starred':''}" title="Favorite" data-action="fav">${b.is_favorite?'★':'☆'}</button>
+          <button class="icon-btn edit" title="Edit bookmark" data-action="edit">Edit</button>
           <button class="icon-btn danger" title="Delete" data-action="del">✕</button>
+          <button class="icon-btn fav ${b.is_favorite?'starred':''}" title="Favorite" data-action="fav">${b.is_favorite?'★':'☆'}</button>
         </div>
       </div>`
   }
 
+  function bookmarkTagsHtml(b, limit) {
+    const tags = []
+    if (b.collection && currentFilter === 'all') {
+      // Show the full path (Parent › Subfolder) so you can tell nesting at a glance.
+      const col = flatCollections.find((c) => c.slug === b.collection.slug)
+      const parent = col?.parent_id ? flatCollections.find((p) => p.id === col.parent_id) : null
+      const childName = col?.name || b.collection.name
+      const childIcon = col?.icon || b.collection.icon || ''
+      let inner, full
+      if (parent) {
+        full = `${parent.name} › ${childName}`
+        inner = `${parent.icon ? esc(parent.icon) + ' ' : ''}<span class="fp-parent">${esc(parent.name)}</span><span class="fp-sep">›</span>${esc(childName)}`
+      } else {
+        full = childName
+        inner = `${childIcon ? esc(childIcon) + ' ' : ''}${esc(childName)}`
+      }
+      tags.push(`<span class="bm-tag folder-tag" title="${esc(full)}">${inner}</span>`)
+    }
+    tags.push(...(b.tags||[]).slice(0, limit).map((t) => `<span class="bm-tag">${esc(t)}</span>`))
+    return tags.slice(0, limit + 1).join('')
+  }
+
   function collectionOptions(selectedId) {
-    return collections.map((c) =>
-      `<option value="${esc(c.slug)}" ${c.id===selectedId?'selected':''}>${esc(c.icon||'')} ${esc(c.name)}</option>`
+    return flatCollections.map((c) =>
+      `<option value="${esc(c.slug)}" ${(c.id===selectedId || (!selectedId && c.slug === '__inbox'))?'selected':''}>${esc(collectionLabel(c))}</option>`
     ).join('')
+  }
+
+  function collectionLabel(c) {
+    const parent = c.parent_id ? flatCollections.find((p) => p.id === c.parent_id) : null
+    return (parent ? `${parent.icon||''} ${parent.name} › ${c.name}` : `${c.icon||''} ${c.name}`).trim()
+  }
+
+  function populateMoveSelect() {
+    const sel = document.getElementById('multiMoveSelect')
+    if (!sel) return
+    sel.innerHTML = '<option value="">Move to…</option>' + flatCollections
+      .map((c) => `<option value="${esc(c.slug)}">${esc(collectionLabel(c))}</option>`)
+      .join('')
   }
 
   function wireActions(container) {
     // Whole card/row click → open URL (stop on buttons/inputs)
     container.querySelectorAll('[data-id]').forEach((card) => {
+      card.addEventListener('dragstart', () => { draggedBookmarkId = card.dataset.id })
+      card.addEventListener('dragend', () => { draggedBookmarkId = null })
       card.addEventListener('click', (e) => {
         if (e.target.closest('button,input,select,a,.drag-handle')) return
         const url = card.dataset.url
@@ -1317,23 +2845,47 @@
       })
     })
 
+    container.querySelectorAll('[data-action="edit"]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        const card = btn.closest('[data-id]')
+        const bm = allBookmarks.find((b) => b.id === card.dataset.id)
+        if (bm) openEditModal(bm)
+      })
+    })
+
+    container.querySelectorAll('[data-action="move"]').forEach((sel) => {
+      sel.addEventListener('click', (e) => e.stopPropagation())
+      sel.addEventListener('change', async (e) => {
+        e.stopPropagation()
+        const card = sel.closest('[data-id]')
+        await moveBookmarksToCollection([card.dataset.id], sel.value)
+      })
+    })
+
     container.querySelectorAll('[data-action="del"]').forEach((btn) => {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation()
-        if (!confirm('Delete this bookmark?')) return
         const card = btn.closest('[data-id]')
-        await apiFetch('/api/bookmarks', {
-          method: 'DELETE', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ id: card.dataset.id }),
-        })
+        const id = card.dataset.id
+        try {
+          const res = await apiFetch('/api/bookmarks', {
+            method: 'DELETE', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ id }),
+          })
+          if (!res.ok) throw new Error('Could not delete')
+        } catch (err) {
+          showToast(err.message || 'Could not delete', 'err')
+          return
+        }
         card.remove()
-        selectedIds.delete(card.dataset.id)
-        allBookmarks = allBookmarks.filter((b) => b.id !== card.dataset.id)
-        showToast('Deleted')
-        loadCollections()
+        selectedIds.delete(id)
+        allBookmarks = allBookmarks.filter((b) => b.id !== id)
+        loadCollections({ background: true })
         updateMultiBar()
         document.getElementById('resultCount').textContent = allBookmarks.length ? `${allBookmarks.length} bookmarks` : ''
         if (!allBookmarks.length) document.getElementById('emptyState').classList.add('visible')
+        showUndoToast('Moved to Recently deleted', () => restoreBookmark(id))
       })
     })
   }
@@ -1371,24 +2923,198 @@
     return res.json()
   }
 
+  function setEditStatus(msg, mode='') {
+    const el = document.getElementById('editStatus')
+    el.textContent = msg || ''
+    el.className = 'modal-status' + (mode ? ' ' + mode : '')
+  }
+
+  function parseTagsInput(value) {
+    return String(value || '')
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .slice(0, 8)
+  }
+
+  function openEditModal(bm) {
+    document.getElementById('editId').value = bm.id
+    document.getElementById('editUrl').value = bm.url || ''
+    document.getElementById('editTitle').value = bm.title || ''
+    document.getElementById('editDescription').value = bm.description && bm.description !== 'Unable to crawl' ? bm.description : ''
+    document.getElementById('editNotes').value = bm.notes || ''
+    document.getElementById('editTags').value = (bm.tags || []).join(', ')
+    const sel = document.getElementById('editCollection')
+    sel.innerHTML = collectionOptions(bm.collection_id)
+    setEditStatus('')
+    document.getElementById('editOverlay').classList.add('visible')
+    setTimeout(() => document.getElementById('editTitle').focus(), 50)
+  }
+
+  function closeEditModal() {
+    document.getElementById('editOverlay').classList.remove('visible')
+  }
+
+  // Keep the open edit modal's folder dropdown in sync when folders change
+  // (e.g. a new folder was just created), preserving the current selection.
+  function refreshEditFolderSelect() {
+    const overlay = document.getElementById('editOverlay')
+    if (!overlay.classList.contains('visible')) return
+    const sel = document.getElementById('editCollection')
+    const prev = sel.value
+    const bm = allBookmarks.find((b) => b.id === document.getElementById('editId').value)
+    sel.innerHTML = collectionOptions(bm ? bm.collection_id : null)
+    if (prev) sel.value = prev
+  }
+
+  function readEditForm() {
+    return {
+      id: document.getElementById('editId').value,
+      url: document.getElementById('editUrl').value.trim(),
+      title: document.getElementById('editTitle').value.trim(),
+      description: document.getElementById('editDescription').value.trim(),
+      notes: document.getElementById('editNotes').value.trim(),
+      tags: parseTagsInput(document.getElementById('editTags').value),
+      collection: document.getElementById('editCollection').value,
+    }
+  }
+
+  async function reresearchEdit() {
+    const url = document.getElementById('editUrl').value.trim()
+    if (!url) { setEditStatus('URL is required', 'err'); return }
+    const btn = document.getElementById('reresearchBtn')
+    btn.disabled = true
+    setEditStatus('Re-researching from the live page… ~15s', '')
+    try {
+      const currentNotes = document.getElementById('editNotes').value.trim()
+      const res = await apiFetch('/api/bookmark-sort', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ url, refresh: true, context: currentNotes }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Could not re-research bookmark')
+      if (data.title) document.getElementById('editTitle').value = data.title
+      if (data.description) document.getElementById('editDescription').value = data.description
+      if (data.notes) document.getElementById('editNotes').value = data.notes
+      if (Array.isArray(data.tags) && data.tags.length) document.getElementById('editTags').value = data.tags.join(', ')
+      const sug = data.suggested_collection?.name ? ` · suggested folder: ${data.suggested_collection.name}` : ''
+      setEditStatus(`Rewritten via ${data.model_used}${sug} — review and Save`, 'ok')
+    } catch (err) {
+      setEditStatus(err.message || 'Could not re-research bookmark', 'err')
+    } finally {
+      btn.disabled = false
+    }
+  }
+
+  async function proofreadEdit() {
+    const form = readEditForm()
+    const btn = document.getElementById('proofreadBtn')
+    btn.disabled = true
+    setEditStatus('Proofreading...', '')
+    try {
+      const res = await apiFetch('/api/bookmarks', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ proofread: true, ...form }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Could not proofread bookmark')
+      document.getElementById('editTitle').value = data.proofread.title || form.title
+      document.getElementById('editDescription').value = data.proofread.description || form.description
+      document.getElementById('editNotes').value = data.proofread.notes || form.notes
+      document.getElementById('editTags').value = (data.proofread.tags || form.tags).join(', ')
+      setEditStatus(`Proofread via ${data.proofread.model_used}`, 'ok')
+    } catch (err) {
+      setEditStatus(err.message || 'Could not proofread bookmark', 'err')
+    } finally {
+      btn.disabled = false
+    }
+  }
+
+  async function saveEditBookmark() {
+    const form = readEditForm()
+    if (!form.id) return
+    if (!form.url) { setEditStatus('URL is required', 'err'); return }
+    const btn = document.getElementById('saveEditBtn')
+    btn.disabled = true
+    setEditStatus('Saving...', '')
+    try {
+      const res = await apiFetch('/api/bookmarks', {
+        method: 'PATCH',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(form),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Could not save bookmark')
+      mergeBookmark(data.bookmark)
+      await loadCollections({ background: true })
+      applyFilters()
+      closeEditModal()
+      showToast('Bookmark updated')
+    } catch (err) {
+      setEditStatus(err.message || 'Could not save bookmark', 'err')
+    } finally {
+      btn.disabled = false
+    }
+  }
+
+  async function moveBookmarksToCollection(ids, collectionSlug) {
+    if (!collectionSlug || !ids.length) return
+    const moved = []
+    for (const id of ids) {
+      const res = await patchBookmark(id, { collection: collectionSlug })
+      if (res?.bookmark) moved.push(res.bookmark)
+    }
+    if (!moved.length) return
+    const byId = new Map(moved.map((b) => [b.id, b]))
+    allBookmarks = allBookmarks
+      .map((b) => byId.get(b.id) || b)
+      .filter((b) => currentFilter !== 'collection' || collectionSlug === currentSlug || !byId.has(b.id))
+    clearSelection()
+    cacheCurrentBookmarks()
+    await loadCollections({ background: true })
+    applyFilters()
+    showToast(`Moved ${moved.length} bookmark${moved.length === 1 ? '' : 's'}`)
+  }
+
+  async function moveSelectedToCollection(collectionSlug) {
+    const sel = document.getElementById('multiMoveSelect')
+    if (sel) sel.value = ''
+    await moveBookmarksToCollection([...selectedIds], collectionSlug)
+  }
+
   // ── Collections ───────────────────────────
-  async function loadCollections() {
+  async function loadCollections({ background=false } = {}) {
     try {
       const res = await apiFetch('/api/bookmark-collections')
       if (res.status === 401) { showAuth(); return }
+      if (!res.ok) throw new Error('Could not load collections')
       const data = await res.json()
       collections = data.collections || []
       flatCollections = data.flat || []
+      writeCache(CACHE_KEYS.collections, { collections, flat: flatCollections })
       renderSidebar()
       populateAddBarSelect()
+      populateMoveSelect()
+      refreshEditFolderSelect()
       document.getElementById('countFav').textContent = allBookmarks.filter((b) => b.is_favorite).length || 0
-    } catch { showToast('Could not load collections', 'err') }
+      document.getElementById('countRecent').textContent = Math.min(10, allBookmarks.length)
+    } catch (err) {
+      if (!background) {
+        showToast(err.message || 'Could not load collections', 'err')
+        document.getElementById('collectionNav').innerHTML = `<div class="error-panel"><strong>${esc(err.message || 'Could not load folders')}</strong><button type="button" onclick="loadCollections()">Retry</button></div>`
+        showDataError(err.message || 'Could not load folders', () => loadCollections())
+      } else {
+        setSyncStatus('Sync failed', 'warn')
+      }
+    }
   }
 
   function populateAddBarSelect() {
     const sel = document.getElementById('addCollection')
     const prev = sel.value
-    sel.innerHTML = '<option value="">AI sort</option>'
+    sel.innerHTML = '<option value="">AI sort (auto folder)</option>'
     for (const c of flatCollections) {
       const parent = c.parent_id ? flatCollections.find((p) => p.id === c.parent_id) : null
       const label = parent ? `${parent.icon||''} ${parent.name} › ${c.name}` : `${c.icon||''} ${c.name}`
@@ -1403,16 +3129,16 @@
   // ── Sub-collection grid ───────────────────
   function renderSubColGrid() {
     const el = document.getElementById('subColGrid')
+    if (currentFilter === 'all') {
+      el.style.display = ''
+      el.innerHTML = `<div class="subcol-grid">${collections.map(folderCardHtml).join('')}</div>`
+      return
+    }
     if (currentFilter !== 'collection' || !currentSlug) { el.style.display = 'none'; return }
     const parent = collections.find((c) => c.slug === currentSlug)
     if (!parent || !parent.children || !parent.children.length) { el.style.display = 'none'; return }
     el.style.display = ''
-    el.innerHTML = `<div class="subcol-grid">${parent.children.map((ch) => `
-      <div class="subcol-card" onclick="selectFilter('collection','${esc(ch.slug)}')">
-        <div class="sc-icon">${esc(ch.icon||'📁')}</div>
-        <div class="sc-name">${esc(ch.name)}</div>
-        <div class="sc-count">${ch.count} bookmark${ch.count!==1?'s':''}</div>
-      </div>`).join('')}</div>`
+    el.innerHTML = `<div class="subcol-grid">${parent.children.map(folderCardHtml).join('')}</div>`
   }
 
   // ── History ───────────────────────────────
@@ -1447,38 +3173,37 @@
   async function addBookmark() {
     const url = document.getElementById('addUrl').value.trim()
     if (!url) { setAddStatus('Paste a URL first', 'err'); return }
+    const context = document.getElementById('addContext').value.trim()
     const collectionSlug = document.getElementById('addCollection').value
     const btn = document.getElementById('addBtn')
     btn.disabled = true
-    setAddStatus(collectionSlug ? 'Adding…' : 'AI sorting… ~15s', 'loading')
+    const chosen = collectionSlug ? (flatCollections.find((c) => c.slug === collectionSlug)?.name || 'folder') : ''
+    setAddStatus(chosen ? `Researching + filing in ${chosen}… ~15s` : 'AI sorting + writing description… ~15s', 'loading')
 
     try {
-      let res, data
-      if (collectionSlug) {
-        // Direct add to chosen collection (no AI)
-        res = await apiFetch('/api/bookmarks', {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ url, collection: collectionSlug }),
-        })
-        data = await res.json()
-        if (!res.ok) throw new Error(data.error || 'Could not add bookmark')
-        const col = flatCollections.find((c) => c.slug === collectionSlug)
-        setAddStatus(`Added to ${col?.name || collectionSlug}`, 'ok')
+      // Every add runs the AI research (title/description/notes/tags). If a folder is
+      // chosen it's honoured; otherwise the AI also picks the folder.
+      const res = await apiFetch('/api/bookmark-sort', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ url, context, collection: collectionSlug || undefined }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Could not add bookmark')
+      mergeBookmark(data.bookmark)
+      const col = data.collection?.name || 'Inbox'
+      if (data.duplicate) {
+        setAddStatus(`Already saved in ${col}`, 'ok')
+      } else if (collectionSlug) {
+        setAddStatus(`Added to ${col} · AI wrote the details`, 'ok')
       } else {
-        // AI sort
-        res = await apiFetch('/api/bookmark-sort', {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ url }),
-        })
-        data = await res.json()
-        if (!res.ok) throw new Error(data.error || 'Could not sort bookmark')
-        const col = data.collection?.name || 'Inbox'
         const pct = Math.round((data.confidence||0)*100)
-        setAddStatus(`→ ${col} · ${pct}%`, 'ok')
+        setAddStatus(`Added to ${col} · AI ${pct}% sure of folder`, 'ok')
       }
       document.getElementById('addUrl').value = ''
+      document.getElementById('addContext').value = ''
       document.getElementById('addCollection').value = ''
-      await Promise.all([loadCollections(), loadBookmarks()])
+      await loadCollections({ background: true })
+      applyFilters()
     } catch (err) {
       setAddStatus(err.message, 'err')
     } finally {
@@ -1487,13 +3212,82 @@
   }
 
   // ── Search ────────────────────────────────
+  function toggleSearchClear() {
+    document.getElementById('searchClear').classList.toggle('visible', !!document.getElementById('searchInput').value)
+  }
+
+  function clearSearch() {
+    const input = document.getElementById('searchInput')
+    input.value = ''
+    toggleSearchClear()
+    if (currentFilter === 'ai' || currentFilter === 'trash') {
+      currentFilter = 'all'; aiResults = null; clearAiAnswer(); setSidebarActive('all')
+      document.getElementById('listContainer').style.display = currentView === 'list' ? '' : 'none'
+      document.getElementById('gridContainer').style.display = currentView === 'grid' ? '' : 'none'
+    }
+    applyFilters()
+    loadBookmarks({ background: true })
+    input.focus()
+  }
+
   document.getElementById('searchInput').addEventListener('input', () => {
     clearTimeout(searchTimer)
-    searchTimer = setTimeout(loadBookmarks, 280)
+    toggleSearchClear()
+    if (currentFilter === 'ai' || currentFilter === 'trash') {
+      currentFilter = 'all'; aiResults = null; clearAiAnswer(); setSidebarActive('all')
+      document.getElementById('listContainer').style.display = currentView === 'list' ? '' : 'none'
+      document.getElementById('gridContainer').style.display = currentView === 'grid' ? '' : 'none'
+    }
+    applyFilters()
+    searchTimer = setTimeout(() => {
+      if (!document.getElementById('searchInput').value.trim()) loadBookmarks({ background: true })
+    }, 280)
   })
   document.getElementById('pinInput').addEventListener('keydown', (e) => { if (e.key==='Enter') unlockApp() })
   document.getElementById('addUrl').addEventListener('keydown', (e) => { if (e.key==='Enter') addBookmark() })
+  document.getElementById('addContext').addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') addBookmark()
+  })
+  // Folder modal: live custom-emoji preview + Enter to save.
+  document.getElementById('folderName').addEventListener('keydown', (e) => { if (e.key === 'Enter') saveFolderModal() })
+  document.getElementById('folderIconCustom').addEventListener('keydown', (e) => { if (e.key === 'Enter') saveFolderModal() })
+  document.getElementById('folderIconCustom').addEventListener('input', (e) => {
+    const v = e.target.value.trim()
+    document.getElementById('folderIconPreview').textContent = v || document.querySelector('#iconGrid .icon-opt.selected')?.dataset.icon || '📁'
+    if (v) document.querySelectorAll('#iconGrid .icon-opt').forEach((b) => b.classList.remove('selected'))
+  })
   document.addEventListener('keydown', (e) => {
+    const active = document.activeElement
+    const isTyping = active && ['INPUT','TEXTAREA','SELECT'].includes(active.tagName)
+    if (e.key === 'Escape' && document.getElementById('folderOverlay').classList.contains('visible')) {
+      closeFolderModal(); return
+    }
+    if (e.key === '/' && !isTyping) {
+      e.preventDefault()
+      document.getElementById('searchInput').focus()
+      return
+    }
+    if (e.key === 'Escape' && document.getElementById('searchInput').value) {
+      if (document.getElementById('editOverlay').classList.contains('visible')) {
+        closeEditModal()
+        return
+      }
+      document.getElementById('searchInput').value = ''
+      toggleSearchClear()
+      if (currentFilter === 'ai') { currentFilter = 'all'; aiResults = null; clearAiAnswer(); setSidebarActive('all') }
+      applyFilters()
+      return
+    }
+    if (e.key === 'Escape' && document.getElementById('editOverlay').classList.contains('visible')) {
+      closeEditModal()
+      return
+    }
+    if (e.key === 'Enter' && active?.id === 'searchInput') {
+      if (e.metaKey || e.ctrlKey) { e.preventDefault(); runAiSearch(); return }
+      const top = lastRenderedBookmarks[0]
+      if (top?.url) window.open(top.url, '_blank', 'noopener,noreferrer')
+      return
+    }
     if ((e.metaKey||e.ctrlKey) && e.key==='k') {
       e.preventDefault()
       document.getElementById('addUrl').focus()
@@ -1503,8 +3297,74 @@
 
   // ── Boot ──────────────────────────────────
   async function bootstrap() {
-    await Promise.all([loadCollections(), loadBookmarks()])
+    const hasCachedView = hydrateFromCache()
+    await Promise.all([
+      loadCollections({ background: hasCachedView }),
+      loadBookmarks({ background: hasCachedView }),
+    ])
   }
+
+  // ── Resizable sidebar ─────────────────────
+  const SIDEBAR_W_KEY = 'samuel_bookmark_sidebar_w'
+  const SIDEBAR_MIN = 180
+  const SIDEBAR_MAX = 460
+
+  function applySidebarWidth(px) {
+    const w = Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, px))
+    document.documentElement.style.setProperty('--sidebar-w', w + 'px')
+    return w
+  }
+
+  function restoreSidebarWidth() {
+    const saved = parseInt(localStorage.getItem(SIDEBAR_W_KEY) || '', 10)
+    if (Number.isFinite(saved)) applySidebarWidth(saved)
+  }
+
+  function initSidebarResizer() {
+    const resizer = document.getElementById('sidebarResizer')
+    const shell = document.getElementById('appShell')
+    if (!resizer || !shell) return
+    let dragging = false
+
+    const onMove = (e) => {
+      if (!dragging) return
+      const left = shell.getBoundingClientRect().left
+      const x = (e.touches ? e.touches[0].clientX : e.clientX)
+      applySidebarWidth(x - left)
+    }
+    const onUp = () => {
+      if (!dragging) return
+      dragging = false
+      resizer.classList.remove('dragging')
+      document.body.classList.remove('col-resizing')
+      const w = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w'), 10)
+      if (Number.isFinite(w)) localStorage.setItem(SIDEBAR_W_KEY, String(w))
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('touchmove', onMove)
+      window.removeEventListener('mouseup', onUp)
+      window.removeEventListener('touchend', onUp)
+    }
+    const onDown = (e) => {
+      dragging = true
+      resizer.classList.add('dragging')
+      document.body.classList.add('col-resizing')
+      window.addEventListener('mousemove', onMove)
+      window.addEventListener('touchmove', onMove, { passive: false })
+      window.addEventListener('mouseup', onUp)
+      window.addEventListener('touchend', onUp)
+      e.preventDefault()
+    }
+    resizer.addEventListener('mousedown', onDown)
+    resizer.addEventListener('touchstart', onDown, { passive: false })
+    // Double-click resets to the default width.
+    resizer.addEventListener('dblclick', () => {
+      document.documentElement.style.removeProperty('--sidebar-w')
+      localStorage.removeItem(SIDEBAR_W_KEY)
+    })
+  }
+
+  restoreSidebarWidth()
+  initSidebarResizer()
 
   checkAuth().then((ok) => { if (ok) bootstrap() })
 </script>
