@@ -49,6 +49,8 @@ Do not present a production `samuelhuang.org` link as ready until it has actuall
 
 Default to live production review, not local review. Do not send me `localhost`, `127.0.0.1`, or `file://` links for normal page work. Push the page live, verify the production URL, and send the clickable `https://samuelhuang.org/...` link in chat. Only mention a local URL if live deployment is blocked and the blocker has been clearly reported.
 
+**Always git and Vercel together.** Every deploy to production must be paired with a git commit AND push, in the same turn — never one without the other. The repo on `main` must always match what is live on `samuelhuang.org`. Workflow whenever a change is ready: stage the changed files, commit with a clear message, `git push origin main`, deploy with `vercel --prod` (run from the repo root, not `site/`), then verify the production URL returns 200. Do not deploy without committing, and do not commit a deployable change without deploying. No need to ask first — this is the standing default for this project.
+
 ## The Self-Improvement Loop
 
 Every failure is a chance to make the system stronger:
