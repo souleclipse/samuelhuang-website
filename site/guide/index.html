@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guides · Samuel Huang</title>
+<meta name="description" content="Field guides for AI coding agents and growth tooling — Claude subagents, tool-agnostic setup, every Claude feature ranked, the skill store map, and the Dalga bot playbooks.">
+<link rel="canonical" href="https://samuelhuang.org/guide">
+<meta property="og:title" content="Guides · Samuel Huang">
+<meta property="og:description" content="Hands-on field guides for AI coding agents and growth tooling.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://samuelhuang.org/guide">
+<style>
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1B1E26;
+    --line: #262932;
+    --ink: #F2F3F5;
+    --ink-soft: #B4B7C1;
+    --ink-mute: #767986;
+    --claude: #E08A6A;
+    --claude-bg: #2A1C16;
+    --codex: #2BC79A;
+    --codex-bg: #11271F;
+    --shared: #8B93FF;
+    --shared-bg: #1A1B30;
+    --warn: #E0B36A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Ambient glow backdrop */
+  .ambient {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 50% at 18% 0%, rgba(224,138,106,0.14), transparent 70%),
+      radial-gradient(55% 45% at 88% 8%, rgba(43,199,154,0.12), transparent 70%),
+      radial-gradient(50% 60% at 50% 100%, rgba(139,147,255,0.08), transparent 70%);
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 24px 100px; }
+
+  /* Top bar */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 64px;
+  }
+  .brand { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; color: var(--ink); }
+  .brand span { color: var(--ink-mute); font-weight: 400; }
+  .back { font-size: 14px; color: var(--ink-mute); transition: color .2s; }
+  .back:hover { color: var(--codex); }
+
+  /* Hero */
+  .hero { margin-bottom: 56px; max-width: 760px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--claude);
+    background: var(--claude-bg);
+    border: 1px solid rgba(224,138,106,0.25);
+    padding: 6px 12px; border-radius: 100px;
+    margin-bottom: 22px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--claude); box-shadow: 0 0 8px var(--claude); }
+  h1 {
+    font-size: clamp(34px, 6vw, 56px);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+    background: linear-gradient(180deg, #fff 0%, #C9CCD6 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+  }
+  .lede { font-size: clamp(16px, 2.4vw, 19px); color: var(--ink-soft); max-width: 620px; }
+  .lede b { color: var(--ink); font-weight: 600; }
+
+  /* Section label */
+  .sec-label {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 56px 0 22px;
+  }
+  .sec-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+  /* Grid */
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    position: relative;
+    display: flex; flex-direction: column;
+    background: linear-gradient(180deg, var(--surface) 0%, rgba(20,22,28,0.6) 100%);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 26px 26px 22px;
+    overflow: hidden;
+    transition: transform .25s cubic-bezier(.2,.7,.3,1), border-color .25s, box-shadow .25s;
+    min-height: 196px;
+  }
+  .card::before {
+    content: "";
+    position: absolute; inset: 0 0 auto 0; height: 2px;
+    background: var(--accent, var(--codex));
+    opacity: 0; transition: opacity .25s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--accent, var(--codex)) 45%, var(--line));
+    box-shadow: 0 18px 40px -22px rgba(0,0,0,0.8), 0 0 0 1px color-mix(in srgb, var(--accent, var(--codex)) 18%, transparent);
+  }
+  .card:hover::before { opacity: 1; }
+  .card:hover .arrow { transform: translateX(4px); opacity: 1; }
+
+  .tag {
+    align-self: flex-start;
+    font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em;
+    padding: 4px 10px; border-radius: 7px;
+    margin-bottom: 16px;
+    background: var(--accent-bg, var(--codex-bg));
+    color: var(--accent, var(--codex));
+    border: 1px solid color-mix(in srgb, var(--accent, var(--codex)) 22%, transparent);
+  }
+  .card h2 {
+    font-size: 19px; font-weight: 650; letter-spacing: -0.015em; line-height: 1.25;
+    color: var(--ink); margin-bottom: 9px;
+  }
+  .card p { font-size: 14.5px; color: var(--ink-soft); flex: 1; }
+  .card .arrow {
+    margin-top: 16px; font-size: 14px; font-weight: 600;
+    color: var(--accent, var(--codex));
+    display: inline-flex; align-items: center; gap: 7px;
+    opacity: 0.85; transition: transform .25s, opacity .25s;
+  }
+  .card .arrow span { transition: transform .25s; }
+
+  /* Featured (full-width) card */
+  .featured { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 28px; min-height: 0; padding: 28px 30px; }
+  .featured .ftxt { flex: 1; }
+  .featured .fmeta { display: flex; flex-direction: column; align-items: flex-start; }
+  @media (max-width: 720px) { .featured { flex-direction: column; align-items: flex-start; } }
+
+  /* Builder strip */
+  .builder {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    background: linear-gradient(110deg, var(--shared-bg), rgba(20,22,28,0.4));
+    border: 1px dashed color-mix(in srgb, var(--shared) 40%, var(--line));
+    border-radius: 16px; padding: 22px 26px;
+    transition: border-color .25s, transform .25s;
+  }
+  .builder:hover { border-color: var(--shared); transform: translateY(-2px); }
+  .builder .bicon { font-size: 22px; }
+  .builder h2 { font-size: 17px; font-weight: 650; color: var(--ink); margin-bottom: 3px; }
+  .builder p { font-size: 14px; color: var(--ink-soft); }
+  .builder .arrow { color: var(--shared); font-weight: 600; white-space: nowrap; }
+  @media (max-width: 560px) { .builder { flex-direction: column; align-items: flex-start; } }
+
+  footer {
+    margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    font-size: 13.5px; color: var(--ink-mute);
+  }
+  footer a { color: var(--ink-mute); transition: color .2s; }
+  footer a:hover { color: var(--codex); }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">Samuel&nbsp;Huang <span>/ guides</span></div>
+    <a class="back" href="/">← home</a>
+  </div>
+
+  <header class="hero">
+    <span class="eyebrow"><span class="dot"></span> Field Guides</span>
+    <h1>Guides worth keeping a tab open for.</h1>
+    <p class="lede">Hands-on, no-fluff walkthroughs for <b>AI coding agents</b> and <b>growth tooling</b> — each one built from the official docs and every tutorial worth watching, then distilled into something you can actually act on.</p>
+  </header>
+
+  <div class="sec-label">AI Coding Agents</div>
+  <div class="grid">
+
+    <a class="card featured" href="/guide/claude-subagents" style="--accent:var(--claude); --accent-bg:var(--claude-bg);">
+      <div class="ftxt">
+        <span class="tag">Claude Code</span>
+        <h2>Build Claude Subagents Better Than 99% of People</h2>
+        <p>What subagents are, when to reach for one, how to build your own, and how to keep costs down — from the 30-second version up to a fleet of orchestrated specialists.</p>
+      </div>
+      <div class="fmeta">
+        <span class="arrow">Read the guide <span>→</span></span>
+      </div>
+    </a>
+
+    <a class="card" href="/guide/tool-agnostic-setup" style="--accent:var(--codex); --accent-bg:var(--codex-bg);">
+      <span class="tag">Setup</span>
+      <h2>Tool-Agnostic Coding Agent Setup</h2>
+      <p>Structure your project so Claude Code and Codex both work from the same instructions, workflows, and tool settings — no per-tool rewrites.</p>
+      <span class="arrow">Read the guide <span>→</span></span>
+    </a>
+
+    <a class="card" href="/guide/every-claude-feature-ranked" style="--accent:var(--claude); --accent-bg:var(--claude-bg);">
+      <span class="tag">Reference</span>
+      <h2>Every Claude Feature Ranked</h2>
+      <p>The creator tier board and the S-tier countdown — every Claude feature ranked from a ten-agent research sweep of the docs and changelog.</p>
+      <span class="arrow">Read the guide <span>→</span></span>
+    </a>
+
+    <a class="card" href="/guide/skill-store-map" style="--accent:var(--shared); --accent-bg:var(--shared-bg);">
+      <span class="tag">Reference</span>
+      <h2>Skill Store Map</h2>
+      <p>A plain-English inventory of every available agent skill — local, Codex, OpenAI, GitHub, Notion, and Claude — deduped from 153 installed files.</p>
+      <span class="arrow">Read the guide <span>→</span></span>
+    </a>
+
+  </div>
+
+  <div class="sec-label">Growth Tooling</div>
+  <div class="grid">
+
+    <a class="card" href="/guide/awesome-traffic-bot" style="--accent:var(--codex); --accent-bg:var(--codex-bg);">
+      <span class="tag">Dalga · Field Guide</span>
+      <h2>Awesome Traffic Bot</h2>
+      <p>How the CTR &amp; search-volume bot works, install, the IP-changing toolkit, building a campaign step by step, and a playbook for moving CTR. Built from the docs + every tutorial transcript.</p>
+      <span class="arrow">Read the guide <span>→</span></span>
+    </a>
+
+    <a class="card" href="/guide/awesome-youtube-bot" style="--accent:var(--warn); --accent-bg:#2A2316;">
+      <span class="tag">Dalga · Field Guide</span>
+      <h2>Awesome YouTube Bot</h2>
+      <p>Human-like views, accounts &amp; IPs, view/like/comment campaigns, mobile emulator views, and a playbook for YouTube CTR and ranking. Built from the docs + every tutorial transcript.</p>
+      <span class="arrow">Read the guide <span>→</span></span>
+    </a>
+
+  </div>
+
+  <div class="sec-label">Podcast Notes</div>
+  <div class="grid">
+
+    <a class="card" href="/guide/ngmi-ranking-ai-slop" style="--accent:var(--claude); --accent-bg:var(--claude-bg);">
+      <span class="tag">NGMI · Episode Notes</span>
+      <h2>Ranking AI Slop on Google in 2026</h2>
+      <p>Field notes from NGMI Ep. 2 with Tony Yu &amp; Indexsy: AI content as commodity, domain authority as the new tiebreaker, parasite SEO via Reddit / Quora / Facebook Groups, and a rapid-fire NGMI-or-GMI verdict round.</p>
+      <span class="arrow">Read the notes <span>→</span></span>
+    </a>
+
+  </div>
+
+  <div class="sec-label">Training</div>
+  <div class="grid">
+
+    <a class="card" href="/guide/3-day-strength" style="--accent:var(--codex); --accent-bg:var(--codex-bg);">
+      <span class="tag">Fitness · Field Guide</span>
+      <h2>The 3-Day Strength Build</h2>
+      <p>A simple Kinobody-style gym program: Upper / Lower / Upper, three days a week, Reverse Pyramid Training at 6/8/10, and double progression. Walk in, lift heavy, get out.</p>
+      <span class="arrow">Read the guide <span>→</span></span>
+    </a>
+
+  </div>
+
+  <div class="sec-label">Tools</div>
+  <div class="grid">
+    <a class="builder" href="/guide/new">
+      <span class="bicon">🛠️</span>
+      <div style="flex:1">
+        <h2>Guide Builder</h2>
+        <p>Turn a doc dump or a stack of transcripts into a polished field guide like the ones above.</p>
+      </div>
+      <span class="arrow">Open builder →</span>
+    </a>
+  </div>
+
+  <footer>
+    <span>© Samuel Huang</span>
+    <span><a href="/">Home</a> · <a href="/glossary">Glossary</a> · <a href="/bookmark">Bookmarks</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

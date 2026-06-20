@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The 3-Day Strength Build — Kinobody-Style RPT Program</title>
+<meta name="description" content="A simple, get-stronger 3-day gym program built on Kinobody (Greg O'Gallagher) principles: Upper / Lower / Upper, Reverse Pyramid Training, 6/8/10 reps, double progression. Walk in, lift heavy, get out.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1B1E26;
+    --line: #262932;
+    --ink: #F2F3F5;
+    --ink-soft: #B4B7C1;
+    --ink-mute: #767986;
+    --accent: #E08A6A;
+    --accent-bg: #2A1C16;
+    --push: #6AA8E0;
+    --push-bg: #14222E;
+    --pull: #2BC79A;
+    --pull-bg: #11271F;
+    --legs: #C58BFF;
+    --legs-bg: #221A30;
+    --warn: #E0B36A;
+    --warn-bg: #2A2316;
+    --code-bg: #06070A;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* TOP BAR */
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 28px; margin-bottom: 40px; border-bottom: 1px solid var(--line);
+  }
+  .topbar .brand-mark {
+    font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-mute); font-weight: 600;
+  }
+  .topbar .home-link {
+    font-size: 13px; color: var(--ink-mute); text-decoration: none;
+    font-weight: 600; transition: color 0.15s;
+  }
+  .topbar .home-link:hover { color: var(--accent); }
+
+  /* HERO */
+  header.hero { padding: 8px 0 40px; }
+  .hero .eyebrow {
+    display: inline-block; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 18px; font-weight: 600;
+  }
+  .hero h1 {
+    font-size: 46px; line-height: 1.08; font-weight: 700;
+    letter-spacing: -0.025em; margin-bottom: 18px;
+  }
+  .hero p.sub { font-size: 18px; color: var(--ink-soft); max-width: 700px; }
+  .hero .meta-row {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 26px;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 15px; font-size: 13px; font-weight: 600; color: var(--ink-soft);
+  }
+  .pill b { color: var(--ink); }
+
+  @media (max-width: 600px) { .hero h1 { font-size: 34px; } }
+
+  /* SECTIONS */
+  section { margin-bottom: 56px; scroll-margin-top: 24px; }
+  h2 {
+    font-size: 26px; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 14px;
+  }
+  h2 .num { color: var(--ink-mute); font-variant-numeric: tabular-nums; margin-right: 10px; }
+  section > p { color: var(--ink-soft); margin-bottom: 16px; max-width: 760px; }
+  section > p:last-child { margin-bottom: 0; }
+  strong { color: var(--ink); font-weight: 650; }
+
+  /* WEEK STRIP */
+  .week {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 8px;
+  }
+  @media (max-width: 640px) { .week { grid-template-columns: repeat(4, 1fr); } }
+  .day {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 10px; text-align: center;
+  }
+  .day .dow { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-mute); font-weight: 700; }
+  .day .lbl { font-size: 13px; font-weight: 700; margin-top: 8px; }
+  .day.train { border-color: #3a3f4d; }
+  .day.rest .lbl { color: var(--ink-mute); font-weight: 600; }
+  .tag-a .lbl { color: var(--push); }
+  .tag-l .lbl { color: var(--legs); }
+  .tag-b .lbl { color: var(--pull); }
+
+  /* CALLOUT */
+  .callout {
+    background: var(--surface); border: 1px solid var(--line);
+    border-left: 3px solid var(--accent); border-radius: 12px;
+    padding: 18px 22px; margin: 18px 0; color: var(--ink-soft);
+  }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout b { color: var(--ink); }
+
+  /* HOW-IT-WORKS GRID */
+  .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 4px; }
+  @media (max-width: 680px) { .grid2 { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px;
+  }
+  .card h4 { font-size: 15px; margin-bottom: 6px; color: var(--ink); }
+  .card p { font-size: 14px; color: var(--ink-soft); margin: 0; }
+
+  /* RPT EXAMPLE TABLE */
+  .rpt-demo { background: var(--code-bg); border: 1px solid var(--line); border-radius: 12px; padding: 6px 4px; margin-top: 16px; overflow-x:auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 11px 16px; }
+  thead th { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-mute); font-weight: 700; border-bottom: 1px solid var(--line); }
+  tbody td { border-bottom: 1px solid #1c1f27; color: var(--ink-soft); }
+  tbody tr:last-child td { border-bottom: none; }
+  td b { color: var(--ink); }
+  .mono { font-family: "SF Mono", ui-monospace, Menlo, monospace; }
+
+  /* WORKOUT DAY CARDS */
+  .dayblock { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 4px 0 6px; margin-bottom: 22px; overflow: hidden; }
+  .dayblock .head {
+    display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    padding: 20px 24px 14px;
+  }
+  .dayblock .head .name { font-size: 20px; font-weight: 700; }
+  .dayblock .head .focus { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+  .dayblock.a { border-top: 3px solid var(--push); }
+  .dayblock.l { border-top: 3px solid var(--legs); }
+  .dayblock.b { border-top: 3px solid var(--pull); }
+  .dayblock.a .focus { color: var(--push); }
+  .dayblock.l .focus { color: var(--legs); }
+  .dayblock.b .focus { color: var(--pull); }
+
+  .ex { display: grid; grid-template-columns: 26px 1fr auto; gap: 4px 14px; align-items: baseline; padding: 13px 24px; border-top: 1px solid #1c1f27; }
+  .ex .i { color: var(--ink-mute); font-weight: 700; font-variant-numeric: tabular-nums; font-size: 14px; }
+  .ex .nm { font-weight: 650; font-size: 15.5px; }
+  .ex .role { display: block; font-size: 12px; color: var(--ink-mute); font-weight: 600; margin-top: 2px; letter-spacing: 0.02em; }
+  .ex .scheme { text-align: right; font-size: 13px; color: var(--ink-soft); white-space: nowrap; }
+  .ex .scheme .sets { color: var(--ink); font-weight: 700; }
+  .ex .scheme .reps { font-family: "SF Mono", ui-monospace, Menlo, monospace; }
+  .ex.fin { background: #101218; }
+  @media (max-width: 560px) {
+    .ex { grid-template-columns: 22px 1fr; }
+    .ex .scheme { grid-column: 2; text-align: left; margin-top: 2px; }
+  }
+
+  /* FAQ / NOTES */
+  .note { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .note:last-child { border-bottom: none; }
+  .note h4 { font-size: 16px; margin-bottom: 4px; }
+  .note p { font-size: 14.5px; color: var(--ink-soft); margin: 0; }
+
+  footer { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--ink-mute); font-size: 13px; }
+  footer a { color: var(--ink-soft); }
+  .legend { display:flex; gap:16px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-mute); margin-top:10px; font-weight:600; }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <span class="brand-mark">SAMUELHUANG.ORG</span>
+    <a class="home-link" href="https://samuelhuang.org">← Home</a>
+  </div>
+
+  <header class="hero">
+    <span class="eyebrow">Training · Kinobody-Style RPT</span>
+    <h1>The 3-Day Strength Build</h1>
+    <p class="sub">Quick, easy, simple. Three days a week, four big lifts a day, and one job: get stronger. Built on Greg O'Gallagher's Kinobody principles — Upper / Lower / Upper, Reverse Pyramid Training, and progression you can actually track.</p>
+    <div class="meta-row">
+      <span class="pill">📅 <b>3 days</b>/week</span>
+      <span class="pill">🔺 <b>RPT</b> 6 · 8 · 10</span>
+      <span class="pill">⏱️ <b>~45–60</b> min/session</span>
+      <span class="pill">📈 <b>Double</b> progression</span>
+    </div>
+  </header>
+
+  <!-- WEEK -->
+  <section>
+    <h2><span class="num">01</span>The week at a glance</h2>
+    <p>Train three days on <strong>non-consecutive days</strong> so each session lands fresh. The classic is Monday / Wednesday / Friday — but Tue/Thu/Sat works just as well. The two upper days are different (A and B) so nothing gets stale and push/pull stay balanced across the week.</p>
+    <div class="week">
+      <div class="day train tag-a"><div class="dow">Mon</div><div class="lbl">Upper A</div></div>
+      <div class="day rest"><div class="dow">Tue</div><div class="lbl">Rest</div></div>
+      <div class="day train tag-l"><div class="dow">Wed</div><div class="lbl">Lower</div></div>
+      <div class="day rest"><div class="dow">Thu</div><div class="lbl">Rest</div></div>
+      <div class="day train tag-b"><div class="dow">Fri</div><div class="lbl">Upper B</div></div>
+      <div class="day rest"><div class="dow">Sat</div><div class="lbl">Rest</div></div>
+      <div class="day rest"><div class="dow">Sun</div><div class="lbl">Rest</div></div>
+    </div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--push)"></i> Upper A — push-led</span>
+      <span><i class="dot" style="background:var(--legs)"></i> Lower</span>
+      <span><i class="dot" style="background:var(--pull)"></i> Upper B — pull-led</span>
+    </div>
+  </section>
+
+  <!-- HOW RPT WORKS -->
+  <section>
+    <h2><span class="num">02</span>How to run every set</h2>
+    <p><strong>Reverse Pyramid Training (RPT)</strong> is the engine of this program. You hit your <strong>heaviest set first</strong>, while you're freshest and strongest, then drop the weight ~10% each following set so you can keep the reps high. It's the opposite of the usual "warm up into your top set" — and it's why you get strong without living in the gym.</p>
+    <div class="grid2">
+      <div class="card"><h4>3 working sets</h4><p>Per main lift, <em>after</em> warm-ups. Reps climb each set: <span class="mono">6 → 8 → 10</span>.</p></div>
+      <div class="card"><h4>Drop ~10% each set</h4><p>Heaviest set 1. Take roughly 10% off the bar for set 2, another 10% for set 3.</p></div>
+      <div class="card"><h4>Rest 3 minutes</h4><p>Between work sets on the big lifts. Long rest = full power on every set. ~90s on finishers.</p></div>
+      <div class="card"><h4>Leave 1 rep in the tank</h4><p>Stop ~1 rep short of failure on set 1. Sets 2–3 can be taken close to the limit.</p></div>
+    </div>
+
+    <p style="margin-top:22px;">Here's exactly what it looks like for someone whose top incline-press set is <strong>80 lb dumbbells</strong>:</p>
+    <div class="rpt-demo">
+      <table>
+        <thead><tr><th>Set</th><th>Target reps</th><th>Weight</th><th>Rest after</th></tr></thead>
+        <tbody>
+          <tr><td><b>Set 1</b></td><td class="mono">6 reps</td><td>80 lb <span style="color:var(--ink-mute)">(heaviest)</span></td><td>3 min</td></tr>
+          <tr><td><b>Set 2</b></td><td class="mono">8 reps</td><td>72 lb <span style="color:var(--ink-mute)">(−10%)</span></td><td>3 min</td></tr>
+          <tr><td><b>Set 3</b></td><td class="mono">10 reps</td><td>65 lb <span style="color:var(--ink-mute)">(−10%)</span></td><td>done</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <b>Warm up first.</b> Before set 1 of your first heavy lift, do 2–3 quick ramp-up sets (e.g. 50% × 5, 70% × 3, 85% × 1) — light, no fatigue. These don't count as working sets. Later lifts in the session need only one easy primer set.
+    </div>
+  </section>
+
+  <!-- THE PROGRAM -->
+  <section>
+    <h2><span class="num">03</span>The program</h2>
+    <p>Run your <strong>RPT 6 / 8 / 10</strong> on the heavy compound lifts. The finishers (curls, pushdowns, raises, abs) use lighter, higher-rep "straight sets" — same weight-ish, just chase a good pump and clean form.</p>
+
+    <!-- UPPER A -->
+    <div class="dayblock a">
+      <div class="head"><span class="name">Upper A</span><span class="focus">Push-led</span></div>
+      <div class="ex"><span class="i">1</span><span><span class="nm">Incline Dumbbell Press</span><span class="role">Horizontal push</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">6/8/10</span> RPT</span></div>
+      <div class="ex"><span class="i">2</span><span><span class="nm">Weighted Chin-ups</span><span class="role">Vertical pull</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">6/8/10</span> RPT</span></div>
+      <div class="ex"><span class="i">3</span><span><span class="nm">Standing Barbell Overhead Press</span><span class="role">Vertical push</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">6/8/10</span> RPT</span></div>
+      <div class="ex"><span class="i">4</span><span><span class="nm">Barbell / Cable / DB Row</span><span class="role">Horizontal pull</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">8/10/12</span> RPT</span></div>
+      <div class="ex fin"><span class="i">5</span><span><span class="nm">Incline Dumbbell Curl</span><span class="role">Finisher · biceps</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">10/12/15</span></span></div>
+      <div class="ex fin"><span class="i">6</span><span><span class="nm">Tricep Rope Pushdown</span><span class="role">Finisher · triceps</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">10/12/15</span></span></div>
+      <div class="ex fin"><span class="i">7</span><span><span class="nm">Hanging Leg Raise</span><span class="role">Finisher · abs</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">10–15</span></span></div>
+    </div>
+
+    <!-- LOWER -->
+    <div class="dayblock l">
+      <div class="head"><span class="name">Lower</span><span class="focus">Legs · no calves 😤</span></div>
+      <div class="ex"><span class="i">1</span><span><span class="nm">Barbell Back Squat</span><span class="role">Quads · primary</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">6/8/10</span> RPT</span></div>
+      <div class="ex"><span class="i">2</span><span><span class="nm">DB Bulgarian Split Squat</span><span class="role">Quads · 2nd movement (per leg)</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">8/10/12</span></span></div>
+      <div class="ex"><span class="i">3</span><span><span class="nm">Romanian Deadlift (RDL)</span><span class="role">Hamstrings · hinge</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">6/8/10</span> RPT</span></div>
+      <div class="ex fin"><span class="i">4</span><span><span class="nm">Cable Crunch / Weighted Plank</span><span class="role">Finisher · abs</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">10–15</span></span></div>
+    </div>
+
+    <!-- UPPER B -->
+    <div class="dayblock b">
+      <div class="head"><span class="name">Upper B</span><span class="focus">Pull-led</span></div>
+      <div class="ex"><span class="i">1</span><span><span class="nm">Barbell Row (or T-Bar)</span><span class="role">Horizontal pull</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">6/8/10</span> RPT</span></div>
+      <div class="ex"><span class="i">2</span><span><span class="nm">Weighted Dip (or Flat DB Press)</span><span class="role">Horizontal push</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">6/8/10</span> RPT</span></div>
+      <div class="ex"><span class="i">3</span><span><span class="nm">Wide-Grip Pull-ups (or Lat Pulldown)</span><span class="role">Vertical pull</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">8/10/12</span></span></div>
+      <div class="ex"><span class="i">4</span><span><span class="nm">Seated DB Shoulder Press</span><span class="role">Vertical push</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">8/10/12</span></span></div>
+      <div class="ex fin"><span class="i">5</span><span><span class="nm">DB Lateral Raise</span><span class="role">Finisher · side delts</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">12–15</span></span></div>
+      <div class="ex fin"><span class="i">6</span><span><span class="nm">EZ-Bar / Barbell Curl</span><span class="role">Finisher · biceps</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">10/12/15</span></span></div>
+      <div class="ex fin"><span class="i">7</span><span><span class="nm">Overhead Tricep Extension</span><span class="role">Finisher · triceps</span></span><span class="scheme"><span class="sets">3 sets</span> · <span class="reps">10/12/15</span></span></div>
+    </div>
+
+    <div class="callout">
+      <b>Why two different upper days?</b> Upper A leads with <em>pressing</em> so you're fresh for push strength; Upper B leads with <em>rowing</em> and adds dips + lateral raises. Over the week every movement pattern gets trained ~twice, from a slightly different angle — more balanced shoulders and back, zero boredom.
+    </div>
+  </section>
+
+  <!-- INDICATOR LIFTS -->
+  <section>
+    <h2><span class="num">04</span>The 5 lifts that matter</h2>
+    <p>You don't need to track everything. Kinobody's idea is to pick a handful of <strong>"indicator lifts"</strong> and relentlessly drive them up. Get these stronger and the physique follows. Log them every session:</p>
+    <div class="grid2">
+      <div class="card"><h4>1. Incline DB Press</h4><p>Upper chest + front delts. Your main pressing number.</p></div>
+      <div class="card"><h4>2. Weighted Chin-up</h4><p>Back width + biceps. Strength-to-weight king.</p></div>
+      <div class="card"><h4>3. Overhead Press</h4><p>Shoulders + triceps. The hardest to add weight to — be patient.</p></div>
+      <div class="card"><h4>4. Back Squat</h4><p>Whole lower body + core. Your one big leg number.</p></div>
+      <div class="card"><h4>5. Romanian Deadlift</h4><p>Hamstrings + glutes + posterior chain.</p></div>
+      <div class="card"><h4>(Swap-in) Weighted Dip</h4><p>Sub for incline press on Upper B if you prefer dips.</p></div>
+    </div>
+  </section>
+
+  <!-- PROGRESSION -->
+  <section>
+    <h2><span class="num">05</span>How you actually get stronger</h2>
+    <p>The whole program runs on <strong>double progression</strong>. Each lift has a rep target for set 1 (6 reps). You don't add weight on a feeling — you add it when you earn it:</p>
+    <div class="rpt-demo">
+      <table>
+        <thead><tr><th>This week</th><th>Set 1 result</th><th>Next week</th></tr></thead>
+        <tbody>
+          <tr><td>Incline press @ 80 lb</td><td>You get <b>6 reps</b> (the target)</td><td>Go up: <b>82.5 lb</b>, aim for 6 again</td></tr>
+          <tr><td>Incline press @ 80 lb</td><td>You only get 4–5 reps</td><td>Stay at 80 lb, build to 6</td></tr>
+          <tr><td>Incline press @ 80 lb</td><td>You smash <b>7–8 reps</b></td><td>Jump up: <b>+5 lb</b> next time</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid2" style="margin-top:18px;">
+      <div class="card"><h4>Small jumps win</h4><p>Upper body: +2.5–5 lb. Lower body: +5–10 lb. Micro-loading beats ego-loading every time.</p></div>
+      <div class="card"><h4>One number to chase</h4><p>Drive set 1. When it goes up, sets 2 and 3 (your −10% / −20% sets) follow automatically.</p></div>
+    </div>
+  </section>
+
+  <!-- NOTES -->
+  <section>
+    <h2><span class="num">06</span>Rules, swaps &amp; common questions</h2>
+    <div class="note"><h4>How long should this take?</h4><p>45–60 minutes. The 3-minute rests feel long, but that's the point — they're what let you lift heavy on every set. Bring something to do between sets.</p></div>
+    <div class="note"><h4>Should I deload?</h4><p>Yes. Every 6–8 weeks, take one lighter week — same lifts, ~60% of your weights, stop well short of hard. You'll come back stronger.</p></div>
+    <div class="note"><h4>What if I can't do weighted chin-ups yet?</h4><p>Start with bodyweight chin-ups for reps. Once you can do 10+ clean, start adding weight with a belt or a dumbbell between your feet. Use an assisted machine or bands if you can't hit a few yet.</p></div>
+    <div class="note"><h4>Can I add an arm/ab day?</h4><p>Keep it 3 days while you're getting stronger — that's the whole appeal. If you're recovering well and want more, add a short optional 4th "pump" day of arms, lateral raises and abs. Never make it heavy.</p></div>
+    <div class="note"><h4>Nutrition, briefly</h4><p>Strength needs fuel and protein. Eat ~0.8–1 g of protein per lb of bodyweight daily. Slight calorie surplus to build, slight deficit to lean out — but keep the weights going up either way.</p></div>
+    <div class="note"><h4>And the calves?</h4><p>Per Anthony: skipped. 😎 If you ever want them, tack on 3 sets of standing calf raises at the end of Lower day. No judgment.</p></div>
+  </section>
+
+  <footer>
+    <p>Built on Kinobody (Greg O'Gallagher) Reverse Pyramid Training principles. This is general fitness info, not medical advice — warm up, use good form, and check with a doctor before starting a new program.</p>
+    <p style="margin-top:10px;">Sources: <a href="https://blog.kinobody.com/workouts-and-exercises/reverse-pyramid-training/">Kinobody — RPT</a> · <a href="https://fitbod.me/blog/kinobody-greek-god-program-review/">Greek God Program review</a> · <a href="https://exercisewithstyle.com/greg-ogallagher-workout-routine/">O'Gallagher routine breakdown</a></p>
+    <p style="margin-top:10px;"><a href="https://samuelhuang.org">← samuelhuang.org</a></p>
+  </footer>
+
+</div>
+</body>
+</html>
