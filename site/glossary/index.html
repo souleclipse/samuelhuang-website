@@ -53,12 +53,23 @@
     border-radius: 50%;
     background: var(--green);
   }
+  .nav-links {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+  }
   .home-link {
     color: var(--ink-mute);
     font-size: 13px;
     text-decoration: none;
   }
   .home-link:hover { color: var(--ink); }
+  .hero-cta {
+    color: var(--green);
+    text-decoration: none;
+    font-weight: 650;
+  }
+  .hero-cta:hover { text-decoration: underline; }
 
   .wrap {
     max-width: 1080px;
@@ -267,7 +278,10 @@
 <body>
   <div class="topbar">
     <div class="brand"><span class="brand-dot"></span>Samuel Huang</div>
-    <a class="home-link" href="/">Home</a>
+    <nav class="nav-links">
+      <a class="home-link" href="/guide">Guides</a>
+      <a class="home-link" href="/">Home</a>
+    </nav>
   </div>
 
   <main class="wrap">
@@ -275,10 +289,10 @@
       <div>
         <div class="eyebrow">Site Glossary</div>
         <h1>Pages Built Together</h1>
-        <p>A reference index for the Samuelhuang pages created in this project. Each entry has the production URL ready to open or copy.</p>
+        <p>A reference index for every Samuelhuang page created in this project — guides plus everything else. Each entry has the production URL ready to open or copy. Just want the readable guides? <a class="hero-cta" href="/guide">Browse the Guides hub →</a></p>
       </div>
       <div class="count">
-        <strong>14</strong>
+        <strong>18</strong>
         <span>active routes</span>
       </div>
     </header>
