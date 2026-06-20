@@ -1629,6 +1629,17 @@
     return fetch(url, { ...opts, credentials: 'same-origin', headers: new Headers(opts.headers||{}) })
   }
 
+  // Parse a response as JSON, but never throw a raw "Unexpected token" at the user.
+  // If the server returned a non-JSON body (e.g. a Vercel timeout/error page),
+  // surface a clean message keyed off the status instead.
+  async function safeJson(res) {
+    const text = await res.text()
+    try { return JSON.parse(text) } catch {}
+    if (res.status === 504 || res.status === 408) return { error: 'The AI took too long and timed out. Please try again.' }
+    if (res.status >= 500) return { error: 'The server hit an error. Please try again.' }
+    return { error: 'Unexpected response from the server. Please try again.' }
+  }
+
   function readCache(key) {
     try {
       const cached = JSON.parse(localStorage.getItem(key) || 'null')
@@ -2449,11 +2460,8 @@
         body: JSON.stringify({ aiSearch: true, query: q }),
       })
       if (res.status === 401) { showAuth('Enter your dashboard password.'); return }
-      if (!res.ok) {
-        const e = await res.json().catch(() => ({}))
-        throw new Error(e.error || 'AI search failed')
-      }
-      const data = await res.json()
+      const data = await safeJson(res)
+      if (!res.ok) throw new Error(data.error || 'AI search failed')
       aiResults = data.bookmarks || []
       const answer = data.answer || 'Here are the closest matches.'
       ai.innerHTML = `${aiAnswerHead()}<p>${esc(answer)}</p>`
@@ -2992,7 +3000,7 @@
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ url, refresh: true, context: currentNotes }),
       })
-      const data = await res.json()
+      const data = await safeJson(res)
       if (!res.ok) throw new Error(data.error || 'Could not re-research bookmark')
       if (data.title) document.getElementById('editTitle').value = data.title
       if (data.description) document.getElementById('editDescription').value = data.description
@@ -3018,7 +3026,7 @@
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ proofread: true, ...form }),
       })
-      const data = await res.json()
+      const data = await safeJson(res)
       if (!res.ok) throw new Error(data.error || 'Could not proofread bookmark')
       document.getElementById('editTitle').value = data.proofread.title || form.title
       document.getElementById('editDescription').value = data.proofread.description || form.description
