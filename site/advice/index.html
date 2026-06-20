@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<title>AI Search Advice</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1B1F27;
+    --line: #2A2E38;
+    --ink: #F2F3F5;
+    --ink-soft: #B8BBC5;
+    --ink-mute: #777C89;
+    --green: #2BC79A;
+    --green-bg: #11271F;
+    --blue: #8FB7FF;
+    --blue-bg: #142033;
+    --amber: #F0B35E;
+    --amber-bg: #2C2214;
+    --red: #FF8B8B;
+    --code-bg: #07080C;
+  }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--green); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(11, 12, 16, 0.96);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 750; }
+  .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  .top-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .home-link { color: var(--ink-mute); font-size: 13px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 36px 22px 90px; }
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px;
+    align-items: end;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow { color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 12px; }
+  h1 { font-size: clamp(34px, 6vw, 60px); line-height: 1; letter-spacing: -0.02em; }
+  .hero p { color: var(--ink-soft); font-size: 16px; line-height: 1.6; max-width: 760px; margin-top: 16px; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+    gap: 10px;
+    min-width: 285px;
+  }
+  .stat {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 13px 14px;
+  }
+  .stat strong { display: block; font-size: 24px; line-height: 1; }
+  .stat span { color: var(--ink-mute); font-size: 12px; }
+  .auth-card {
+    display: none;
+    max-width: 440px;
+    margin: 44px auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 22px;
+  }
+  .auth-card.visible { display: block; }
+  .auth-card h2 { font-size: 18px; margin-bottom: 12px; }
+  .auth-form { display: flex; gap: 10px; }
+  .auth-form input {
+    min-width: 0;
+    flex: 1;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--code-bg);
+    color: var(--ink);
+    font: inherit;
+    padding: 11px 12px;
+  }
+  button {
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 750;
+    padding: 10px 12px;
+  }
+  button:hover { color: var(--ink); border-color: var(--green); }
+  .primary { border-color: #1C5A48; background: var(--green-bg); color: var(--green); }
+  .error { display: none; color: var(--red); font-size: 13px; margin-top: 12px; }
+  .error.visible { display: block; }
+  .app-shell.locked { display: none; }
+  .notice {
+    margin-top: 18px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink-soft);
+    padding: 13px 14px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 22px;
+    margin-top: 28px;
+  }
+  .sidebar {
+    position: sticky;
+    top: 74px;
+    align-self: start;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .sidebar button {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+    text-align: left;
+  }
+  .sidebar button.active { color: var(--green); background: var(--green-bg); }
+  .content { display: grid; gap: 18px; }
+  .chat-panel {
+    position: fixed;
+    right: 22px;
+    bottom: 86px;
+    z-index: 50;
+    width: min(430px, calc(100vw - 32px));
+    height: min(640px, calc(100vh - 122px));
+    max-height: calc(100vh - 122px);
+    min-height: 0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.42);
+  }
+  .chat-panel.open {
+    display: flex;
+  }
+  .chat-bar {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .chat-bar strong { font-size: 13px; }
+  .chat-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    padding: 0;
+    line-height: 1;
+  }
+  .chat-launcher {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 55;
+    min-width: 108px;
+    min-height: 54px;
+    border-color: #1C5A48;
+    border-radius: 10px;
+    background: var(--green-bg);
+    color: var(--green);
+    font-size: 15px;
+    padding: 14px 20px;
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.38);
+  }
+  .chat-head {
+    flex: 0 0 auto;
+    padding: 15px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .chat-head h2 { font-size: 18px; margin-bottom: 6px; }
+  .chat-head p { color: var(--ink-soft); font-size: 13px; line-height: 1.45; }
+  .chat-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 10px;
+  }
+  .chat-body {
+    min-height: 0;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .chat-starters {
+    display: grid;
+    flex: 0 0 auto;
+    gap: 7px;
+    max-height: 230px;
+    overflow-y: auto;
+    padding: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .chat-starters button { text-align: left; }
+  .chat-messages {
+    min-height: 0;
+    overflow-y: auto;
+    display: grid;
+    flex: 1 1 0;
+    gap: 10px;
+    padding: 12px;
+    scrollbar-gutter: stable;
+  }
+  .chat-empty {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--code-bg);
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 12px;
+  }
+  .chat-message {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--code-bg);
+    padding: 11px;
+  }
+  .chat-message.user {
+    border-color: #1C5A48;
+    background: var(--green-bg);
+  }
+  .chat-message strong {
+    display: block;
+    color: var(--ink);
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  .chat-message p {
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+  .chat-citations {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scroll-snap-type: x mandatory;
+  }
+  .chat-citation {
+    flex: 0 0 min(100%, 420px);
+    scroll-snap-align: start;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 9px;
+  }
+  .chat-citation div {
+    color: var(--ink-soft);
+    font-size: 12px;
+    line-height: 1.45;
+    margin-top: 4px;
+  }
+  .chat-citation code {
+    display: block;
+    color: var(--green);
+    font: 11px/1.45 "SF Mono", Menlo, Consolas, monospace;
+    margin: 6px 0;
+    word-break: break-word;
+  }
+  .chat-form {
+    display: grid;
+    flex: 0 0 auto;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .chat-form textarea {
+    min-height: 68px;
+    max-height: 120px;
+    resize: vertical;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--code-bg);
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px;
+  }
+  .chat-form-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .chat-form-actions span {
+    color: var(--ink-mute);
+    font-size: 12px;
+  }
+  .section {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .section-head { padding: 18px 18px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+  .section-head h2 { font-size: 20px; letter-spacing: -0.01em; }
+  .section-body { padding: 16px 18px 18px; }
+  .takeaways, .tests, .gaps { display: grid; gap: 8px; }
+  .row {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--code-bg);
+    padding: 12px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .how-grid {
+    display: grid;
+    gap: 12px;
+  }
+  .how-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 15px;
+  }
+  .how-card h3 { font-size: 16px; margin-bottom: 8px; }
+  .how-card p, .how-card li { color: var(--ink-soft); font-size: 14px; line-height: 1.58; }
+  .how-card ol, .how-card ul { margin: 10px 0 0 18px; }
+  .how-callout {
+    border: 1px solid #1C5A48;
+    border-radius: 8px;
+    background: var(--green-bg);
+    color: var(--ink-soft);
+    padding: 13px;
+    line-height: 1.55;
+  }
+  .how-callout strong { color: var(--green); }
+  .item {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 15px;
+    margin-bottom: 12px;
+  }
+  .item:last-child { margin-bottom: 0; }
+  .item h3 { font-size: 16px; margin-bottom: 8px; }
+  .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .pill {
+    border: 1px solid #274A78;
+    border-radius: 999px;
+    background: var(--blue-bg);
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 8px;
+  }
+  .pill.evidence { border-color: #5A3C18; background: var(--amber-bg); color: var(--amber); }
+  .pill.origin { border-color: #1C5A48; background: var(--green-bg); color: var(--green); }
+  .item p, .item li { color: var(--ink-soft); font-size: 14px; line-height: 1.58; }
+  .item ul { margin: 10px 0 0 18px; }
+  .source-grid { display: grid; gap: 12px; }
+  .source-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 15px;
+  }
+  .source-card h3 { font-size: 16px; margin-bottom: 8px; }
+  .source-card p, .source-card li { color: var(--ink-soft); font-size: 14px; line-height: 1.58; }
+  .source-card ul { margin: 10px 0 0 18px; }
+  .source-ref {
+    display: grid;
+    gap: 8px;
+    margin: 12px 0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--code-bg);
+    padding: 12px;
+  }
+  .source-ref div { color: var(--ink-soft); font-size: 13px; line-height: 1.45; }
+  .source-ref strong { color: var(--ink); }
+  .controls {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .view-tabs, .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .view-tabs button.active, .filters button.active {
+    border-color: #1C5A48;
+    background: var(--green-bg);
+    color: var(--green);
+  }
+  .search-input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--code-bg);
+    color: var(--ink);
+    font: inherit;
+    padding: 12px;
+  }
+  .filter-select {
+    min-width: 190px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--code-bg);
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    padding: 10px;
+  }
+  .result-label {
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 850;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .radar-grid, .archive-grid {
+    display: grid;
+    gap: 12px;
+  }
+  .decision-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 14px;
+  }
+  .decision-card h3 { font-size: 17px; margin-bottom: 6px; }
+  .decision-card p, .decision-card li { color: var(--ink-soft); font-size: 14px; line-height: 1.58; }
+  .playbook-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 16px;
+  }
+  .playbook-card h3 { font-size: 19px; margin-bottom: 7px; }
+  .playbook-card p, .playbook-card li { color: var(--ink-soft); font-size: 14px; line-height: 1.58; }
+  .playbook-steps { margin: 12px 0 0 18px; }
+  .tool-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+  .tool-chip {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--code-bg);
+    color: var(--ink-soft);
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+  .source-stack { display: grid; gap: 8px; margin-top: 12px; }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+  .card-title { min-width: 0; }
+  .card-title p { margin-top: 0; }
+  .priority-badge {
+    flex: 0 0 auto;
+    border: 1px solid #1C5A48;
+    border-radius: 7px;
+    background: var(--green-bg);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 850;
+    padding: 7px 9px;
+  }
+  .decision-note {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 12px 0;
+  }
+  .note-box {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--code-bg);
+    padding: 10px;
+  }
+  .note-box strong { display: block; color: var(--ink); font-size: 12px; margin-bottom: 5px; }
+  .note-box span { color: var(--ink-soft); font-size: 13px; line-height: 1.45; }
+  .source-mini {
+    margin-top: 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--code-bg);
+    padding: 10px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .source-context {
+    display: grid;
+    gap: 7px;
+    margin-top: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 10px;
+  }
+  .source-context div,
+  .source-context li {
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.48;
+  }
+  .source-context strong { color: var(--ink); }
+  .source-context ul { margin: 4px 0 0 18px; }
+  .source-mini code {
+    display: block;
+    margin: 7px 0;
+    color: var(--green);
+    font: 12px/1.45 "SF Mono", Menlo, Consolas, monospace;
+    word-break: break-word;
+  }
+  .query-options {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .query-option {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 10px;
+  }
+  .query-option strong { display: block; color: var(--ink); font-size: 12px; margin-bottom: 4px; }
+  .query-option span { display: block; color: var(--ink-mute); font-size: 12px; line-height: 1.4; }
+  .query-option code {
+    display: block;
+    margin: 7px 0;
+    color: var(--green);
+    font: 12px/1.45 "SF Mono", Menlo, Consolas, monospace;
+    word-break: break-word;
+  }
+  .mini-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .muted { color: var(--ink-mute); }
+  .search-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .search-row code {
+    min-width: 0;
+    flex: 1;
+    color: var(--green);
+    font: 12px/1.45 "SF Mono", Menlo, Consolas, monospace;
+    word-break: break-word;
+  }
+  .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .links a {
+    max-width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--code-bg);
+    padding: 8px 9px;
+    font: 12px/1.4 "SF Mono", Menlo, Consolas, monospace;
+    word-break: break-all;
+  }
+  .coverage {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .loading { color: var(--ink-mute); padding: 26px 0; }
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; }
+    .stats { min-width: 0; }
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+    .chat-starters { max-height: none; overflow: visible; }
+    .chat-messages { min-height: 180px; max-height: 420px; }
+    .chat-panel {
+      right: 10px;
+      bottom: 76px;
+      width: calc(100vw - 20px);
+      height: min(620px, calc(100vh - 112px));
+      max-height: calc(100vh - 112px);
+    }
+    .chat-launcher { right: 10px; bottom: 14px; }
+    .coverage { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .decision-note { grid-template-columns: 1fr; }
+    .card-top { flex-direction: column; }
+  }
+  @media (max-width: 560px) {
+    .topbar { align-items: flex-start; flex-direction: column; }
+    .auth-form { flex-direction: column; }
+    .stats, .coverage { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="brand-dot"></span>Samuel Huang</div>
+    <div class="top-actions">
+      <button id="refreshBtn" onclick="loadAdvice()">Refresh</button>
+      <a class="home-link" href="/">Home</a>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">Private Advice</div>
+        <h1>AI Search Action Radar</h1>
+        <p>Private Slack intelligence database for the Advise community. It holds curated playbooks, all-channel source notes, and Slack lookup clues. An Owl Alpha assistant answers with citations.</p>
+      </div>
+      <div class="stats" id="heroStats">
+        <div class="stat"><strong>31</strong><span>channels</span></div>
+        <div class="stat"><strong>708</strong><span>source notes</span></div>
+      </div>
+    </header>
+
+    <div class="auth-card" id="authCard">
+      <h2>Private page</h2>
+      <div class="auth-form">
+        <input id="passwordInput" type="password" autocomplete="current-password" placeholder="Dashboard password">
+        <button class="primary" id="unlockBtn" onclick="unlock()">Unlock</button>
+      </div>
+      <div class="error" id="authError">Password required.</div>
+    </div>
+
+    <div class="app-shell locked" id="appShell">
+      <div class="notice" id="scopeNote"></div>
+      <div class="coverage" id="coverage"></div>
+      <div class="layout">
+        <nav class="sidebar" id="nav"></nav>
+        <section class="content" id="content">
+          <div class="loading">Loading...</div>
+        </section>
+        <aside class="chat-panel" id="chatPanel"></aside>
+      </div>
+      <button class="chat-launcher" id="chatToggle" type="button" onclick="toggleAdviceChat()" aria-controls="chatPanel" aria-expanded="false">Ask DB</button>
+    </div>
+  </main>
+
+<script>
+  let adviceData = null
+  let activeView = 'howto'
+  let activePriority = 'all'
+  let activeType = 'all'
+  let activeEvidence = 'all'
+  let activeChannel = 'all'
+  let searchQuery = ''
+  let adviceChatMessages = []
+  let adviceChatBusy = false
+  let adviceChatOpen = false
+
+  const evidenceLabels = {
+    tested: 'Evidence: tested by member',
+    anecdotal: 'Evidence: member anecdote',
+    'tool/news': 'Evidence: shared resource/news',
+    'question/unverified': 'Evidence: question / needs testing',
+  }
+  const priorityLabels = { 'try-now': 'Try now', watch: 'Watch', archive: 'Archive', ignore: 'Ignore' }
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]))
+  }
+  async function apiFetch(url, options = {}) { return fetch(url, { ...options, credentials: 'same-origin' }) }
+  function evidenceLabel(value) { return evidenceLabels[value] || 'Evidence: ' + value }
+  function sourceById(id) { return adviceData?.sources?.find((source) => source.id === id) }
+  function isoDate(value) {
+    const months = { january: '01', february: '02', march: '03', april: '04', may: '05', june: '06', july: '07', august: '08', september: '09', october: '10', november: '11', december: '12' }
+    const match = String(value || '').match(/^(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),\s+(\d{4})/i)
+    if (match) return match[3] + '-' + months[match[1].toLowerCase()] + '-' + match[2].padStart(2, '0')
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return ''
+    return date.toISOString().slice(0, 10)
+  }
+  function compactUrl(value) {
+    try {
+      const url = new URL(value)
+      return (url.hostname + url.pathname).replace(/^www\./, '')
+    } catch { return value }
+  }
+  function quotedPhrases(value) {
+    return [...String(value || '').matchAll(/"([^"]+)"/g)].map((match) => match[1]).filter(Boolean)
+  }
+  function dedupeQueries(queries) {
+    const seen = new Set()
+    return queries.filter((query) => {
+      if (!query.query || seen.has(query.query)) return false
+      seen.add(query.query)
+      return true
+    })
+  }
+  function normalizedSource(source) {
+    const fullSource = source.sourceId ? sourceById(source.sourceId) : null
+    return { ...(fullSource || {}), ...source, lookupPhrase: source.lookupPhrase || source.originalClue || fullSource?.lookupPhrase || fullSource?.searchPhrase }
+  }
+  function sourceContextText(sourceInput) {
+    const source = normalizedSource(sourceInput)
+    return [source.title, source.category, source.channel, source.date, source.startedBy, source.participants, source.threadClue, source.lookupPhrase, source.slackQuery, source.summary, (source.details || []).join(' '), (source.links || []).join(' ')].join(' ')
+  }
+  function makeSlackQueries(sourceInput) {
+    const source = normalizedSource(sourceInput)
+    const date = isoDate(source.date)
+    const inChannel = source.channel ? ' in:' + source.channel : ''
+    const onDate = date ? ' on:' + date : ''
+    const firstPhrase = quotedPhrases(source.lookupPhrase)[0]
+    const link = source.links?.[0] ? compactUrl(source.links[0]) + inChannel : ''
+    return dedupeQueries([
+      {
+        label: 'Best exact',
+        help: 'Start here. One distinctive phrase plus channel/date keeps results tight without over-constraining.',
+        query: firstPhrase ? '"' + firstPhrase + '"' + inChannel + onDate : ''
+      },
+      {
+        label: 'Broad keyword',
+        help: 'Use when exact phrase fails or Slack splits punctuation like /, hyphens, and quotes.',
+        query: source.slackQuery || source.searchPhrase || source.lookupPhrase
+      },
+      {
+        label: 'Original clue',
+        help: 'Closest saved wording from the source. Good when you want the human phrase, but it can be too strict.',
+        query: source.lookupPhrase ? source.lookupPhrase + inChannel : ''
+      },
+      {
+        label: 'Link search',
+        help: 'Best when the post shared an external link and Slack indexed the URL.',
+        query: link
+      },
+      {
+        label: 'Date scan',
+        help: 'Last fallback: search the channel/date, then look for the started-by person and thread clue.',
+        query: source.channel && date ? 'in:' + source.channel + onDate : ''
+      }
+    ])
+  }
+  function renderSourceContext(sourceInput) {
+    const source = normalizedSource(sourceInput)
+    const details = Array.isArray(source.details) ? source.details : []
+    return '<div class="source-context"><div><strong>Who:</strong> started by ' + escapeHtml(source.startedBy || 'Unknown') + (source.participants ? ' · ' + escapeHtml(source.participants) : '') + '</div><div><strong>What it was about:</strong> ' + escapeHtml(source.threadClue || source.title || 'Saved Slack source') + '</div><div><strong>What was said:</strong> ' + escapeHtml(source.summary || 'No source summary saved yet.') + '</div>' + (details.length ? '<div><strong>Concrete notes:</strong><ul>' + details.map((detail) => '<li>' + escapeHtml(detail) + '</li>').join('') + '</ul></div>' : '') + '</div>'
+  }
+  function renderSlackLookup(sourceInput, title, includeContext = true) {
+    const source = normalizedSource(sourceInput)
+    const queries = makeSlackQueries(source)
+    return '<div class="source-mini"><strong>' + escapeHtml(title) + ':</strong> #' + escapeHtml(source.channel) + ' · ' + escapeHtml(source.date) + ' · started by ' + escapeHtml(source.startedBy) + (includeContext ? renderSourceContext(source) : '<div class="muted">Thread clue: ' + escapeHtml(source.threadClue || source.title || 'Saved Slack source') + '</div>') + '<div class="query-options">' + queries.map((query) => '<div class="query-option"><strong>' + escapeHtml(query.label) + '</strong><span>' + escapeHtml(query.help) + '</span><code>' + escapeHtml(query.query) + '</code><button class="primary" data-copy="' + escapeHtml(query.query) + '" onclick="copyText(this.dataset.copy)">Copy ' + escapeHtml(query.label) + '</button></div>').join('') + '</div></div>'
+  }
+  function sourceText(item) {
+    return (item.sourceIds || []).map(sourceById).filter(Boolean).map((source) => [source.title, source.channel, source.startedBy, source.participants, source.date, source.lookupPhrase, source.slackQuery, source.summary, (source.details || []).join(' '), (source.links || []).join(' ')].join(' ')).join(' ')
+  }
+  function normalizeSearch(value) {
+    return String(value || '').toLowerCase().replace(/[^a-z0-9+#./:-]+/g, ' ').replace(/\s+/g, ' ').trim()
+  }
+  const commonSearchTerms = new Set(['a', 'an', 'and', 'are', 'about', 'channel', 'did', 'do', 'for', 'from', 'how', 'in', 'my', 'of', 'people', 'said', 'search', 'should', 'slack', 'source', 'sources', 'thread', 'to', 'what'])
+  function containsSearchTerm(haystack, term) {
+    if (term.length <= 3) return new RegExp('(^|[^a-z0-9])' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)').test(haystack)
+    return haystack.includes(term)
+  }
+  function matchesSearch(haystack, query = searchQuery) {
+    const normalizedQuery = normalizeSearch(query)
+    if (!normalizedQuery) return true
+    const normalizedHaystack = normalizeSearch(haystack)
+    if (normalizedHaystack.includes(normalizedQuery)) return true
+    const tokens = normalizedQuery.split(' ').filter((token) => token.length > 1 && !commonSearchTerms.has(token))
+    return tokens.every((token) => containsSearchTerm(normalizedHaystack, token))
+  }
+  function playbookMatchesQuery(playbook) {
+    const haystack = [playbook.title, playbook.category, playbook.priority, playbook.useWhen, playbook.outcome, (playbook.steps || []).join(' '), (playbook.tools || []).join(' '), playbook.expectedResult, playbook.testWindow, playbook.risk, playbook.confidence, playbook.evidence, (playbook.sourceQueries || []).map(sourceContextText).join(' ')].join(' ')
+    return matchesSearch(haystack)
+  }
+  function matchesQuery(item) {
+    const haystack = [item.title, item.type, item.priority, item.status, item.category, item.summary, item.whyItMatters, item.howToTest, item.risk, item.effort, item.confidence, item.evidence, (item.links || []).join(' '), sourceText(item)].join(' ')
+    return matchesSearch(haystack)
+  }
+  function itemMatchesFilters(item) {
+    if (activePriority !== 'all' && item.priority !== activePriority) return false
+    if (activeType !== 'all' && item.type !== activeType) return false
+    if (activeEvidence !== 'all' && item.evidence !== activeEvidence) return false
+    if (activeChannel !== 'all') {
+      const channels = item.sourceIds.map(sourceById).filter(Boolean).map((source) => source.channel)
+      if (!channels.includes(activeChannel)) return false
+    }
+    return matchesQuery(item)
+  }
+  function sortItems(items) {
+    const priorityRank = { 'try-now': 0, watch: 1, archive: 2, ignore: 3 }
+    const confidenceRank = { high: 0, medium: 1, low: 2 }
+    const effortRank = { low: 0, medium: 1, high: 2 }
+    return [...items].sort((a, b) => (priorityRank[a.priority] ?? 9) - (priorityRank[b.priority] ?? 9) || (confidenceRank[a.confidence] ?? 9) - (confidenceRank[b.confidence] ?? 9) || (effortRank[a.effort] ?? 9) - (effortRank[b.effort] ?? 9) || a.title.localeCompare(b.title))
+  }
+  function showAuth(message = 'Enter your dashboard password.') {
+    document.getElementById('appShell').classList.add('locked')
+    document.getElementById('authCard').classList.add('visible')
+    const err = document.getElementById('authError')
+    err.textContent = message
+    err.classList.add('visible')
+    document.getElementById('passwordInput').focus()
+  }
+  function showApp() {
+    document.getElementById('authCard').classList.remove('visible')
+    document.getElementById('appShell').classList.remove('locked')
+  }
+  async function unlock() {
+    const password = document.getElementById('passwordInput').value
+    const btn = document.getElementById('unlockBtn')
+    btn.disabled = true
+    btn.textContent = 'Checking...'
+    try {
+      const res = await apiFetch('/api/dashboard-auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) })
+      if (!res.ok) { showAuth('Incorrect password.'); return }
+      document.getElementById('passwordInput').value = ''
+      showApp()
+      await loadAdvice()
+    } catch { showAuth('Could not unlock.') } finally { btn.disabled = false; btn.textContent = 'Unlock' }
+  }
+  async function checkAuth() {
+    try {
+      const res = await apiFetch('/api/dashboard-auth')
+      const data = await res.json()
+      if (!data.authenticated) { showAuth(); return false }
+      showApp()
+      return true
+    } catch { showAuth('Could not check access.'); return false }
+  }
+  function renderCoverage(data) {
+    const stats = data.archiveStats?.totals || {}
+    const cards = [
+      [data.scope.channels.length, 'channels preserved'],
+      [data.sources.length, 'source notes'],
+      [data.items.length, 'action items'],
+      [stats.threadFiles || data.coverage.reduce((sum, row) => sum + Number(row.repliedThreads || 0), 0), 'threads opened'],
+      [stats.partialThreads || 0, 'partial threads'],
+      [stats.externalLinksInParents || 0, 'external links found']
+    ]
+    document.getElementById('coverage').innerHTML = cards.map(([count, label]) => '<div class="stat"><strong>' + escapeHtml(count) + '</strong><span>' + escapeHtml(label) + '</span></div>').join('')
+    document.getElementById('scopeNote').textContent = data.scope.note + ' ' + data.preservation.note + ' Updated ' + data.updatedAt + '.'
+    document.getElementById('heroStats').innerHTML = '<div class="stat"><strong>' + data.scope.channels.length + '</strong><span>channels</span></div><div class="stat"><strong>' + data.sources.length + '</strong><span>source notes</span></div>'
+  }
+  function renderNav() {
+    const entries = [['howto', 'How to Use'], ['playbooks', 'Playbooks'], ['radar', 'Action Radar'], ['archive', 'Search Archive'], ['sources', 'Source Notes'], ['collections', 'Collections'], ['gaps', 'Gaps']]
+    document.getElementById('nav').innerHTML = entries.map(([id, title]) => '<button class="' + (activeView === id ? 'active' : '') + '" onclick="setView(\'' + id + '\')">' + escapeHtml(title) + '</button>').join('')
+  }
+  function setView(view) { activeView = view; renderAdvice(adviceData); document.getElementById('content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
+  function setFilter(kind, value) { if (kind === 'priority') activePriority = value; if (kind === 'type') activeType = value; if (kind === 'evidence') activeEvidence = value; if (kind === 'channel') activeChannel = value; renderAdvice(adviceData) }
+  function setSearch(value) { searchQuery = value; renderMain(adviceData) }
+  function buttonGroup(kind, values, active) { return values.map(([value, label]) => '<button class="' + (active === value ? 'active' : '') + '" onclick="setFilter(\'' + kind + '\', \'' + value + '\')">' + escapeHtml(label) + '</button>').join('') }
+  function selectFilter(kind, values, active) {
+    return '<select class="filter-select" onchange="setFilter(\'' + kind + '\', this.value)">' + values.map(([value, label]) => '<option value="' + escapeHtml(value) + '"' + (active === value ? ' selected' : '') + '>' + escapeHtml(label) + '</option>').join('') + '</select>'
+  }
+  function renderControls(data) {
+    const typeValues = [['all', 'All types'], ...[...new Set(data.items.map((item) => item.type))].sort().map((type) => [type, type])]
+    const evidenceValues = [['all', 'All evidence'], ...[...new Set(data.items.map((item) => item.evidence))].sort().map((evidence) => [evidence, evidenceLabel(evidence).replace('Evidence: ', '')])]
+    const channelValues = [['all', 'All channels'], ...data.scope.channels.map((channel) => [channel, '#' + channel])]
+    const viewTabs = '<div class="view-tabs"><button class="' + (activeView === 'howto' ? 'active' : '') + '" onclick="setView(\'howto\')">How to Use</button><button class="' + (activeView === 'playbooks' ? 'active' : '') + '" onclick="setView(\'playbooks\')">Playbooks</button><button class="' + (activeView === 'radar' ? 'active' : '') + '" onclick="setView(\'radar\')">Action Radar</button><button class="' + (activeView === 'archive' ? 'active' : '') + '" onclick="setView(\'archive\')">Search Archive</button><button class="' + (activeView === 'sources' ? 'active' : '') + '" onclick="setView(\'sources\')">Source Notes</button></div>'
+    if (activeView === 'howto') return '<div class="controls">' + viewTabs + '</div>'
+    const detailedFilters = activeView === 'playbooks' || activeView === 'howto' ? '' : '<div class="filters">' + buttonGroup('type', typeValues, activeType) + '</div><div class="filters">' + buttonGroup('evidence', evidenceValues, activeEvidence) + '</div>'
+    return '<div class="controls">' + viewTabs + '<input class="search-input" value="' + escapeHtml(searchQuery) + '" oninput="setSearch(this.value)" placeholder="Search playbook, tactic, person, channel, link, or Slack query"><div class="filters">' + buttonGroup('priority', [['all', 'All priorities'], ['try-now', 'Try now'], ['watch', 'Watch'], ['archive', 'Archive']], activePriority) + selectFilter('channel', channelValues, activeChannel) + '</div>' + detailedFilters + '</div>'
+  }
+  function renderHowTo(data) {
+    const examplePlaybook = data.playbooks.find((playbook) => playbook.priority === 'try-now') || data.playbooks[0]
+    const exampleSource = examplePlaybook?.sourceQueries?.[0]
+    const exampleQuery = exampleSource ? makeSlackQueries(exampleSource)[0]?.query : 'in:geo on:2026-06-11'
+    const channelList = data.scope.channels.map((channel) => '#' + channel).join(', ')
+    return '<section class="section" id="howto"><div class="section-head"><h2>How to Use</h2></div><div class="section-body how-grid"><div class="how-callout"><strong>Best use case:</strong> open this when you have not checked Slack for a while. Start with Playbooks, choose one Try now test, then use Search Archive or Source Notes only when you need provenance, names, dates, links, or the original Slack lookup query.</div><article class="how-card"><h3>Fast workflow</h3><ol><li>Open <strong>Playbooks</strong> first. These are the best saved discussions converted into tests you can run.</li><li>Use <strong>Search Archive</strong> when you remember a word, tool, person, channel, link domain, or phrase. It searches playbooks, insights, and source notes together.</li><li>Open <strong>Source Notes</strong> when you need who started it, who replied, date, channel, and Slack recovery searches.</li><li>If you need the original conversation, copy <strong>Best exact</strong> first and paste it into Slack search.</li><li>If Slack search fails, try <strong>Broad keyword</strong>, then <strong>Original clue</strong>, then <strong>Link search</strong> or <strong>Date scan</strong>.</li></ol></article><article class="how-card"><h3>Which view to use</h3><ul><li><strong>Playbooks:</strong> use this when you want actions, experiments, or client-facing ideas.</li><li><strong>Action Radar:</strong> use this for individual tactics, tools, news, or questions that may not be bundled into a playbook yet.</li><li><strong>Search Archive:</strong> use this for broad search across everything saved.</li><li><strong>Source Notes:</strong> use this when you need provenance and exact Slack lookup terms.</li><li><strong>Collections:</strong> use this for browsing by theme, such as AEO/GEO tactics, parasites, tracking, offers, AI tools, model news, and workflows.</li></ul></article><article class="how-card"><h3>How to find the Slack thread</h3><ol><li>Use <strong>Best exact</strong> first. It searches one distinctive phrase in the right channel on the right day.</li><li>Paste the query into Slack search. Example: <code>' + escapeHtml(exampleQuery) + '</code></li><li>If Slack returns nothing, use <strong>Broad keyword</strong>. It removes fragile punctuation like /, quotes, and hyphens.</li><li>If the thread shared a URL, use <strong>Link search</strong>. Slack often finds URLs better than rewritten summaries.</li><li>If everything fails, use <strong>Date scan</strong>, then look for the started-by person and thread clue shown on the source card.</li></ol></article><article class="how-card"><h3>How to read the labels</h3><ul><li><strong>Priority:</strong> Try now means worth testing soon. Watch means monitor or wait for more proof. Archive means useful reference but not urgent.</li><li><strong>Evidence:</strong> Tested by member is strongest. Member anecdote is useful but not proof. Shared resource/news means external item. Question/needs testing means treat as unverified.</li><li><strong>Risk:</strong> High risk needs isolated testing. Medium risk needs narrow rollout. Low risk still needs a small validation.</li><li><strong>Confidence:</strong> Confidence reflects the quality of extracted evidence, not guaranteed business impact.</li></ul></article><article class="how-card"><h3>Weekly review habit</h3><ol><li>Spend 10 minutes on Playbooks and filter to Try now.</li><li>Choose one test only. Put the expected result somewhere measurable.</li><li>Search the Slack source before acting if the tactic depends on a specific caveat, tool setting, or member result.</li><li>After one or two weeks, keep the tactic, kill it, or write down what evidence is still missing.</li></ol></article><article class="how-card"><h3>What not to do</h3><ul><li>Do not treat the archive as a raw Slack backup. It is a cleaned intelligence layer, not a full transcript.</li><li>Do not cite private Slack permalinks, Slack files, or member profile URLs outside the private site.</li><li>Do not ship client recommendations from Watch or question items without your own validation.</li><li>Do not assume Slack search is perfect. Use channel, date, started-by, participants, and original clue together.</li></ul><p class="muted">All visible channels covered: ' + escapeHtml(channelList) + '. DMs are intentionally excluded.</p></article></div></section>'
+  }
+  function playbookSourceHtml(playbook) {
+    return '<div class="source-stack"><div class="row"><strong>Source context:</strong> the steps above are a synthesized playbook from the Slack notes below. Use these blocks to see who said what before you search the original thread.</div>' + playbook.sourceQueries.map((source) => renderSlackLookup(source, 'Slack source and recovery')).join('') + '</div>'
+  }
+  function renderPlaybookCard(playbook) {
+    return '<article class="playbook-card"><div class="card-top"><div class="card-title"><h3>' + escapeHtml(playbook.title) + '</h3><p>' + escapeHtml(playbook.outcome) + '</p></div><div class="priority-badge">' + escapeHtml(priorityLabels[playbook.priority] || playbook.priority) + '</div></div><div class="meta"><span class="pill origin">' + escapeHtml(playbook.category) + '</span><span class="pill">Window: ' + escapeHtml(playbook.testWindow) + '</span><span class="pill">Confidence: ' + escapeHtml(playbook.confidence) + '</span><span class="pill">Risk: ' + escapeHtml(playbook.risk) + '</span></div><div class="decision-note"><div class="note-box"><strong>Use when</strong><span>' + escapeHtml(playbook.useWhen) + '</span></div><div class="note-box"><strong>Expected result</strong><span>' + escapeHtml(playbook.expectedResult) + '</span></div></div><ol class="playbook-steps">' + playbook.steps.map((step) => '<li>' + escapeHtml(step) + '</li>').join('') + '</ol><div class="tool-list">' + playbook.tools.map((tool) => '<span class="tool-chip">' + escapeHtml(tool) + '</span>').join('') + '</div>' + playbookSourceHtml(playbook) + '</article>'
+  }
+  function sourceLookupHtml(item) {
+    return item.sourceIds.map(sourceById).filter(Boolean).map((source) => renderSlackLookup(source, 'Find in Slack')).join('')
+  }
+  function renderDecisionCard(item) {
+    const watch = item.risk === 'high' ? 'High risk. Use isolated tests, avoid sensitive accounts, and verify claims before scaling.' : item.risk === 'medium' ? 'Medium risk. Keep the test narrow and document evidence before scaling.' : 'Low risk. Still verify with a small test before operationalizing.'
+    return '<article class="decision-card" data-item-id="' + escapeHtml(item.id) + '"><div class="card-top"><div class="card-title"><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.summary) + '</p></div><div class="priority-badge">' + escapeHtml(priorityLabels[item.priority] || item.priority) + '</div></div><div class="meta"><span class="pill evidence">' + escapeHtml(evidenceLabel(item.evidence)) + '</span><span class="pill">Type: ' + escapeHtml(item.type) + '</span><span class="pill">Confidence: ' + escapeHtml(item.confidence) + '</span><span class="pill">Effort: ' + escapeHtml(item.effort) + '</span><span class="pill">Risk: ' + escapeHtml(item.risk) + '</span></div><div class="decision-note"><div class="note-box"><strong>Why it matters</strong><span>' + escapeHtml(item.whyItMatters) + '</span></div><div class="note-box"><strong>How to test</strong><span>' + escapeHtml(item.howToTest) + '</span></div></div>' + (item.risk !== 'low' ? '<div class="row"><strong>Watch:</strong> ' + escapeHtml(watch) + '</div>' : '') + (item.links?.length ? '<div class="links">' + item.links.map((link) => '<a href="' + escapeHtml(link) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(link) + '</a>').join('') + '</div>' : '') + sourceLookupHtml(item) + '</article>'
+  }
+  function renderSourceNote(source) {
+    const capture = source.captureStatus ? '<span class="pill">' + escapeHtml(source.captureStatus === 'partial' ? 'Partial capture' : 'Complete capture') + '</span>' : ''
+    const counts = source.replyCountExpected ? '<div><strong>Replies:</strong> captured ' + escapeHtml(source.repliesCaptured || 0) + ' of ' + escapeHtml(source.replyCountExpected || 0) + '</div>' : ''
+    return '<article class="source-card"><h3>' + escapeHtml(source.title) + '</h3><div class="meta"><span class="pill evidence">' + escapeHtml(evidenceLabel(source.evidence)) + '</span><span class="pill">' + escapeHtml(source.category) + '</span><span class="pill origin">From: Slack #' + escapeHtml(source.channel) + '</span>' + capture + '</div><div class="source-ref"><div><strong>Date:</strong> ' + escapeHtml(source.date) + '</div><div><strong>Started by:</strong> ' + escapeHtml(source.startedBy) + '</div><div><strong>Participants:</strong> ' + escapeHtml(source.participants) + '</div>' + counts + '<div><strong>Thread:</strong> ' + escapeHtml(source.threadClue) + '</div><div class="muted"><strong>Original clue:</strong> ' + escapeHtml(source.lookupPhrase || source.searchPhrase) + '</div></div><p>' + escapeHtml(source.summary) + '</p>' + (source.details?.length ? '<ul>' + source.details.map((detail) => '<li>' + escapeHtml(detail) + '</li>').join('') + '</ul>' : '') + renderSlackLookup(source, 'Slack recovery options', false) + (source.links?.length ? '<div class="links">' + source.links.map((link) => '<a href="' + escapeHtml(link) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(link) + '</a>').join('') + '</div>' : '') + '</article>'
+  }
+  function filteredItems(data) { return sortItems(data.items.filter(itemMatchesFilters)) }
+  function filteredSources(data) {
+    return data.sources.filter((source) => {
+      if (activeChannel !== 'all' && source.channel !== activeChannel) return false
+      if (activeEvidence !== 'all' && source.evidence !== activeEvidence) return false
+      return matchesSearch([source.title, source.category, source.channel, source.startedBy, source.participants, source.date, source.threadClue, source.lookupPhrase, source.slackQuery, source.summary, (source.details || []).join(' '), (source.links || []).join(' ')].join(' '))
+    })
+  }
+  function renderArchiveRecord(record) {
+    if (record.kind === 'playbook') return '<div class="result-label">Playbook</div>' + renderPlaybookCard(record.value)
+    if (record.kind === 'source') return '<div class="result-label">Source note</div>' + renderSourceNote(record.value)
+    return '<div class="result-label">Action item</div>' + renderDecisionCard(record.value)
+  }
+  function archiveRecords(data, items, sources, playbooks) {
+    const records = [
+      ...playbooks.map((value) => ({ kind: 'playbook', value })),
+      ...items.map((value) => ({ kind: 'item', value })),
+      ...sources.map((value) => ({ kind: 'source', value })),
+    ]
+    if (searchQuery) return records.slice(0, 80)
+    return records.filter((record) => record.kind !== 'source' || record.value.captureStatus === 'partial' || record.value.generatedFrom).slice(0, 40)
+  }
+  function renderMain(data) {
+    const controls = renderControls(data)
+    const items = filteredItems(data)
+    const radarItems = items.filter((item) => item.priority !== 'archive')
+    const sources = filteredSources(data)
+    const playbooks = data.playbooks.filter((playbook) => {
+      if (activePriority !== 'all' && playbook.priority !== activePriority) return false
+      if (activeChannel !== 'all' && !(playbook.sourceQueries || []).some((source) => source.channel === activeChannel)) return false
+      return playbookMatchesQuery(playbook)
+    })
+    const mixedArchive = archiveRecords(data, items, sources, playbooks)
+    const shownSources = searchQuery ? sources.slice(0, 80) : sources.slice(0, 60)
+    let body = ''
+    if (activeView === 'howto') body = renderHowTo(data)
+    else if (activeView === 'playbooks') body = '<section class="section" id="playbooks"><div class="section-head"><h2>Playbooks</h2></div><div class="section-body radar-grid"><div class="row"><strong>Start here after 2 weeks away:</strong> these convert Slack discussion into executable tests. Each playbook has steps, tools, expected result, and multiple Slack fallback searches.</div>' + (playbooks.length ? playbooks.map(renderPlaybookCard).join('') : '<div class="row">No playbooks match these filters.</div>') + '</div></section>'
+    else if (activeView === 'radar') body = '<section class="section" id="radar"><div class="section-head"><h2>Action Radar</h2></div><div class="section-body radar-grid"><div class="row"><strong>Use this first:</strong> cards are sorted by priority, confidence, and effort. Use <strong>Best exact</strong> first when recovering a Slack thread, then try Broad keyword, Original clue, Link search, or Date scan if Slack returns weak results.</div>' + (radarItems.length ? radarItems.map(renderDecisionCard).join('') : '<div class="row">No radar items match these filters.</div>') + '</div></section>'
+    else if (activeView === 'archive') body = '<section class="section" id="archive"><div class="section-head"><h2>Search Archive</h2></div><div class="section-body archive-grid"><div class="row"><strong>' + mixedArchive.length + ' shown</strong> from ' + playbooks.length + ' playbooks, ' + items.length + ' action items, and ' + sources.length + ' source notes. Type a search term to narrow the database; blank search shows a capped recent/high-signal sample.</div>' + (mixedArchive.length ? mixedArchive.map(renderArchiveRecord).join('') : '<div class="row">No database records match these filters.</div>') + '</div></section>'
+    else if (activeView === 'sources') body = '<section class="section" id="sources"><div class="section-head"><h2>Source Notes</h2></div><div class="section-body source-grid"><div class="row"><strong>' + shownSources.length + ' shown</strong> from ' + sources.length + ' matching source notes. Search by person, channel, phrase, link domain, or date to narrow it.</div>' + (shownSources.length ? shownSources.map(renderSourceNote).join('') : '<div class="row">No source notes match these filters.</div>') + '</div></section>'
+    else if (activeView === 'collections') body = '<section class="section" id="collections"><div class="section-head"><h2>Collections</h2></div><div class="section-body archive-grid">' + data.collections.map((collection) => '<article class="item"><h3>' + escapeHtml(collection.title) + '</h3><p>' + escapeHtml(collection.description) + '</p><div class="meta"><span class="pill">' + collection.itemIds.length + ' saved insights</span></div></article>').join('') + '</div></section>'
+    else body = '<section class="section" id="gaps"><div class="section-head"><h2>Extraction Gaps</h2></div><div class="section-body gaps">' + data.gaps.map((gap) => '<div class="row">' + escapeHtml(gap) + '</div>').join('') + '</div></section>'
+    document.getElementById('content').innerHTML = controls + body
+  }
+  function textToHtml(value) {
+    return escapeHtml(value).replace(/\n/g, '<br>')
+  }
+  function renderChatCitation(citation) {
+    const refs = citation.sourceRefs || []
+    const sourceHtml = refs.slice(0, 1).map((source) => '<div><strong>Source:</strong> #' + escapeHtml(source.channel) + ' · ' + escapeHtml(source.date) + ' · started by ' + escapeHtml(source.startedBy) + '</div>' + (source.summary ? '<div>' + escapeHtml(source.summary) + '</div>' : '') + (source.slackQuery ? '<code>' + escapeHtml(source.slackQuery) + '</code><button data-copy="' + escapeHtml(source.slackQuery) + '" onclick="copyText(this.dataset.copy)">Copy Slack search</button>' : '')).join('')
+    return '<div class="chat-citation"><strong>[' + escapeHtml(citation.citation) + '] ' + escapeHtml(citation.title) + '</strong><div>' + escapeHtml(citation.kind) + ' · ' + escapeHtml(citation.category || '') + ' · ' + escapeHtml(citation.evidence || '') + '</div>' + sourceHtml + '</div>'
+  }
+  function renderChatMessages() {
+    const log = document.getElementById('adviceChatLog')
+    if (!log) return
+    if (!adviceChatMessages.length && !adviceChatBusy) {
+      log.innerHTML = ''
+      return
+    }
+    log.innerHTML = adviceChatMessages.map((message) => '<div class="chat-message ' + escapeHtml(message.role) + '"><strong>' + (message.role === 'user' ? 'You' : 'Advice assistant') + '</strong><p>' + textToHtml(message.content) + '</p>' + (message.citations?.length ? '<div class="chat-citations">' + message.citations.slice(0, 2).map(renderChatCitation).join('') + '</div>' : '') + '</div>').join('') + (adviceChatBusy ? '<div class="chat-message"><strong>Advice assistant</strong><p>Searching the private database with Owl Alpha...</p></div>' : '')
+    log.scrollTop = log.scrollHeight
+  }
+  function renderChatPanel(data) {
+    const panel = document.getElementById('chatPanel')
+    if (!panel) return
+    panel.classList.toggle('open', adviceChatOpen)
+    panel.setAttribute('aria-hidden', adviceChatOpen ? 'false' : 'true')
+    panel.innerHTML = '<div class="chat-bar"><strong>Ask Advice DB</strong><button class="chat-close" type="button" onclick="toggleAdviceChat(false)" aria-label="Close chat">&times;</button></div><div class="chat-body"><div class="chat-messages" id="adviceChatLog"></div><form class="chat-form" onsubmit="sendAdviceChat(event)"><textarea id="adviceChatInput" aria-label="Ask advice database"></textarea><div class="chat-form-actions"><button class="primary" id="adviceChatSend" type="submit">' + (adviceChatBusy ? 'Thinking...' : 'Ask') + '</button></div></form></div>'
+    const toggle = document.getElementById('chatToggle')
+    if (toggle) {
+      toggle.textContent = adviceChatOpen ? 'Close' : 'Ask DB'
+      toggle.setAttribute('aria-expanded', adviceChatOpen ? 'true' : 'false')
+    }
+    const send = document.getElementById('adviceChatSend')
+    if (send) send.disabled = adviceChatBusy
+    renderChatMessages()
+  }
+  function toggleAdviceChat(open = !adviceChatOpen) {
+    adviceChatOpen = open
+    renderChatPanel(adviceData)
+    if (adviceChatOpen) setTimeout(() => document.getElementById('adviceChatInput')?.focus(), 0)
+  }
+  function askAdviceStarter(question) {
+    adviceChatOpen = true
+    const input = document.getElementById('adviceChatInput')
+    if (!input) return
+    input.value = question
+    sendAdviceChat()
+  }
+  async function sendAdviceChat(event) {
+    if (event) event.preventDefault()
+    if (adviceChatBusy) return
+    const input = document.getElementById('adviceChatInput')
+    const question = input?.value.trim()
+    if (!question) return
+    adviceChatOpen = true
+    adviceChatMessages.push({ role: 'user', content: question })
+    if (input) input.value = ''
+    adviceChatBusy = true
+    renderChatPanel(adviceData)
+    try {
+      const res = await apiFetch('/api/advice', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: adviceChatMessages.map(({ role, content }) => ({ role, content })) }) })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.error || 'Advice chat failed')
+      adviceChatMessages.push({ role: 'assistant', content: data.answer || 'No answer returned.', citations: data.citations || [] })
+    } catch (error) {
+      adviceChatMessages.push({ role: 'assistant', content: 'I could not query the advice database: ' + error.message })
+    } finally {
+      adviceChatBusy = false
+      renderChatPanel(adviceData)
+    }
+  }
+  function renderAdvice(data) { renderCoverage(data); renderNav(); renderMain(data); renderChatPanel(data) }
+  async function copyText(value) {
+    try { await navigator.clipboard.writeText(value) } catch { const textarea = document.createElement('textarea'); textarea.value = value; document.body.appendChild(textarea); textarea.select(); document.execCommand('copy'); textarea.remove() }
+  }
+  async function loadAdvice() {
+    try {
+      const res = await apiFetch('/api/advice')
+      if (res.status === 401) { showAuth(); return }
+      adviceData = await res.json()
+      showApp()
+      renderAdvice(adviceData)
+    } catch { document.getElementById('content').innerHTML = '<div class="row">Could not load advice.</div>' }
+  }
+  document.getElementById('passwordInput').addEventListener('keydown', (event) => { if (event.key === 'Enter') unlock() })
+  checkAuth().then((ok) => { if (ok) loadAdvice() })
+</script>
+</body>
+</html>

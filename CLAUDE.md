@@ -51,6 +51,9 @@ Default to live production review, not local review. Do not send me `localhost`,
 
 **Always git and Vercel together.** Every deploy to production must be paired with a git commit AND push, in the same turn — never one without the other. The repo on `main` must always match what is live on `samuelhuang.org`. Workflow whenever a change is ready: stage the changed files, commit with a clear message, `git push origin main`, deploy with `vercel --prod` (run from the repo root, not `site/`), then verify the production URL returns 200. Do not deploy without committing, and do not commit a deployable change without deploying. No need to ask first — this is the standing default for this project.
 
+**5. Run all published prose through the humanizer**
+Any human-readable copy you write or edit for the site must pass through the `humanizer` skill before it goes live. This covers guide body text, intros, landing/marketing copy, glossary descriptions, advice articles, and any other prose a visitor reads. Apply the humanizer patterns: no em dashes or en dashes, no emojis in prose, straight quotes only, cut promotional and significance-inflation language, drop "-ing" filler clauses and rule-of-three padding, prefer plain `is`/`are`/`has` over elaborate constructions, and vary sentence rhythm so it reads like a person wrote it. Preserve all technical facts, commands, code, numbers, and HTML structure exactly. Do not humanize code blocks, UI labels, button text, navigation, or anything inside `<pre>`/`<code>`. This is a standing default; no need to ask first.
+
 ## The Self-Improvement Loop
 
 Every failure is a chance to make the system stronger:

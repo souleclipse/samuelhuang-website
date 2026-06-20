@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<title>Special SOPs: Advise Strategy Playbook</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1B1F27;
+    --line: #2A2E38;
+    --ink: #F2F3F5;
+    --ink-soft: #B8BBC5;
+    --ink-mute: #777C89;
+    --green: #2BC79A;
+    --green-bg: #11271F;
+    --blue: #8FB7FF;
+    --blue-bg: #142033;
+    --amber: #F0B35E;
+    --amber-bg: #2C2214;
+    --red: #FF8B8B;
+    --red-bg: #2C1517;
+    --code-bg: #07080C;
+  }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--green); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(11, 12, 16, 0.96);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 750; }
+  .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  .top-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .home-link { color: var(--ink-mute); font-size: 13px; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 36px 22px 110px; }
+  .hero { padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+  .eyebrow { color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 12px; }
+  h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.04; letter-spacing: -0.02em; }
+  .hero p { color: var(--ink-soft); font-size: 16px; line-height: 1.6; max-width: 780px; margin-top: 14px; }
+
+  .auth-card {
+    display: none;
+    max-width: 440px;
+    margin: 60px auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 22px;
+  }
+  .auth-card.visible { display: block; }
+  .auth-card h2 { font-size: 18px; margin-bottom: 12px; }
+  .auth-form { display: flex; gap: 10px; }
+  .auth-form input {
+    min-width: 0; flex: 1;
+    border: 1px solid var(--line); border-radius: 7px;
+    background: var(--code-bg); color: var(--ink); font: inherit; padding: 11px 12px;
+  }
+  button {
+    border: 1px solid var(--line); border-radius: 7px;
+    background: var(--surface-2); color: var(--ink-soft);
+    cursor: pointer; font: inherit; font-size: 13px; font-weight: 750; padding: 10px 12px;
+  }
+  button:hover { color: var(--ink); border-color: var(--green); }
+  .primary { border-color: #1C5A48; background: var(--green-bg); color: var(--green); }
+  .error { display: none; color: var(--red); font-size: 13px; margin-top: 12px; }
+  .error.visible { display: block; }
+  .app-shell.locked { display: none; }
+
+  .toc {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+    margin: 22px 0 4px;
+  }
+  .toc a {
+    border: 1px solid var(--line); border-radius: 8px;
+    background: var(--surface); color: var(--ink-soft);
+    font-size: 13px; font-weight: 650; padding: 9px 11px;
+  }
+  .toc a span { color: var(--ink-mute); font-weight: 600; }
+  .toc a:hover { border-color: var(--green); color: var(--green); text-decoration: none; }
+
+  .dossiers { margin-top: 22px; }
+  .dossiers .dh { color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 10px; }
+  .dossier-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+  .dossier-card { display: block; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 14px 15px; }
+  .dossier-card:hover { border-color: var(--green); text-decoration: none; }
+  .dossier-card strong { display: block; color: var(--ink); font-size: 15px; }
+  .dossier-card span { display: block; color: var(--ink-mute); font-size: 12.5px; line-height: 1.45; margin-top: 5px; }
+  .dossier-card em { color: var(--green); font-style: normal; font-weight: 700; }
+  .dive { border: 1px solid #1C5A48; border-radius: 999px; background: var(--green-bg); color: var(--green); font-size: 11px; font-weight: 800; padding: 4px 10px; }
+  .dive:hover { text-decoration: none; border-color: var(--green); }
+
+  .sec-head {
+    margin: 40px 0 4px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .sec-head .kicker { color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+  .sec-head h2 { font-size: 25px; letter-spacing: -0.015em; margin-top: 6px; }
+  .sec-head p { color: var(--ink-soft); font-size: 14.5px; line-height: 1.6; margin-top: 8px; }
+
+  .sop {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+    overflow: hidden;
+    margin-top: 18px;
+  }
+  .sop-head { padding: 18px 20px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+  .sop-head h3 { font-size: 20px; letter-spacing: -0.01em; }
+  .sop-meta { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 11px; }
+  .pill {
+    border: 1px solid #274A78; border-radius: 999px;
+    background: var(--blue-bg); color: var(--blue);
+    font-size: 11px; font-weight: 800; padding: 4px 9px;
+  }
+  .pill.origin { border-color: #1C5A48; background: var(--green-bg); color: var(--green); }
+  .pill.warn { border-color: #5A3C18; background: var(--amber-bg); color: var(--amber); }
+  .pill.danger { border-color: #5A2222; background: var(--red-bg); color: var(--red); }
+  .status { font-size: 11px; font-weight: 850; padding: 4px 9px; border-radius: 999px; border: 1px solid; }
+  .status.ok { color: var(--green); background: var(--green-bg); border-color: #1C5A48; }
+  .status.flaky { color: var(--amber); background: var(--amber-bg); border-color: #5A3C18; }
+  .status.dead { color: var(--red); background: var(--red-bg); border-color: #5A2222; }
+  .sop-body { padding: 16px 20px 20px; display: grid; gap: 16px; }
+
+  .block h4 {
+    font-size: 11.5px; font-weight: 850; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--green); margin-bottom: 9px;
+  }
+  .block p, .block li { color: var(--ink-soft); font-size: 14.5px; line-height: 1.6; }
+  .block ol, .block ul { margin: 0 0 0 19px; display: grid; gap: 6px; }
+  .block ol li::marker { color: var(--ink-mute); font-weight: 700; }
+  .steps-tool { color: var(--ink); font-weight: 650; }
+
+  .quote {
+    border: 1px solid var(--line); border-left: 3px solid var(--green); border-radius: 8px;
+    background: var(--code-bg); padding: 14px 16px;
+    color: var(--ink-soft); font-size: 14px; line-height: 1.6;
+  }
+  .quote strong { color: var(--ink); }
+  .quote .src { display: block; margin-top: 10px; color: var(--ink-mute); font-size: 12px; }
+
+  .callout {
+    border: 1px solid #1C5A48; border-radius: 8px; background: var(--green-bg);
+    color: var(--ink-soft); padding: 12px 15px; font-size: 14px; line-height: 1.56;
+  }
+  .callout.warn { border-color: #5A3C18; background: var(--amber-bg); }
+  .callout.danger { border-color: #5A2222; background: var(--red-bg); }
+  .callout strong { color: var(--ink); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table th, table td { border: 1px solid var(--line); padding: 9px 11px; text-align: left; vertical-align: top; line-height: 1.5; }
+  table th { background: var(--surface-2); color: var(--ink); font-weight: 750; }
+  table td { color: var(--ink-soft); }
+  table td strong { color: var(--ink); }
+  .table-scroll { overflow-x: auto; }
+
+  code { font-family: "SF Mono", Menlo, Consolas, monospace; }
+  .block code, .quote code {
+    background: var(--code-bg); border: 1px solid var(--line); border-radius: 5px;
+    padding: 1px 5px; font-size: 12.5px; color: var(--green); word-break: break-word;
+  }
+  .footnote { margin-top: 34px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink-mute); font-size: 12.5px; line-height: 1.6; }
+  @media (max-width: 560px) {
+    .topbar { align-items: flex-start; flex-direction: column; }
+    .auth-form { flex-direction: column; }
+    .toc { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="brand-dot"></span>Samuel Huang</div>
+    <div class="top-actions">
+      <a class="home-link" href="/advice">← Advice DB</a>
+      <a class="home-link" href="/">Home</a>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <div class="auth-card" id="authCard">
+      <h2>Private page</h2>
+      <div class="auth-form">
+        <input id="passwordInput" type="password" autocomplete="current-password" placeholder="Dashboard password">
+        <button class="primary" id="unlockBtn" onclick="unlock()">Unlock</button>
+      </div>
+      <div class="error" id="authError">Password required.</div>
+    </div>
+
+    <div class="app-shell locked" id="appShell">
+        <div id="content" data-slug="playbook"></div>
+      </div>
+  </main>
+<script>
+  const SLUG = document.getElementById('content').dataset.slug
+  async function apiFetch(u,o={}){return fetch(u,{...o,credentials:'same-origin'})}
+  function showAuth(m){document.getElementById('appShell').classList.add('locked');document.getElementById('authCard').classList.add('visible');const e=document.getElementById('authError');if(m){e.textContent=m;e.classList.add('visible')}const p=document.getElementById('passwordInput');if(p)p.focus()}
+  function showApp(){document.getElementById('authCard').classList.remove('visible');document.getElementById('appShell').classList.remove('locked')}
+  async function loadContent(){
+    try{
+      const r=await apiFetch('/api/special?slug='+encodeURIComponent(SLUG))
+      if(r.status===401){showAuth();return}
+      if(!r.ok){document.getElementById('content').innerHTML='<p style="color:#B8BBC5;padding:40px 0">Could not load this page.</p>';showApp();return}
+      const d=await r.json()
+      document.getElementById('content').innerHTML=d.html||''
+      showApp()
+    }catch{showAuth('Could not load. Check your connection.')}
+  }
+  async function unlock(){const p=document.getElementById('passwordInput').value;const b=document.getElementById('unlockBtn');b.disabled=true;b.textContent='Checking...';try{const r=await apiFetch('/api/dashboard-auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:p})});if(!r.ok){showAuth('Incorrect password.');return}document.getElementById('passwordInput').value='';await loadContent()}catch{showAuth('Could not unlock.')}finally{b.disabled=false;b.textContent='Unlock'}}
+  document.getElementById('passwordInput').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()})
+  loadContent()
+</script>
+</body>
+</html>

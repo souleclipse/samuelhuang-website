@@ -1,7 +1,2 @@
 User-agent: *
-Disallow: /dashboard
-Disallow: /api/dashboard
-Disallow: /api/dashboard-auth
-Disallow: /api/persona-info
-Disallow: /api/wake-up
-Disallow: /api/taken
+Disallow: /

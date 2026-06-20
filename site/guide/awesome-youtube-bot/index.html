@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Awesome YouTube Bot Field Guide (Views, Watch-Time &amp; Ranking)</title>
+<meta name="description" content="A hands-on field guide to Dalga's Awesome YouTube Bot (AYB): how it sends human-like views, accounts &amp; IPs, building view/like/comment campaigns, nested campaigns, random-act warm-up, mobile emulator views, and a playbook for YouTube CTR and ranking. Built from the product docs + every tutorial transcript.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1B1E26;
+    --line: #262932;
+    --ink: #F2F3F5;
+    --ink-soft: #B4B7C1;
+    --ink-mute: #767986;
+    /* AYB brand — YouTube red */
+    --brand: #F2453D;
+    --brand-bg: #2A1413;
+    --brand-edge: #5A2420;
+    --brand-shadow: rgba(242,69,61,0.38);
+    --codex: #2BC79A;
+    --codex-bg: #11271F;
+    --shared: #8B93FF;
+    --shared-bg: #1A1B30;
+    --warn: #E0B36A;
+    --warn-bg: #2A2316;
+    --danger: #E07A7A;
+    --danger-bg: #2A1616;
+    --code-bg: #06070A;
+    --code-ink: #DCDEE3;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; font-size: 16px; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  .topbar { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; margin-bottom: 22px; border-bottom: 1px solid var(--line); }
+  .topbar .brand-mark { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute); font-weight: 600; }
+  .topbar .home-link { font-size: 13px; color: var(--ink-mute); text-decoration: none; font-weight: 600; transition: color 0.15s; }
+  .topbar .home-link:hover { color: var(--brand); }
+
+  .tool-tabs { display: flex; gap: 8px; margin-bottom: 40px; flex-wrap: wrap; }
+  .tool-tab { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-soft); text-decoration: none; font-size: 14px; font-weight: 600; transition: color 0.15s, border-color 0.15s, background 0.15s; }
+  .tool-tab:hover { color: var(--ink); border-color: var(--brand); }
+  .tool-tab.active { background: var(--brand-bg); border-color: var(--brand-edge); color: var(--brand); }
+  .tool-tab .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  header.hero { padding: 8px 0 40px; text-align: left; }
+  .hero .eyebrow { display: inline-block; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--brand); margin-bottom: 18px; font-weight: 600; }
+  .hero h1 { font-size: 46px; line-height: 1.08; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 18px; }
+  .hero p.sub { font-size: 18px; color: var(--ink-soft); max-width: 700px; }
+  .hero .resource-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+  .res-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; font-size: 13px; font-weight: 600; color: var(--ink-soft); text-decoration: none; transition: color 0.15s, border-color 0.15s, background 0.15s; }
+  .res-btn:hover { color: var(--ink); border-color: var(--brand); }
+  .res-btn.primary { background: var(--brand-bg); border-color: var(--brand-edge); color: var(--brand); }
+
+  .toc { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px 26px; margin-bottom: 60px; }
+  .toc h3 { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 16px; font-weight: 600; }
+  .toc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 28px; }
+  @media (max-width: 720px) { .toc-grid { grid-template-columns: 1fr; } }
+  .toc-grid a { display: flex; gap: 12px; font-size: 14.5px; color: var(--ink-soft); text-decoration: none; padding: 5px 0; transition: color 0.15s; }
+  .toc-grid a:hover { color: var(--brand); }
+  .toc-grid a .n { color: var(--ink-mute); font-variant-numeric: tabular-nums; flex: 0 0 22px; font-weight: 600; }
+
+  section { margin-bottom: 64px; scroll-margin-top: 24px; }
+  h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; }
+  h2 .num { flex: 0 0 34px; height: 34px; border-radius: 50%; background: var(--brand-bg); border: 1px solid var(--brand-edge); color: var(--brand); text-align: center; line-height: 32px; font-size: 14px; font-weight: 700; }
+  h3.sub-h { font-size: 18px; font-weight: 700; margin: 30px 0 10px; color: var(--ink); }
+  h4.mini-h { font-size: 15px; font-weight: 700; margin: 22px 0 8px; color: var(--ink); }
+  .section-sub { font-size: 16px; color: var(--ink-soft); margin-bottom: 24px; max-width: 760px; }
+  p.body { color: var(--ink-soft); margin-bottom: 14px; max-width: 770px; }
+  p.body strong { color: var(--ink); }
+  p.body:last-child { margin-bottom: 0; }
+  ul.body, ol.body { color: var(--ink-soft); margin: 0 0 16px; padding-left: 22px; max-width: 770px; }
+  ul.body li, ol.body li { margin-bottom: 8px; }
+  ul.body li strong, ol.body li strong { color: var(--ink); }
+
+  code { color: var(--brand); background: var(--brand-bg); padding: 2px 7px; border-radius: 4px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+
+  .explainer { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px 28px; }
+  .explainer p { color: var(--ink-soft); margin-bottom: 12px; }
+  .explainer p:last-child { margin-bottom: 0; }
+  .explainer strong { color: var(--ink); }
+
+  .callout { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--brand); border-radius: 10px; padding: 18px 22px; margin: 20px 0; }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.danger { border-left-color: var(--danger); }
+  .callout.key { border-left-color: var(--shared); }
+  .callout .clabel { display: block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; color: var(--brand); }
+  .callout.warn .clabel { color: var(--warn); }
+  .callout.danger .clabel { color: var(--danger); }
+  .callout.key .clabel { color: var(--shared); }
+  .callout p { color: var(--ink-soft); font-size: 14.5px; }
+  .callout p + p { margin-top: 10px; }
+  .callout strong { color: var(--ink); }
+  .callout ul { color: var(--ink-soft); font-size: 14.5px; padding-left: 20px; margin-top: 8px; }
+  .callout ul li { margin-bottom: 5px; }
+
+  .table-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin: 8px 0 4px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  thead th { background: var(--surface-2); text-align: left; padding: 13px 18px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); border-bottom: 1px solid var(--line); }
+  tbody td { padding: 13px 18px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-soft); }
+  tbody tr:last-child td { border-bottom: none; }
+  td.col-key { font-weight: 600; color: var(--ink); white-space: nowrap; }
+
+  .code-card { margin: 18px 0; }
+  .code-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 12px; }
+  .code-toolbar .code-name { font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+  .code-toolbar .code-name .file { color: var(--brand); font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; }
+  .copy-btn { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; color: var(--ink-soft); cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 700; padding: 7px 12px; transition: color 0.15s, border-color 0.15s, background 0.15s; flex-shrink: 0; }
+  .copy-btn:hover { color: var(--ink); border-color: var(--brand); }
+  .copy-btn.copied { color: var(--brand); background: var(--brand-bg); border-color: var(--brand-edge); }
+  pre.code { background: var(--code-bg); border: 1px solid var(--line); color: var(--code-ink); padding: 16px 18px; border-radius: 10px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.8px; line-height: 1.7; overflow-x: auto; white-space: pre; }
+  pre.code .cm { color: #6A6E7C; font-style: italic; }
+
+  ol.steps { list-style: none; counter-reset: step; padding: 0; margin: 14px 0 0; max-width: 820px; }
+  ol.steps > li { position: relative; padding-left: 52px; margin-bottom: 26px; }
+  ol.steps > li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: -2px; width: 34px; height: 34px; border-radius: 50%; background: var(--brand-bg); border: 1px solid var(--brand-edge); color: var(--brand); text-align: center; line-height: 32px; font-weight: 700; font-size: 14px; }
+  ol.steps > li h4 { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  ol.steps > li p { color: var(--ink-soft); font-size: 15px; margin-bottom: 8px; }
+  ol.steps > li p:last-child { margin-bottom: 0; }
+  ol.steps > li strong { color: var(--ink); }
+  ol.steps > li code { font-size: 12.5px; }
+
+  details.src { margin: 12px 0 0; border: 1px dashed var(--line); border-radius: 8px; background: var(--bg); }
+  details.src > summary { cursor: pointer; padding: 9px 13px; font-size: 12px; color: var(--ink-mute); font-weight: 600; letter-spacing: 0.02em; list-style: none; user-select: none; transition: color 0.15s; }
+  details.src > summary::-webkit-details-marker { display: none; }
+  details.src > summary::before { content: '▸'; display: inline-block; width: 14px; color: var(--ink-mute); }
+  details.src[open] > summary::before { content: '▾'; }
+  details.src[open] > summary { color: var(--brand); }
+  details.src .src-body { padding: 0 14px 14px 27px; font-size: 13px; color: var(--ink-soft); line-height: 1.65; }
+  details.src .src-body .src-quote { border-left: 2px solid var(--brand-edge); padding-left: 12px; font-style: italic; color: var(--ink-soft); }
+  details.src .src-body a { color: var(--codex); text-decoration: none; }
+  details.src .src-body a:hover { text-decoration: underline; }
+
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 8px; }
+  @media (max-width: 720px) { .duo { grid-template-columns: 1fr; } }
+  .kind-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; border-top: 3px solid var(--brand); }
+  .kind-card.b { border-top-color: var(--shared); }
+  .kind-card.g { border-top-color: var(--codex); }
+  .kind-card .ktag { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; background: var(--brand-bg); color: var(--brand); }
+  .kind-card.b .ktag { background: var(--shared-bg); color: var(--shared); }
+  .kind-card.g .ktag { background: var(--codex-bg); color: var(--codex); }
+  .kind-card h3 { font-size: 18px; margin-bottom: 8px; }
+  .kind-card p { font-size: 14px; color: var(--ink-soft); margin-bottom: 10px; }
+  .kind-card p:last-child { margin-bottom: 0; }
+  .kind-card strong { color: var(--ink); }
+
+  .gutcheck { background: var(--brand-bg); border: 1px solid var(--brand-edge); border-radius: 14px; padding: 26px 30px; margin: 8px 0 24px; }
+  .gutcheck .q { font-size: 19px; font-weight: 700; color: var(--brand); line-height: 1.4; }
+  .gutcheck p { color: var(--ink-soft); font-size: 14.5px; margin-top: 12px; }
+
+  .cheat { background: var(--shared-bg); border: 1px solid #2D2F50; border-radius: 16px; padding: 30px 32px; }
+  .cheat h3 { font-size: 16px; color: var(--shared); margin: 22px 0 8px; }
+  .cheat h3:first-child { margin-top: 0; }
+  .cheat p { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 10px; }
+  .cheat strong { color: var(--ink); }
+  .cheat ul { color: var(--ink-soft); padding-left: 20px; margin-bottom: 10px; font-size: 14.5px; }
+  .cheat ul li { margin-bottom: 6px; }
+  .cheat ul li strong { color: var(--ink); }
+
+  details.faq { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 10px; padding: 0; }
+  details.faq > summary { cursor: pointer; padding: 16px 20px; font-size: 15.5px; font-weight: 600; color: var(--ink); list-style: none; display: flex; justify-content: space-between; gap: 14px; }
+  details.faq > summary::-webkit-details-marker { display: none; }
+  details.faq > summary::after { content: '+'; color: var(--brand); font-size: 20px; line-height: 1; flex-shrink: 0; }
+  details.faq[open] > summary::after { content: '−'; }
+  details.faq .faq-body { padding: 0 20px 18px; color: var(--ink-soft); font-size: 14.5px; }
+  details.faq .faq-body p { margin-bottom: 10px; }
+  details.faq .faq-body p:last-child { margin-bottom: 0; }
+  details.faq .faq-body strong { color: var(--ink); }
+
+  .sources { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  @media (max-width: 720px) { .sources { grid-template-columns: 1fr; } }
+  .sources h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute); margin-bottom: 12px; }
+  .sources ul { list-style: none; }
+  .sources li { margin-bottom: 10px; font-size: 14px; }
+  .sources a { color: var(--codex); text-decoration: none; word-break: break-word; }
+  .sources a:hover { text-decoration: underline; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 90px); border: 1px solid var(--brand-edge); border-radius: 8px; background: var(--brand-bg); color: var(--brand); padding: 10px 14px; font-size: 13px; transition: transform 0.22s ease; z-index: 50; }
+  .toast.visible { transform: translate(-50%, 0); }
+
+  footer { border-top: 1px solid var(--line); padding: 28px 0 0; margin-top: 16px; text-align: center; color: var(--ink-mute); font-size: 12.5px; }
+  footer a { color: var(--ink-soft); text-decoration: none; }
+  footer a:hover { color: var(--brand); }
+
+  .chat-fab { position: fixed; bottom: 28px; right: 28px; z-index: 200; width: 52px; height: 52px; border-radius: 50%; background: var(--brand); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px var(--brand-shadow); transition: transform 0.2s, box-shadow 0.2s; color: #fff; }
+  .chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px var(--brand-shadow); }
+  .chat-fab.hidden { opacity: 0; pointer-events: none; transform: scale(0.8); }
+  .chat-fab svg { width: 22px; height: 22px; }
+  .chat-sidebar { position: fixed; top: 0; right: 0; bottom: 0; width: 400px; max-width: 100vw; z-index: 190; background: var(--surface); border-left: 1px solid var(--line); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); box-shadow: -8px 0 40px rgba(0,0,0,0.4); }
+  .chat-sidebar.open { transform: translateX(0); }
+  .chat-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--line); background: var(--surface-2); flex-shrink: 0; }
+  .chat-header-left { display: flex; flex-direction: column; gap: 3px; }
+  .chat-header-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .chat-header-sub { font-size: 11px; color: var(--ink-mute); letter-spacing: 0.04em; }
+  .chat-close-btn { background: none; border: 1px solid var(--line); color: var(--ink-mute); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: color 0.15s, border-color 0.15s; flex-shrink: 0; }
+  .chat-close-btn:hover { color: var(--ink); border-color: var(--brand); }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+  .chat-msg { max-width: 92%; font-size: 13.5px; line-height: 1.6; border-radius: 12px; padding: 10px 14px; word-break: break-word; }
+  .chat-msg.user { align-self: flex-end; background: var(--brand-bg); border: 1px solid var(--brand-edge); color: var(--ink); border-bottom-right-radius: 4px; }
+  .chat-msg.assistant { align-self: flex-start; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-soft); border-bottom-left-radius: 4px; }
+  .chat-msg.assistant strong { color: var(--ink); }
+  .chat-msg.assistant code { background: var(--code-bg); color: var(--brand); padding: 1px 5px; border-radius: 3px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; }
+  .chat-msg.assistant p { margin: 0 0 8px; }
+  .chat-msg.assistant p:last-child { margin: 0; }
+  .chat-msg.assistant ul { margin: 4px 0 8px; padding-left: 18px; }
+  .chat-msg.assistant li { margin-bottom: 4px; }
+  .chat-msg.loading { opacity: 0.6; }
+  .chat-typing { display: inline-flex; gap: 4px; align-items: center; padding: 4px 0; }
+  .chat-typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-mute); animation: typing-dot 1.2s infinite ease-in-out; }
+  .chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typing-dot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-5px); opacity: 1; } }
+  .chat-starters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .starter-chip { background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 11px; font-size: 12px; color: var(--ink-soft); cursor: pointer; font-family: inherit; text-align: left; transition: color 0.15s, border-color 0.15s; }
+  .starter-chip:hover { color: var(--brand); border-color: var(--brand); }
+  .chat-input-area { padding: 12px 14px; border-top: 1px solid var(--line); background: var(--surface-2); flex-shrink: 0; }
+  .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
+  .chat-input { flex: 1; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; color: var(--ink); font-family: inherit; font-size: 13.5px; line-height: 1.5; padding: 9px 12px; resize: none; min-height: 40px; max-height: 120px; outline: none; transition: border-color 0.15s; }
+  .chat-input:focus { border-color: var(--brand); }
+  .chat-input::placeholder { color: var(--ink-mute); }
+  .chat-send-btn { flex-shrink: 0; background: var(--brand); border: none; border-radius: 10px; color: #fff; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; padding: 9px 14px; height: 40px; transition: opacity 0.15s, transform 0.1s; }
+  .chat-send-btn:hover:not(:disabled) { opacity: 0.85; transform: scale(1.02); }
+  .chat-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .chat-hint { font-size: 11px; color: var(--ink-mute); margin-top: 6px; text-align: center; }
+  @media (max-width: 480px) { .chat-sidebar { width: 100vw; } .chat-fab { bottom: 18px; right: 18px; } .hero h1 { font-size: 34px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <span class="brand-mark">Dalga Tools · Field Guide</span>
+    <a class="home-link" href="/">samuelhuang.org</a>
+  </div>
+
+  <nav class="tool-tabs" aria-label="Choose a tool">
+    <a class="tool-tab" href="/guide/awesome-traffic-bot"><span class="dot"></span>Awesome Traffic Bot</a>
+    <a class="tool-tab active" href="/guide/awesome-youtube-bot"><span class="dot"></span>Awesome YouTube Bot</a>
+  </nav>
+
+  <header class="hero">
+    <span class="eyebrow">Views · Watch-Time · YouTube CTR &amp; Ranking</span>
+    <h1>Awesome YouTube Bot,<br>Run to the Fullest</h1>
+    <p class="sub">A hands-on field guide to Dalga's <strong>Awesome YouTube Bot (AYB)</strong>. It's the desktop tool that opens real browsers (or Android emulators), watches your videos like a human, and can like, comment, and subscribe with real Google accounts. Built from the product docs plus a transcript of every AYB tutorial on Dalga's channel.</p>
+    <div class="resource-row">
+      <a class="res-btn primary" href="#playbook">★ Jump to the ranking playbook</a>
+      <a class="res-btn" href="https://dalga.dev/product/awesome-youtube-bot/" target="_blank" rel="noopener">↗ Product page</a>
+      <a class="res-btn" href="https://www.youtube.com/@dalgadev/videos" target="_blank" rel="noopener">▶ Tutorial channel</a>
+    </div>
+  </header>
+
+  <div class="callout" style="margin-bottom:48px;">
+    <span class="clabel">A note on sources</span>
+    <p>Dalga's written documentation (docs.dalga.dev) currently covers Awesome <em>Traffic</em> Bot only. There's no written manual for AYB. So this guide is built from AYB's product page plus a transcript of every AYB tutorial video. Where a detail is video-specific, the collapsible source shows the exact clip. Anything you can't confirm here, verify in the app.</p>
+  </div>
+
+  <nav class="toc">
+    <h3>What's inside</h3>
+    <div class="toc-grid">
+      <a href="#how"><span class="n">1</span>What it is &amp; how it works</a>
+      <a href="#install"><span class="n">2</span>Install &amp; requirements</a>
+      <a href="#interface"><span class="n">3</span>The interface in 2 minutes</a>
+      <a href="#accounts"><span class="n">4</span>Accounts &amp; IPs (get these right)</a>
+      <a href="#campaign"><span class="n">5</span>Your first view campaign</a>
+      <a href="#engagement"><span class="n">6</span>Likes, comments, subs &amp; nesting</a>
+      <a href="#mobile"><span class="n">7</span>Mobile views &amp; AI mode</a>
+      <a href="#playbook"><span class="n">8</span>★ YouTube CTR &amp; ranking playbook</a>
+      <a href="#measure"><span class="n">9</span>Drops, measuring &amp; risk</a>
+      <a href="#cheat"><span class="n">10</span>Settings cheat sheet</a>
+      <a href="#faq"><span class="n">11</span>FAQ</a>
+      <a href="#sources"><span class="n">12</span>Sources</a>
+    </div>
+  </nav>
+
+  <!-- 1 -->
+  <section id="how">
+    <h2><span class="num">1</span>What It Is &amp; How It Works</h2>
+    <p class="body"><strong>Awesome YouTube Bot is a YouTube optimization tool that mimics real human viewing.</strong> Instead of blasting fake views through an API, it opens a real browser (or an Android emulator), navigates to your video the way a person would (via YouTube search, suggested videos, Google, direct, or an embed), watches it, scrolls, changes quality/speed, and can like, comment, and subscribe with logged-in Google accounts.</p>
+
+    <div class="duo">
+      <div class="kind-card g">
+        <span class="ktag">vs. SMM panels</span>
+        <h3>Why "real browser" matters</h3>
+        <p>SMM panels push 100k views in hours via unofficial APIs, with no browser, no user, no interaction. YouTube's AI spots and strips that. AYB is slower (it can't open 100k browsers at once) but each view is a real watch with a unique fingerprint, so views look organic and stick.</p>
+      </div>
+      <div class="kind-card b">
+        <span class="ktag">The levers</span>
+        <h3>What it can move</h3>
+        <p>Views &amp; watch-time, likes, comments, subscriptions, live-stream views, and crucially <strong>keyword CTR</strong>: search your keyword, scroll, find your video, click, watch to the end. That search-find-click pattern is the YouTube ranking signal.</p>
+      </div>
+    </div>
+
+    <h3 class="sub-h">The five view sources</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Source</th><th>What it does</th><th>Ranking value</th></tr></thead>
+        <tbody>
+          <tr><td class="col-key">YouTube Search</td><td>Searches your keyword on YouTube, scrolls, finds your video, clicks. This is YouTube <strong>CTR manipulation</strong>.</td><td>Highest. Feeds keyword ranking.</td></tr>
+          <tr><td class="col-key">Suggested</td><td>Reaches your video through the suggested/recommended sidebar.</td><td>High. Signals relevance to other videos.</td></tr>
+          <tr><td class="col-key">Google Search</td><td>Searches Google, then watches via the result (your URL must be indexed for that keyword).</td><td>Medium. External discovery.</td></tr>
+          <tr><td class="col-key">Direct</td><td>Goes straight to the video URL.</td><td>Low. No discovery signal.</td></tr>
+          <tr><td class="col-key">Embedded</td><td>Plays via an embed on a page.</td><td>Low/contextual.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <details class="src">
+      <summary>Source · "Awesome YouTube Bot" (FAQ walkthrough)</summary>
+      <div class="src-body">
+        <p class="src-quote">"AYB really mimics actual human behavior… it opens the browser, watches the video and interacts with it, scrolls through the page like a real user, changes the playback speed, quality and much more. Each browser the bot opens has a completely unique footprint… YouTube search will search your keyword on YouTube and watch it through that; suggested videos will generate traffic as the suggested videos; Google will search your keyword on Google."</p>
+        <p><a href="https://www.youtube.com/watch?v=w5X4doVVRjE" target="_blank" rel="noopener">▶ Awesome YouTube Bot full walkthrough</a></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 2 -->
+  <section id="install">
+    <h2><span class="num">2</span>Install &amp; Requirements</h2>
+    <p class="section-sub">Windows desktop software, like its sibling. For <strong>mobile</strong> views it also drives the <strong>LD Player</strong> Android emulator (MEmu also supported).</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Requirement</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="col-key">OS</td><td>Windows 10 / 11, or Server 2016 R2+.</td></tr>
+          <tr><td class="col-key">RAM / CPU</td><td>8 GB minimum, 4-core ~2600 MHz. More if you run many threads/emulators.</td></tr>
+          <tr><td class="col-key">Framework</td><td>.NET Framework 4.7.2 or higher.</td></tr>
+          <tr><td class="col-key">Browser</td><td>Latest Google Chrome for desktop views.</td></tr>
+          <tr><td class="col-key">For mobile views</td><td>LD Player (the AYB installer can install it). Enable <strong>Intel virtualization (VT)</strong> in BIOS, usually on by default.</td></tr>
+          <tr><td class="col-key">Version</td><td>V1.5.0 (Mar 2026) added 2captcha ReCaptcha solving + AI improvements. License = 2 devices.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details class="src">
+      <summary>Source · "Android Phone Emulation in AYB" + product page</summary>
+      <div class="src-body">
+        <p class="src-quote">"First up we'll set up LD Player… make sure Intel's virtualization technology is enabled in your BIOS… AYB and LD Player support multi-threading… choose the emulator here, not Firefox, in order for the bot to run LD Player instead of the normal browser."</p>
+        <p><a href="https://www.youtube.com/watch?v=DWJxm3Ef-hg" target="_blank" rel="noopener">▶ Android Phone Emulation in AYB</a> · <a href="https://dalga.dev/product/awesome-youtube-bot/" target="_blank" rel="noopener">↗ Product page</a></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 3 -->
+  <section id="interface">
+    <h2><span class="num">3</span>The Interface in 2 Minutes</h2>
+    <p class="section-sub">AYB is built around a <strong>job list</strong>. You add jobs (each is a video + an action), set properties on the left, and hit Start.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Area</th><th>What it's for</th></tr></thead>
+        <tbody>
+          <tr><td class="col-key">Job panel</td><td>The tasks you've added (view / like / comment / subscribe / random act). Status + progress bar below, Start at top.</td></tr>
+          <tr><td class="col-key">Import buttons</td><td>Import campaign (add a job), import accounts, import comments, import jobs from a text file. Plus a <strong>Loop</strong> function.</td></tr>
+          <tr><td class="col-key">Left settings</td><td>IP method, threads/multi-threading, external browser (AdsPower), emulator vs Firefox, AI configuration.</td></tr>
+          <tr><td class="col-key">Per-campaign accounts/comments</td><td>As of v1.4.2 each campaign can use its own account set and comment list. Press <strong>Edit job</strong> for changes to take effect. Cookies are stored after first login and restored on re-import.</td></tr>
+          <tr><td class="col-key">Start individual</td><td>Start one campaign on its own via the campaign menu (bottom-right). Handy with many campaigns.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details class="src">
+      <summary>Source · "Awesome YouTube Bot" + "New Recent changes of AYB"</summary>
+      <div class="src-body">
+        <p class="src-quote">"Now you can have different accounts and different comments for each campaign… just don't forget to press the edit job button for your changes to take effect… you can start your desired campaign separately… press Start from the campaign menu in the bottom right corner."</p>
+        <p><a href="https://www.youtube.com/watch?v=w5X4doVVRjE" target="_blank" rel="noopener">▶ AYB walkthrough</a> · <a href="https://www.youtube.com/watch?v=ykRUpbVY6JQ" target="_blank" rel="noopener">▶ Recent changes</a></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 4 -->
+  <section id="accounts">
+    <h2><span class="num">4</span>Accounts &amp; IPs: Get These Two Right</h2>
+    <p class="section-sub">Almost every "it didn't work / my views dropped" problem traces to one of these two. Nail them before anything else.</p>
+
+    <h3 class="sub-h">Google accounts</h3>
+    <ul class="body">
+      <li><strong>Views:</strong> not strictly required, but accounts <em>prevent drops</em>. Per the latest YouTube changes, accounts are effectively needed for views to stick. Around 30 to 50 good accounts can support thousands of views.</li>
+      <li><strong>Likes / comments / subscribes:</strong> <strong>mandatory</strong>. You can't engage as a guest. You need roughly <strong>one account per like/sub</strong> (1,000 likes is about 1,000 accounts).</li>
+      <li><strong>Quality &gt; quantity.</strong> Aged accounts with an avatar and watch history massively outperform fresh ones. Low-quality accounts are the #1 cause of drops.</li>
+      <li><strong>Warm up weak accounts</strong> with a standalone <em>Random Act</em> job (Section 6). Let the bot watch random videos on different IPs to build history before you use them for real.</li>
+      <li><strong>Cookies are stored</strong> after the first successful login, so the bot doesn't re-login every run. 2FA accounts are supported via a secret key; branded accounts (one Google account, many channels) via a <code>branded:</code> prefix.</li>
+    </ul>
+
+    <div class="code-card">
+      <div class="code-toolbar"><span class="code-name">Account import format · <span class="file">accounts.txt</span></span><button class="copy-btn" data-copy="acct">Copy</button></div>
+      <pre class="code" id="acct">email@gmail.com:password
+email2@gmail.com:password2|recovery@email.com
+<span class="cm"># 2FA account — add the 32-digit secret key after the password</span>
+email3@gmail.com:password3|recovery@email.com|JBSWY3DPEHPK3PXP
+<span class="cm"># branded account (one login, multiple channels)</span>
+branded:email4@gmail.com:password4</pre>
+    </div>
+
+    <h3 class="sub-h">IP changing</h3>
+    <p class="body">Same toolkit philosophy as ATB: <strong>residential IPs are what keep views alive.</strong> Blacklisted/free/datacenter proxies are the other big drop cause.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="col-key">Proxies</td><td>HTTP(S)/SOCKS, multiple IPs at once = more views in less time. Supports rotating proxies via API link. Residential strongly preferred.</td></tr>
+          <tr><td class="col-key">VPN</td><td>NordVPN (near-automatic with OpenVPN creds) or manual OpenVPN configs. Only <strong>one IP at a time</strong>, cheaper but caps throughput.</td></tr>
+          <tr><td class="col-key">Android phone</td><td>Phone SIM data for residential mobile IPs (one IP at a time).</td></tr>
+          <tr><td class="col-key">Bridge / PPPoE</td><td>ISP reconnect for free residential IPs where supported.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-card">
+      <div class="code-toolbar"><span class="code-name">Proxy formats</span><button class="copy-btn" data-copy="px">Copy</button></div>
+      <pre class="code" id="px">IP:Port
+User:Pass@IP:Port
+<span class="cm"># rotating — separate the refresh URL with a pipe</span>
+User:Pass@IP:Port|https://your-rotate-api-link</pre>
+    </div>
+
+    <details class="src">
+      <summary>Source · "Awesome YouTube Bot", "Recent changes", "Branded Account Support"</summary>
+      <div class="src-body">
+        <p class="src-quote">"Regarding views we need [accounts] to prevent our views from getting dropped… for likes and subscribers we obviously need them… for a thousand likes we will need a thousand Google accounts… a two-year-old account with an avatar and some watching history is way better than a freshly created account." · 2FA: "add the 32-digit two-factor authentication secret key after your password." · Branded: "add the keyword branded followed by a colon before your account entry."</p>
+        <p><a href="https://www.youtube.com/watch?v=w5X4doVVRjE" target="_blank" rel="noopener">▶ AYB walkthrough</a> · <a href="https://www.youtube.com/watch?v=ykRUpbVY6JQ" target="_blank" rel="noopener">▶ Recent changes</a> · <a href="https://www.youtube.com/watch?v=Zuebe0Gc4IY" target="_blank" rel="noopener">▶ Branded Account Support</a></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 5 -->
+  <section id="campaign">
+    <h2><span class="num">5</span>Your First View Campaign, Step by Step</h2>
+    <ol class="steps">
+      <li>
+        <h4>Import accounts &amp; set your IP</h4>
+        <p>Import your Google accounts (Section 4) and configure proxies/VPN on the left. For views that stick, tick "use accounts" and use residential IPs.</p>
+      </li>
+      <li>
+        <h4>Add a View job</h4>
+        <p>Import campaign → action <strong>View</strong>. Enter a <strong>keyword</strong> (your video's title works) and the <strong>video URL</strong> (trim to just the YouTube domain + video ID, drop extra parameters).</p>
+      </li>
+      <li>
+        <h4>Pick the view source</h4>
+        <p>Choose <strong>YouTube Search</strong> for keyword CTR (bot searches → scrolls → finds → clicks), or Suggested / Google / Direct / Embedded. YouTube Search and Suggested carry the most ranking weight.</p>
+      </li>
+      <li>
+        <h4>Set watch time, quality &amp; speed</h4>
+        <p>Set a watch-time range (e.g. <strong>60-90s</strong>). <strong>Watch at least 30-40 seconds</strong>, since YouTube ignores shorter views. Quality/speed can be random for realism; "default" picks data-saver to save proxy bandwidth.</p>
+      </li>
+      <li>
+        <h4>Set count &amp; (optionally) Random Act</h4>
+        <p>Set how many views. Enable <strong>Random Act</strong> so the bot does natural activity (recommended/trending/short videos, random keyword searches, like/dislike) before the real view. Far more human.</p>
+      </li>
+      <li>
+        <h4>Choose browser or emulator, then Start</h4>
+        <p>Desktop = Chrome/Firefox; mobile = pick <strong>emulator</strong> (LD Player). Enable multi-threading to run several at once. Hit Start and watch the job panel / progress.</p>
+      </li>
+    </ol>
+
+    <div class="code-card">
+      <div class="code-toolbar"><span class="code-name">Bulk job import format · <span class="file">jobs.txt</span></span><button class="copy-btn" data-copy="jobs">Copy</button></div>
+      <pre class="code" id="jobs"><span class="cm"># keyword|URL : action : viewtime-or-commentlist : count</span>
+my video title|https://youtu.be/VIDEOID:view:60-90:15
+https://youtu.be/VIDEOID:like::2
+https://youtu.be/VIDEOID:comment:MyCommentList:5
+<span class="cm"># no keyword? skip the pipe and start with the URL</span></pre>
+    </div>
+
+    <details class="src">
+      <summary>Source · "Awesome YouTube Bot" (jobs + text-file import) + "Android Phone Emulation"</summary>
+      <div class="src-body">
+        <p class="src-quote">"A keyword should be written — it can be the name of your video… add the URL and set the duration… you have a few action options like view, like, random act, comment and subscribe, and the format is keyword | URL : action : view time or comment list name : count." · "You must watch the video for at least 30 seconds… viewing a video less than 30 to 40 seconds, YouTube ignores this kind of views."</p>
+        <p><a href="https://www.youtube.com/watch?v=w5X4doVVRjE" target="_blank" rel="noopener">▶ AYB walkthrough</a> · <a href="https://www.youtube.com/watch?v=DWJxm3Ef-hg" target="_blank" rel="noopener">▶ Mobile views</a></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 6 -->
+  <section id="engagement">
+    <h2><span class="num">6</span>Likes, Comments, Subs &amp; Nested Campaigns</h2>
+
+    <h3 class="sub-h">Comments + spintax</h3>
+    <p class="body">Build a named <strong>comment list</strong> (one comment per line), then add a Comment job pointing at the video + list, and the bot picks one at random. Use <strong>spintax</strong> to multiply variety: <code>{cool|interesting|amazing}</code> makes the bot pick one word each time, so comments don't repeat.</p>
+    <div class="code-card">
+      <div class="code-toolbar"><span class="code-name">Spintax comment</span><button class="copy-btn" data-copy="spin">Copy</button></div>
+      <pre class="code" id="spin">This is a really {cool|interesting|amazing} video, {thanks|appreciate it}!</pre>
+    </div>
+
+    <h3 class="sub-h">Random Act (warm-up &amp; realism)</h3>
+    <p class="body">Random Act makes the bot do natural things: browse recommended/trending/short videos, run random keyword searches (spintax supported), like/dislike. It runs either <em>around</em> a real job or as a <strong>standalone</strong> job. The standalone version is the go-to for <strong>warming up Google accounts</strong>: run it for hours on different IPs to build watch history before using those accounts for real engagement.</p>
+
+    <h3 class="sub-h">Nested campaigns (the realistic combo)</h3>
+    <p class="body">Real fans don't just view. They watch, then like, maybe subscribe, maybe comment, all in one sitting. <strong>Nested campaigns</strong> chain those into one browser session: View 20-30s → Like → View another minute → Subscribe → Comment. Set the <strong>count on the first job only</strong> (later jobs inherit it, so 100 first-job views give 100 likes). This single-session bundle is one of the strongest anti-detection patterns AYB offers.</p>
+
+    <div class="callout key">
+      <span class="clabel">Probability dials</span>
+      <p>You don't have to like/subscribe on every session. Set a like at 100% but a subscribe at, say, 35%, so engagement looks like real human variability rather than a perfect robot that subscribes every single time.</p>
+    </div>
+
+    <details class="src">
+      <summary>Source · "Awesome YouTube Bot" (comments/spintax, random act, nesting) + integration video</summary>
+      <div class="src-body">
+        <p class="src-quote">"Nested campaigns… you can have a view job, then like the video, another view job, then a subscribe job, and finally a comment job — all of them in just one browser at the same time… define the number on the first job." · "The standalone random act job is commonly used for warming up Google accounts." · Integration: "I set a task to like the video 100% of the time… subscribe to the channel with a 35% probability."</p>
+        <p><a href="https://www.youtube.com/watch?v=w5X4doVVRjE" target="_blank" rel="noopener">▶ AYB walkthrough</a> · <a href="https://www.youtube.com/watch?v=Xv_i-ejt9p8" target="_blank" rel="noopener">▶ Integrate AYB with ATB</a></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 7 -->
+  <section id="mobile">
+    <h2><span class="num">7</span>Mobile Views &amp; AI Mode</h2>
+    <h3 class="sub-h">Mobile views via emulator</h3>
+    <p class="body">A large share of YouTube watch-time is mobile, so mobile views matter. AYB drives <strong>LD Player</strong> (or MEmu) to watch on a real Android environment, and each emulated device gets its own unique fingerprint. Set the view job up normally, then select <strong>emulator</strong> (not Firefox) before starting; enable VT in BIOS first. Multi-threading runs several emulator instances at once; pair with logged-in accounts to also prime them.</p>
+
+    <h3 class="sub-h">AI mode</h3>
+    <p class="body">Add an OpenAI (GPT-4o) API key in AI configuration and describe what the agent should do in plain language: open YouTube, handle cookie popups, watch realistically for N seconds, leave thoughtful comments, like, explore the channel, subscribe, hit the notification bell, do randomized actions. Run it before or after the main job with a timeout. It's especially good for <strong>warming up new Gmail accounts</strong> with believable, varied activity.</p>
+
+    <details class="src">
+      <summary>Source · "Android Phone Emulation in AYB" + "AYB's AI is here"</summary>
+      <div class="src-body">
+        <p class="src-quote">"Choose the emulator here, not Firefox… each Android device created has its own unique fingerprint… link this with logged-in Google accounts; this setup is great for priming your Gmail accounts." · AI: "instruct the AI agent to visit a YouTube video URL, handle cookie popups, watch realistically for set durations, leave authentic comments, like videos, subscribe and even activate notification bells… decide if the agent should run before or after the primary campaign action."</p>
+        <p><a href="https://www.youtube.com/watch?v=DWJxm3Ef-hg" target="_blank" rel="noopener">▶ Mobile views</a> · <a href="https://www.youtube.com/watch?v=Dup29IFMfOI" target="_blank" rel="noopener">▶ AYB's AI</a> · <a href="https://www.youtube.com/watch?v=xoQLbcvd5nw" target="_blank" rel="noopener">▶ Gemini in AYB</a></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 8 PLAYBOOK -->
+  <section id="playbook">
+    <h2><span class="num">8</span>★ The YouTube CTR &amp; Ranking Playbook</h2>
+    <p class="section-sub">YouTube ranks on <strong>satisfaction signals</strong>: did people search this, click it, watch a meaningful chunk, and engage? AYB lets you manufacture those, but the same realism rules decide whether it helps or backfires.</p>
+
+    <div class="gutcheck">
+      <div class="q">Watch-time and click-through beat raw view count. A real viewer searches, clicks, and stays. Engineer that, not a counter going up.</div>
+      <p>10,000 direct views that bounce at 5 seconds do nothing. 500 search-sourced views that watch 60%+ and occasionally like/sub can move a ranking.</p>
+    </div>
+
+    <h3 class="sub-h">1. Lead with keyword-CTR views</h3>
+    <ul class="body">
+      <li><strong>Use the YouTube Search source</strong> on the keywords you want to rank for: search, scroll, find, click, watch. That's the CTR signal that ties your video to a query.</li>
+      <li><strong>Target keywords you can realistically rank for</strong> (lower competition, where your video already appears a few rows down). CTR nudges; it doesn't conjure rankings from nowhere.</li>
+      <li>Mix in <strong>Suggested</strong> source to signal relevance to related videos.</li>
+    </ul>
+
+    <h3 class="sub-h">2. Maximize watch-time honestly</h3>
+    <ul class="body">
+      <li><strong>Always &gt;30-40s</strong>, and ideally a real percentage of the video. Set watch-time as a <em>range</em> so it varies.</li>
+      <li><strong>Don't watch 100% every time</strong>. Real audience retention is a curve, not a wall. Vary durations so some drop off early, some watch to the end.</li>
+    </ul>
+
+    <h3 class="sub-h">3. Engage like humans, in proportion</h3>
+    <ul class="body">
+      <li><strong>Use nested campaigns</strong> so the same session that watches also (sometimes) likes/subscribes/comments. That's how real fans behave.</li>
+      <li><strong>Keep ratios believable:</strong> likes &lt; views, subscribes &laquo; views, comments rare. A video with more likes than views screams manipulation.</li>
+      <li><strong>Spintax + varied comments</strong> so engagement never looks templated.</li>
+    </ul>
+
+    <h3 class="sub-h">4. Quality of identity</h3>
+    <ul class="body">
+      <li><strong>Aged, warmed accounts + residential IPs.</strong> This is the whole ballgame for views sticking. Warm new accounts with standalone Random Act before using them.</li>
+      <li><strong>Mix desktop + mobile (emulator)</strong> to mirror a real audience.</li>
+      <li><strong>Ramp gradually.</strong> A new upload that jumps to thousands of views in an hour is the classic fake-out. Drip it over days using the Loop function and scheduling.</li>
+    </ul>
+
+    <h3 class="sub-h">5. Combine with Awesome Traffic Bot</h3>
+    <p class="body">Chain an ATB Google-search task with an AYB YouTube task in one flow so a single "person" finds your web result <em>and</em> your video and engages with both, the multi-surface footprint real interest produces. See the <a href="/guide/awesome-traffic-bot">Traffic Bot guide →</a></p>
+
+    <div class="callout danger">
+      <span class="clabel">Footprints that get videos/channels flagged</span>
+      <ul>
+        <li>Views with no accounts, or low-quality/blacklisted IPs (→ drops).</li>
+        <li>Likes &gt; views, or subscribe-on-every-view.</li>
+        <li>All direct-source views, all identical watch-time.</li>
+        <li>Overnight view spikes on a fresh upload.</li>
+        <li>Templated, identical comments.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section id="measure">
+    <h2><span class="num">9</span>Drops, Measuring &amp; Risk</h2>
+    <h3 class="sub-h">Why views drop (and how to stop it)</h3>
+    <ul class="body">
+      <li><strong>Bad IPs:</strong> blacklisted, low-quality, or free proxies. Use residential. #1 cause.</li>
+      <li><strong>Weak / no Google accounts.</strong> Use aged accounts; warm fresh ones first.</li>
+      <li><strong>Watch time under 30-40s.</strong> YouTube ignores those views entirely.</li>
+    </ul>
+
+    <h3 class="sub-h">Measuring impact</h3>
+    <p class="body">Watch <strong>YouTube Studio</strong>: views, average view duration / percentage, traffic sources (you want "YouTube search" and "Suggested" rising), impressions CTR, and ranking for your target keywords (search them and see where your video sits). Treat it as an experiment: baseline, change one variable, watch a week or two, keep a control video.</p>
+
+    <div class="callout danger">
+      <span class="clabel">Honest risk note, read this</span>
+      <p>Sending artificial views/engagement violates YouTube's Terms of Service and its fake-engagement policies; YouTube actively detects and removes it, and it can result in strikes or channel termination. <strong>Dalga itself strongly advises against using AYB on monetized videos.</strong> Artificial views on monetized content is an AdSense-invalid-traffic problem that can get a channel demonetized or banned. This guide documents a tool you license; it does not make the technique safe. Go gradual, keep ratios real, and never point it at a channel (especially a monetized one) you can't afford to lose.</p>
+    </div>
+
+    <details class="src">
+      <summary>Source · "Awesome YouTube Bot" (drops + tips) + product page</summary>
+      <div class="src-body">
+        <p class="src-quote">"The most common reason [for drops] is the proxy — if we use blacklisted IPs, low-quality proxies or free proxies, YouTube can detect them… if our Google accounts are low quality, or worse you send views without any Google accounts, you will see drops… viewing a video less than 30 to 40 seconds, YouTube ignores this kind of views." · Product page: "We strongly advise against using Awesome YouTube Bot on monetized videos."</p>
+        <p><a href="https://www.youtube.com/watch?v=w5X4doVVRjE" target="_blank" rel="noopener">▶ AYB walkthrough</a> · <a href="https://dalga.dev/product/awesome-youtube-bot/" target="_blank" rel="noopener">↗ Product page</a></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 10 -->
+  <section id="cheat">
+    <h2><span class="num">10</span>Settings Cheat Sheet</h2>
+    <div class="cheat">
+      <h3>Non-negotiables</h3>
+      <ul>
+        <li><strong>Watch time:</strong> &gt; 30-40s, set as a range, vary it.</li>
+        <li><strong>IPs:</strong> residential only. Blacklisted/free proxies = drops.</li>
+        <li><strong>Accounts:</strong> aged + warmed. About 30 to 50 for thousands of views; roughly 1 per like/sub.</li>
+        <li><strong>View source:</strong> YouTube Search (CTR) + Suggested for ranking. Direct = filler.</li>
+      </ul>
+      <h3>Copy-ready formats</h3>
+      <ul>
+        <li><strong>Accounts:</strong> <code>email:password|recovery|2FA-secret</code> · branded: <code>branded:email:password</code></li>
+        <li><strong>Jobs:</strong> <code>keyword|URL:action:time-or-list:count</code></li>
+        <li><strong>Proxies:</strong> <code>User:Pass@IP:Port</code> · rotating add <code>|API</code></li>
+        <li><strong>Spintax:</strong> <code>{cool|interesting|amazing}</code></li>
+      </ul>
+      <h3>The realistic-growth recipe</h3>
+      <ul>
+        <li>Nested session: view 60s+ → sometimes like (varied %) → rarely subscribe/comment.</li>
+        <li>Source = YouTube Search on a winnable keyword; add Suggested.</li>
+        <li>Aged accounts + residential IPs; warm new accounts with standalone Random Act first.</li>
+        <li>Mix desktop + emulator; ramp over days with Loop + scheduling.</li>
+        <li>Keep likes &lt; views, subs &laquo; views; track in YouTube Studio.</li>
+        <li>Never on a monetized channel you care about.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 11 FAQ -->
+  <section id="faq">
+    <h2><span class="num">11</span>FAQ</h2>
+    <details class="faq"><summary>Do I really need Google accounts?</summary><div class="faq-body"><p>For likes, comments and subscribes, yes, mandatory (you can't engage as a guest). For views they're not strictly required but they stop your views from dropping, so in practice you want them. Roughly one account per like/sub; about 30 to 50 good accounts can carry thousands of views.</p></div></details>
+    <details class="faq"><summary>Why are my views dropping?</summary><div class="faq-body"><p>Three usual suspects: blacklisted/free/low-quality proxies, weak or missing Google accounts, and watch time under 30-40 seconds. Fix all three: residential IPs, aged/warmed accounts, longer watch time.</p></div></details>
+    <details class="faq"><summary>Can it send 100,000 views in a few hours like an SMM panel?</summary><div class="faq-body"><p>No, and that's the point. It opens real browsers, so throughput is bounded, but the views are real watches with unique fingerprints that look organic and stick, unlike API-blasted panel views that YouTube strips.</p></div></details>
+    <details class="faq"><summary>Should I use it on a monetized channel?</summary><div class="faq-body"><p>Dalga explicitly advises against it, and so does common sense. Artificial views on monetized content is invalid traffic that can get a channel demonetized or terminated. Keep it off anything monetized you care about.</p></div></details>
+    <details class="faq"><summary>How do I do mobile views?</summary><div class="faq-body"><p>Install LD Player (the AYB installer can do it), enable Intel VT in BIOS, set up your view job, then choose <strong>emulator</strong> instead of Firefox before starting. Multi-threading runs several emulator instances at once.</p></div></details>
+    <details class="faq"><summary>What are nested campaigns and why use them?</summary><div class="faq-body"><p>They chain view → like → subscribe → comment into one browser session, like a real fan. Set the count on the first job; later jobs inherit it. It's one of the most natural, hardest-to-detect patterns AYB offers.</p></div></details>
+    <details class="faq"><summary>2FA or multi-channel accounts?</summary><div class="faq-body"><p>Both supported. For 2FA, append the 32-digit secret key after the password and the bot generates codes. For one Google account with multiple channels, prefix the entry with <code>branded:</code> and the bot switches between channels automatically.</p></div></details>
+  </section>
+
+  <!-- 12 SOURCES -->
+  <section id="sources">
+    <h2 style="font-size:20px;"><span class="num" style="font-size:13px;">§</span>Sources</h2>
+    <p class="section-sub">There is no written AYB manual; this is built from the product page and a transcript of every AYB tutorial on Dalga's channel. Quotes link to the exact video.</p>
+    <div class="sources">
+      <div>
+        <h4>Official</h4>
+        <ul>
+          <li><a href="https://dalga.dev/product/awesome-youtube-bot/" target="_blank" rel="noopener">Awesome YouTube Bot product page</a></li>
+          <li><a href="https://dalga.dev/" target="_blank" rel="noopener">dalga.dev store / company</a></li>
+          <li><a href="https://docs.dalga.dev/" target="_blank" rel="noopener">docs.dalga.dev (ATB docs; AYB not yet covered)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Tutorial videos</h4>
+        <ul>
+          <li><a href="https://www.youtube.com/watch?v=w5X4doVVRjE" target="_blank" rel="noopener">Awesome YouTube Bot full walkthrough</a></li>
+          <li><a href="https://www.youtube.com/watch?v=DWJxm3Ef-hg" target="_blank" rel="noopener">Android Phone Emulation (mobile views)</a></li>
+          <li><a href="https://www.youtube.com/watch?v=Dup29IFMfOI" target="_blank" rel="noopener">AYB's AI agent</a></li>
+          <li><a href="https://www.youtube.com/watch?v=ykRUpbVY6JQ" target="_blank" rel="noopener">Recent changes (per-campaign accounts, 2FA)</a></li>
+          <li><a href="https://www.youtube.com/watch?v=Zuebe0Gc4IY" target="_blank" rel="noopener">Branded Account Support</a></li>
+          <li><a href="https://www.youtube.com/watch?v=Xv_i-ejt9p8" target="_blank" rel="noopener">Integrate AYB with ATB</a></li>
+          <li><a href="https://www.youtube.com/@dalgadev/videos" target="_blank" rel="noopener">▶ Full DalgaDev channel</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Awesome YouTube Bot Field Guide &middot; <a href="/guide/awesome-traffic-bot">Traffic Bot guide</a> &middot; <a href="/glossary">Page glossary</a> &middot; <a href="/">samuelhuang.org</a><br>
+    <span style="color:var(--ink-mute);font-size:11px;">Independent reference for a third-party tool. Not affiliated with Dalga. Use within platform terms and the law.</span>
+  </footer>
+
+</div>
+
+<div class="toast" id="toast">Copied</div>
+
+<!-- ── CHAT ── -->
+<button class="chat-fab" id="chatFab" title="Ask a question about Awesome YouTube Bot">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+</button>
+
+<aside class="chat-sidebar" id="chatSidebar" aria-label="Awesome YouTube Bot chatbot">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <span class="chat-header-title">Ask about Awesome YouTube Bot</span>
+      <span class="chat-header-sub">Trained on the product docs + every tutorial</span>
+    </div>
+    <button class="chat-close-btn" id="chatClose" aria-label="Close chat">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg assistant">Hi! I've read AYB's product docs and every tutorial transcript. Ask me anything about Awesome YouTube Bot: accounts, IPs, view sources, nested campaigns, warming up accounts, mobile views, or ranking strategy. Try one of these:</div>
+    <div class="chat-starters" id="chatStarters">
+      <button class="starter-chip">How many Google accounts do I need?</button>
+      <button class="starter-chip">Why are my views dropping?</button>
+      <button class="starter-chip">How do nested campaigns work?</button>
+      <button class="starter-chip">How do I rank a video with CTR views?</button>
+    </div>
+  </div>
+  <div class="chat-input-area">
+    <div class="chat-input-row">
+      <textarea class="chat-input" id="chatInput" placeholder="Ask a question…" rows="1" aria-label="Chat input"></textarea>
+      <button class="chat-send-btn" id="chatSend" disabled>Send</button>
+    </div>
+    <p class="chat-hint">Enter to send · Shift+Enter for new line</p>
+  </div>
+</aside>
+
+<script>
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  function showCopied(button) {
+    const original = button.dataset.originalText || button.textContent;
+    button.dataset.originalText = original;
+    document.querySelectorAll('.copy-btn').forEach(b => b.classList.remove('copied'));
+    button.classList.add('copied');
+    button.textContent = 'Copied';
+    toast.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      button.classList.remove('copied');
+      button.textContent = original;
+      toast.classList.remove('visible');
+    }, 1400);
+  }
+  async function writeClipboard(text) {
+    if (navigator.clipboard?.writeText) { try { await navigator.clipboard.writeText(text); return; } catch {} }
+    const fallback = document.createElement('textarea');
+    fallback.value = text; fallback.setAttribute('readonly', '');
+    fallback.style.position = 'fixed'; fallback.style.left = '-9999px';
+    document.body.appendChild(fallback); fallback.select();
+    document.execCommand('copy'); fallback.remove();
+  }
+  document.querySelectorAll('.copy-btn').forEach(button => {
+    button.addEventListener('click', async () => {
+      const target = document.getElementById(button.dataset.copy);
+      if (!target) return;
+      await writeClipboard(target.innerText.replace(/^#.*$/gm, '').trim());
+      showCopied(button);
+    });
+  });
+
+  const GUIDE_ID = 'awesome-youtube-bot';
+  const chatFab     = document.getElementById('chatFab');
+  const chatSidebar = document.getElementById('chatSidebar');
+  const chatClose   = document.getElementById('chatClose');
+  const chatInput   = document.getElementById('chatInput');
+  const chatSend    = document.getElementById('chatSend');
+  const chatMsgs    = document.getElementById('chatMessages');
+
+  let chatHistory = [];
+  let chatBusy    = false;
+  function openChat()  { chatSidebar.classList.add('open'); chatFab.classList.add('hidden'); chatInput.focus(); }
+  function closeChat() { chatSidebar.classList.remove('open'); chatFab.classList.remove('hidden'); }
+  chatFab.addEventListener('click', openChat);
+  chatClose.addEventListener('click', closeChat);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && chatSidebar.classList.contains('open')) closeChat(); });
+  chatInput.addEventListener('input', () => {
+    chatSend.disabled = chatBusy || !chatInput.value.trim();
+    chatInput.style.height = 'auto';
+    chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+  });
+  chatInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!chatSend.disabled) sendMessage(); } });
+  chatSend.addEventListener('click', sendMessage);
+  document.querySelectorAll('.starter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const starters = document.getElementById('chatStarters');
+      if (starters) starters.remove();
+      chatInput.value = chip.textContent;
+      sendMessage();
+    });
+  });
+  function renderMd(text) {
+    let html = text
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    const lines = html.split('\n'); const out = []; let inList = false;
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (line.startsWith('- ') || line.startsWith('• ')) {
+        if (!inList) { out.push('<ul>'); inList = true; }
+        out.push(`<li>${line.slice(2)}</li>`);
+      } else {
+        if (inList) { out.push('</ul>'); inList = false; }
+        out.push(line === '' ? '' : `<p>${line}</p>`);
+      }
+    }
+    if (inList) out.push('</ul>');
+    return out.join('').replace(/<p><\/p>/g, '');
+  }
+  function escapeHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function appendMsg(role, content, isLoading = false) {
+    const div = document.createElement('div');
+    div.className = 'chat-msg ' + role + (isLoading ? ' loading' : '');
+    if (isLoading) div.innerHTML = '<div class="chat-typing"><span></span><span></span><span></span></div>';
+    else div.innerHTML = role === 'assistant' ? renderMd(content) : escapeHtml(content);
+    chatMsgs.appendChild(div);
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    return div;
+  }
+  async function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text || chatBusy) return;
+    chatBusy = true; chatSend.disabled = true; chatInput.value = ''; chatInput.style.height = 'auto';
+    chatHistory.push({ role: 'user', content: text });
+    appendMsg('user', text);
+    const loadingEl = appendMsg('assistant', '', true);
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: chatHistory, guide: GUIDE_ID }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      const reply = data.choices?.[0]?.message?.content;
+      if (!reply) throw new Error('Empty response');
+      chatHistory.push({ role: 'assistant', content: reply });
+      loadingEl.classList.remove('loading');
+      loadingEl.innerHTML = renderMd(reply);
+    } catch (err) {
+      loadingEl.classList.remove('loading');
+      loadingEl.innerHTML = `<em style="color:var(--danger)">Error: ${escapeHtml(err.message)}</em>`;
+    } finally {
+      chatBusy = false;
+      chatSend.disabled = !chatInput.value.trim();
+      chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    }
+  }
+</script>
+</body>
+</html>

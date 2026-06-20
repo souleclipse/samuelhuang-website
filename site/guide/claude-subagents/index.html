@@ -728,13 +728,13 @@
       <div class="kind-card">
         <span class="ktag">Kind 1 · Built-in</span>
         <h3>Native subagents</h3>
-        <p>These ship with Claude Code. You do not create them. Claude reaches for them automatically when a task fits — you'll often see it say "Exploring…" without you asking.</p>
+        <p>These ship with Claude Code. You do not create them. Claude reaches for them automatically when a task fits. You'll often see it say "Exploring…" without you asking.</p>
         <p><strong>You get value on day one without building anything.</strong> The built-ins are already working for you. Building your own is the next level, not the entry fee.</p>
       </div>
       <div class="kind-card b">
         <span class="ktag">Kind 2 · Custom</span>
         <h3>The ones you build</h3>
-        <p>These are the ones you write. They live as little Markdown files in a folder. They are how you create a permanent "code reviewer," a "researcher," a "test runner" — whatever recurring specialist you need.</p>
+        <p>These are the ones you write. They live as little Markdown files in a folder. They are how you create a permanent "code reviewer," a "researcher," a "test runner," whatever recurring specialist you need.</p>
         <p><strong>The rest of this guide is mostly about these.</strong></p>
       </div>
     </div>
@@ -794,22 +794,22 @@ Include specific file paths and line references.</pre>
     <p class="body">That is it. That file IS the subagent. Drop it in the right folder and Claude can now use it.</p>
 
     <h3 class="sub-h">Where these files live: project-level vs global-level</h3>
-    <p class="body">This is the part beginners get wrong most often, so go slow here. It comes down to one choice: <strong>where you save the file.</strong> That single choice decides two separate things — <strong>where you can use the agent</strong> (which projects it shows up in) and <strong>who else gets it</strong> (just you, or your whole team).</p>
+    <p class="body">This is the part beginners get wrong most often, so go slow here. It comes down to one choice: <strong>where you save the file.</strong> That single choice decides two separate things: <strong>where you can use the agent</strong> (which projects it shows up in) and <strong>who else gets it</strong> (just you, or your whole team).</p>
 
     <div class="duo">
       <div class="kind-card">
         <span class="ktag">Option A · Project-level</span>
         <h3><code>.claude/agents/</code> in a repo</h3>
-        <p><strong>Where you can use it:</strong> ONLY inside that project. Open a different project and it's gone — it's bolted to this one repo.</p>
+        <p><strong>Where you can use it:</strong> ONLY inside that project. Open a different project and it's gone. It's bolted to this one repo.</p>
         <p><strong>Who else gets it:</strong> Your whole team. It gets committed to git, so a teammate who clones or pulls gets the agent automatically, no install.</p>
-        <p><strong>Best for:</strong> agents that only make sense for this codebase — a "run our test suite" agent, a reviewer that knows your conventions, a deploy helper.</p>
+        <p><strong>Best for:</strong> agents that only make sense for this codebase: a "run our test suite" agent, a reviewer that knows your conventions, a deploy helper.</p>
       </div>
       <div class="kind-card b">
         <span class="ktag">Option B · Global / user-level</span>
         <h3><code>~/.claude/agents/</code> in home</h3>
         <p><strong>Where you can use it:</strong> Every project on your machine. It follows you everywhere.</p>
-        <p><strong>Who else gets it:</strong> Nobody. Just you. It's not part of any repo — your private toolkit. A teammate only gets it if you hand them the file.</p>
-        <p><strong>Best for:</strong> your personal favorites — a general researcher, an "explain this code" helper, agents you reach for no matter what you're working on.</p>
+        <p><strong>Who else gets it:</strong> Nobody. Just you. It's not part of any repo. It's your private toolkit. A teammate only gets it if you hand them the file.</p>
+        <p><strong>Best for:</strong> your personal favorites: a general researcher, an "explain this code" helper, agents you reach for no matter what you're working on.</p>
       </div>
     </div>
 
@@ -819,7 +819,7 @@ Include specific file paths and line references.</pre>
         <tbody>
           <tr><td class="col-key">Lives in</td><td>A specific project's folder</td><td>Your home folder</td></tr>
           <tr><td class="col-key">Usable in</td><td>Only that one project</td><td>Every project on your machine</td></tr>
-          <tr><td class="col-key">Shared with team?</td><td><strong>Yes</strong> — rides along in git</td><td><strong>No</strong> — private to you</td></tr>
+          <tr><td class="col-key">Shared with team?</td><td><strong>Yes</strong>, rides along in git</td><td><strong>No</strong>, private to you</td></tr>
           <tr><td class="col-key">Travels with</td><td>The codebase</td><td>Your machine / account</td></tr>
           <tr><td class="col-key">Best for</td><td>Project-specific specialists</td><td>Your everyday personal agents</td></tr>
         </tbody>
@@ -827,11 +827,11 @@ Include specific file paths and line references.</pre>
     </div>
 
     <h4 class="mini-h">When the same name exists in both</h4>
-    <p class="body">If a project-level agent and a global agent share the same <code>name</code>, the <strong>project one wins</strong> inside that project. This is on purpose — it lets a project override your personal default with a project-specific version. Everywhere else, your global one still applies.</p>
+    <p class="body">If a project-level agent and a global agent share the same <code>name</code>, the <strong>project one wins</strong> inside that project. This is on purpose. It lets a project override your personal default with a project-specific version. Everywhere else, your global one still applies.</p>
 
     <h4 class="mini-h">Two smaller notes</h4>
     <ul class="body">
-      <li>You can organize agents into subfolders (like <code>.claude/agents/review/security.md</code>). The path changes nothing — only the unique <code>name</code> field matters.</li>
+      <li>You can organize agents into subfolders (like <code>.claude/agents/review/security.md</code>). The path changes nothing. Only the unique <code>name</code> field matters.</li>
       <li>There are a couple more advanced scopes (plugins can ship agents; enterprises can push org-wide managed ones). For 99% of use, project- and global-level are the only two you need.</li>
     </ul>
 
@@ -847,14 +847,14 @@ Include specific file paths and line references.</pre>
     <p class="section-sub">You almost never call a subagent like a function. Claude picks them for you. Four ways it happens, from most hands-off to most deliberate.</p>
 
     <h4 class="mini-h">1. Automatic delegation (the default)</h4>
-    <p class="body">Claude reads the <code>description</code> field of every available subagent and routes to the matching one. This is why the description is the single most important line in the whole file. It is not a label — it is the trigger rule.</p>
+    <p class="body">Claude reads the <code>description</code> field of every available subagent and routes to the matching one. This is why the description is the single most important line in the whole file. It is not a label. It is the trigger rule.</p>
     <ul class="body">
       <li><strong>Weak:</strong> <code>"Security expert"</code> (Claude has no idea when to use this)</li>
       <li><strong>Strong:</strong> <code>"Reviews code for security vulnerabilities. Use proactively after writing auth or data-handling code. Triggers on 'check this for security issues'."</code></li>
     </ul>
 
     <h4 class="mini-h">2. Proactive invocation</h4>
-    <p class="body">Put the literal phrase <strong>"use proactively"</strong> in the description and Claude will reach for the agent without you asking — e.g. a code reviewer that fires automatically right after you change code.</p>
+    <p class="body">Put the literal phrase <strong>"use proactively"</strong> in the description and Claude will reach for the agent without you asking. For example, a code reviewer that fires automatically right after you change code.</p>
 
     <h4 class="mini-h">3. Explicit, by name</h4>
     <p class="body">Just ask in plain English: <em>"Use the test-runner subagent to fix the failing tests."</em> Or guarantee a specific one runs by @-mentioning it: <code>@agent-code-reviewer check the auth changes</code>. The @-mention is the "I definitely want THIS one" button.</p>
@@ -864,7 +864,7 @@ Include specific file paths and line references.</pre>
 
     <div class="callout">
       <span class="clabel">The /agents command</span>
-      <p>Type <code>/agents</code> in Claude Code to open a manager. From there you can see which subagents are running, browse every available agent, <strong>create a new one</strong> with a guided form (or by describing it and letting Claude write the file), and edit or delete existing ones. For beginners this is the easiest way to make your first subagent — and changes apply immediately, no restart.</p>
+      <p>Type <code>/agents</code> in Claude Code to open a manager. From there you can see which subagents are running, browse every available agent, <strong>create a new one</strong> with a guided form (or by describing it and letting Claude write the file), and edit or delete existing ones. For beginners this is the easiest way to make your first subagent, and changes apply immediately, no restart.</p>
     </div>
   </section>
 
@@ -920,7 +920,7 @@ Include specific file paths and line references.</pre>
     <p class="body">Restricting tools is free, physical enforcement. A code reviewer that only has <code>Read, Grep, Glob</code> literally cannot modify your code, no matter what goes wrong. <strong>You are not trusting it to behave. You made misbehaving impossible.</strong></p>
 
     <div class="explainer">
-      <p><strong>Look-but-don't-touch roles</strong> (reviewer, auditor, researcher, explorer): <code>tools: Read, Grep, Glob, Bash</code> — Bash is for read-only things like <code>git diff</code> or tests, not editing.</p>
+      <p><strong>Look-but-don't-touch roles</strong> (reviewer, auditor, researcher, explorer): <code>tools: Read, Grep, Glob, Bash</code>. Bash is for read-only things like <code>git diff</code> or tests, not editing.</p>
       <p><strong>Fix-it roles</strong> (debugger, implementer): add <code>Edit</code> and/or <code>Write</code>.</p>
       <p><strong>Web research roles:</strong> <code>tools: WebSearch, WebFetch, Read</code>.</p>
     </div>
@@ -971,16 +971,16 @@ Include specific file paths and line references.</pre>
 
     <div class="gutcheck">
       <div class="q">"Is this task about to dump a pile of stuff into my chat that I'll never need to look at again?"</div>
-      <p>If yes, that's a subagent. If no, it's probably not. That's the whole heuristic — it traces straight back to Part 2: subagents exist to protect your main context. Almost every "should I use one" question is really this question in disguise.</p>
+      <p>If yes, that's a subagent. If no, it's probably not. That's the whole heuristic, and it traces straight back to Part 2: subagents exist to protect your main context. Almost every "should I use one" question is really this question in disguise.</p>
     </div>
 
     <h3 class="sub-h">Signals that say "use a subagent"</h3>
     <div class="signal-grid">
       <div class="signal go"><span class="tagline">Use one</span><h4>1. It's going to read a LOT of files.</h4><p>Searching the whole codebase, scanning 15 files, crawling a directory. Each would land in your main context and sit there. The subagent absorbs it all and returns a summary. The most common trigger.</p></div>
-      <div class="signal go"><span class="tagline">Use one</span><h4>2. It'll spit out a wall of output you glance at once.</h4><p>The test suite, a giant log, pages of web research, a noisy build. The raw output is throwaway — you want the verdict ("3 tests failed, all in auth"), not 400 lines of stack traces.</p></div>
-      <div class="signal go"><span class="tagline">Use one</span><h4>3. You keep doing this exact task over and over.</h4><p>Reviewing every PR, auditing every auth change, updating docs after each release. Package it once as a specialist and it's permanent — no re-explaining, consistent standard.</p></div>
-      <div class="signal go"><span class="tagline">Use one</span><h4>4. Several independent jobs, none needs another's output.</h4><p>The parallel test. Fire several at once — auth, database, API routes explored simultaneously, then synthesize. If the pieces ARE ordered (step 2 needs step 1), it's not parallel, so stay inline.</p></div>
-      <div class="signal go"><span class="tagline">Use one</span><h4>5. You want a second opinion not biased by how you built it.</h4><p>A fresh subagent never saw your reasoning — it judges the result on its own terms. Your main chat is emotionally invested in the code it just wrote. The fresh context is the feature.</p></div>
+      <div class="signal go"><span class="tagline">Use one</span><h4>2. It'll spit out a wall of output you glance at once.</h4><p>The test suite, a giant log, pages of web research, a noisy build. The raw output is throwaway. You want the verdict ("3 tests failed, all in auth"), not 400 lines of stack traces.</p></div>
+      <div class="signal go"><span class="tagline">Use one</span><h4>3. You keep doing this exact task over and over.</h4><p>Reviewing every PR, auditing every auth change, updating docs after each release. Package it once as a specialist and it's permanent: no re-explaining, consistent standard.</p></div>
+      <div class="signal go"><span class="tagline">Use one</span><h4>4. Several independent jobs, none needs another's output.</h4><p>The parallel test. Fire several at once: auth, database, API routes explored simultaneously, then synthesize. If the pieces ARE ordered (step 2 needs step 1), it's not parallel, so stay inline.</p></div>
+      <div class="signal go"><span class="tagline">Use one</span><h4>5. You want a second opinion not biased by how you built it.</h4><p>A fresh subagent never saw your reasoning, so it judges the result on its own terms. Your main chat is emotionally invested in the code it just wrote. The fresh context is the feature.</p></div>
       <div class="signal go"><span class="tagline">Use one</span><h4>6. You do NOT want it able to change anything.</h4><p>A subagent with only <code>Read, Grep, Glob</code> physically cannot edit or delete. For an auditor turned loose on a repo, that lockdown is enforced, not a suggestion.</p></div>
       <div class="signal go"><span class="tagline">Use one</span><h4>7. Your context is almost full but you're not done.</h4><p>Offload the next heavy chunk so you keep going without compacting or losing the thread of your main session.</p></div>
       <div class="signal go" style="background:var(--codex-bg);border-color:#1C5A48;"><span class="tagline">Remember</span><h4>The fast rule of thumb</h4><p><strong>10+ files, or output you'll never re-read = subagent.</strong> Under that bar, stay inline.</p></div>
@@ -988,9 +988,9 @@ Include specific file paths and line references.</pre>
 
     <h3 class="sub-h">Signals that say "do NOT use one"</h3>
     <div class="signal-grid">
-      <div class="signal stop"><span class="tagline">Stay inline</span><h4>1. It's small and quick.</h4><p>A subagent has real startup cost — a blank context it must re-gather. If the task takes 30 seconds inline, you paid setup overhead for nothing. The most common misuse, and why people call subagents "slow."</p></div>
+      <div class="signal stop"><span class="tagline">Stay inline</span><h4>1. It's small and quick.</h4><p>A subagent has real startup cost: a blank context it must re-gather. If the task takes 30 seconds inline, you paid setup overhead for nothing. The most common misuse, and why people call subagents "slow."</p></div>
       <div class="signal stop"><span class="tagline">Stay inline</span><h4>2. You're in a tight back-and-forth.</h4><p>Step 2 depends on the full detail of step 1, step 3 on step 2. Subagents hand back a summary and run start-to-finish without checking in. Iterative work belongs inline where you steer turn by turn.</p></div>
-      <div class="signal stop"><span class="tagline">Stay inline</span><h4>3. It needs everything you've talked about.</h4><p>A subagent starts blank. If the job needs the last 20 messages, either re-explain it in the task (clunky) or use a <strong>fork</strong> — a subagent that DOES inherit the full conversation (Part 15).</p></div>
+      <div class="signal stop"><span class="tagline">Stay inline</span><h4>3. It needs everything you've talked about.</h4><p>A subagent starts blank. If the job needs the last 20 messages, either re-explain it in the task (clunky) or use a <strong>fork</strong>, a subagent that DOES inherit the full conversation (Part 15).</p></div>
       <div class="signal stop"><span class="tagline">Stay inline</span><h4>4. It'll need to ask you a question partway.</h4><p>Subagents can't stop to ask anything; background ones auto-deny anything that would prompt you. If the task is ambiguous, clarify it BEFORE you delegate.</p></div>
       <div class="signal stop"><span class="tagline">Stay inline</span><h4>5. You want it to spin up its own subagents.</h4><p>Subagents can't nest. Only your main chat is the conductor. If you need a chain, run it from the main conversation (Part 12).</p></div>
       <div class="signal stop"><span class="tagline">Stay inline</span><h4>6. The subagents would need to talk to each other.</h4><p>A subagent only ever reports back to the main chat. Two can't message each other or share state. If the work needs agents to discuss and react in real time, that's an Agent Team, not subagents (Part 15).</p></div>
@@ -1005,7 +1005,7 @@ Include specific file paths and line references.</pre>
     </div>
     <div class="callout warn">
       <span class="clabel">The escape hatch for quick questions</span>
-      <p>For a quick question about something already in your chat, don't even use a subagent. Use <code>/btw</code> — it sees your full context but has no tools, so it answers fast and cheap without spinning anything up. Reach for a subagent only when there's real, tool-using work to offload.</p>
+      <p>For a quick question about something already in your chat, don't even use a subagent. Use <code>/btw</code>. It sees your full context but has no tools, so it answers fast and cheap without spinning anything up. Reach for a subagent only when there's real, tool-using work to offload.</p>
     </div>
   </section>
 
@@ -1027,9 +1027,9 @@ Include specific file paths and line references.</pre>
     <ol class="body">
       <li>Decide the <strong>one job</strong> this agent does. One job. If you catch yourself writing "and also," split it into two agents.</li>
       <li>Create the file: <code>.claude/agents/your-agent-name.md</code> (project) or <code>~/.claude/agents/your-agent-name.md</code> (personal).</li>
-      <li>Write the frontmatter — <code>name</code> (matches filename, lowercase-hyphenated), <code>description</code> (the trigger rule: WHEN to use it, signal phrases, add "use proactively" if it should self-fire), <code>tools</code> (the minimum it needs), <code>model</code> (cheap if simple, sonnet/opus if it must think).</li>
-      <li>Write the body — <strong>Role</strong> (one sharp sentence), <strong>Workflow</strong> (numbered steps), <strong>Checklist/criteria</strong> (what to look for / what "done" means), <strong>Output format</strong> (tiers, line refs, word limits), <strong>Constraints</strong> (what NOT to do).</li>
-      <li>Keep the body short. Focused prompts beat long ones — a bloated body makes the agent lose track of its own rules.</li>
+      <li>Write the frontmatter: <code>name</code> (matches filename, lowercase-hyphenated), <code>description</code> (the trigger rule: WHEN to use it, signal phrases, add "use proactively" if it should self-fire), <code>tools</code> (the minimum it needs), <code>model</code> (cheap if simple, sonnet/opus if it must think).</li>
+      <li>Write the body: <strong>Role</strong> (one sharp sentence), <strong>Workflow</strong> (numbered steps), <strong>Checklist/criteria</strong> (what to look for / what "done" means), <strong>Output format</strong> (tiers, line refs, word limits), <strong>Constraints</strong> (what NOT to do).</li>
+      <li>Keep the body short. Focused prompts beat long ones. A bloated body makes the agent lose track of its own rules.</li>
       <li>Restart the session (if you wrote the file by hand), then test it and watch whether it routes correctly. First runs often reveal a vague description; tighten it.</li>
     </ol>
   </section>
@@ -1041,7 +1041,7 @@ Include specific file paths and line references.</pre>
 
     <div class="callout">
       <span class="clabel">Pro move: borrow before you build</span>
-      <p>Whole collections of battle-tested Claude Code subagents live on GitHub (search "claude code subagents" or "Awesome Claude Code Subagents"). Download the <code>.md</code>, drop it in <code>.claude/agents/</code>, and it works immediately. Starting from someone else's proven agent and tweaking it beats writing one from scratch — but vet it for prompt injection first.</p>
+      <p>Whole collections of battle-tested Claude Code subagents live on GitHub (search "claude code subagents" or "Awesome Claude Code Subagents"). Download the <code>.md</code>, drop it in <code>.claude/agents/</code>, and it works immediately. Starting from someone else's proven agent and tweaking it beats writing one from scratch. Just vet it for prompt injection first.</p>
     </div>
 
     <div class="code-card">
@@ -1231,15 +1231,15 @@ Only report findings you can trace to specific code. No theoretical issues.</pre
     <ul class="body">
       <li><strong>Skills can call subagents.</strong> A skill (a saved workflow) can hand a step off to a subagent.</li>
       <li><strong>Subagents can call skills.</strong> As long as the agent has the <code>Skill</code> tool. You can even preload skills with the <code>skills:</code> frontmatter field.</li>
-      <li><strong>Subagents CANNOT call other subagents.</strong> No nesting — on purpose, to prevent infinite loops. If you need a chain, the <strong>main conversation</strong> runs it: calls agent A, gets the result, then calls agent B with that result. The main chat is always the conductor.</li>
+      <li><strong>Subagents CANNOT call other subagents.</strong> No nesting, on purpose, to prevent infinite loops. If you need a chain, the <strong>main conversation</strong> runs it: calls agent A, gets the result, then calls agent B with that result. The main chat is always the conductor.</li>
     </ul>
 
     <h3 class="sub-h">The patterns</h3>
-    <p class="body"><strong>Sequential chain.</strong> Main chat runs a pipeline: researcher finds the files → reviewer checks the plan → main implements. Best for 2–3 step flows where each step feeds the next.</p>
-    <p class="body"><strong>Fan-out / fan-in (parallel).</strong> Main chat fires several agents at once, waits for all, then combines. One explorer per module (auth, database, API) running simultaneously, then synthesize. This is where the speed gains live — Anthropic's research system cut research time dramatically by fanning out 3–5 subagents at once.</p>
+    <p class="body"><strong>Sequential chain.</strong> Main chat runs a pipeline: researcher finds the files → reviewer checks the plan → main implements. Best for 2 to 3 step flows where each step feeds the next.</p>
+    <p class="body"><strong>Fan-out / fan-in (parallel).</strong> Main chat fires several agents at once, waits for all, then combines. One explorer per module (auth, database, API) running simultaneously, then synthesize. This is where the speed gains live. Anthropic's research system cut research time dramatically by fanning out 3 to 5 subagents at once.</p>
     <div class="callout">
       <span class="clabel">When the fan-out outgrows a handful</span>
-      <p>Doing the orchestration by hand from the main chat is fine for two or three agents. When the job needs dozens (a codebase-wide audit, a 500-file migration, cross-checked research), reach for a <strong>dynamic workflow</strong> — a JavaScript script the main agent writes that orchestrates and runs many subagents in parallel at scale, then merges results. The trade-off is cost: more agents means meaningfully more tokens, so point it only at jobs that genuinely break into many independent pieces.</p>
+      <p>Doing the orchestration by hand from the main chat is fine for two or three agents. When the job needs dozens (a codebase-wide audit, a 500-file migration, cross-checked research), reach for a <strong>dynamic workflow</strong>, a JavaScript script the main agent writes that orchestrates and runs many subagents in parallel at scale, then merges results. The trade-off is cost: more agents means meaningfully more tokens, so point it only at jobs that genuinely break into many independent pieces.</p>
     </div>
     <p class="body"><strong>Orchestrator-worker.</strong> One session that does no work itself. It only plans, delegates, reviews, and routes to the next worker: spec writer → architect review → implementer → code reviewer → final PR. Good for full feature pipelines. Put human checkpoints at the important handoffs so it can't run off a cliff.</p>
     <p class="body"><strong>Builder/validator.</strong> A builder writes the code. A separate validator checks it in a fresh context with no memory of the reasoning, so it judges the result on its own terms. This is the strongest argument for subagents in serious work: the reviewer isn't biased by having written the thing.</p>
@@ -1259,7 +1259,7 @@ Only report findings you can trace to specific code. No theoretical issues.</pre
       <li><strong>Fresh memory every time.</strong> A subagent doesn't see your chat history or read files. It gets a task brief, its own system prompt, and your CLAUDE.md project rules (those still load). That's it. (Built-in Explore and Plan even skip CLAUDE.md to stay fast.)</li>
       <li><strong>It cannot ask you questions.</strong> It runs to completion; background ones auto-deny anything that would prompt you. Clarify before delegating.</li>
       <li><strong>No nesting.</strong> Subagents can't spawn subagents. Chain from the main chat instead.</li>
-      <li><strong>Only the final message comes back.</strong> All the intermediate work is gone once it finishes. That's the feature — but you can't go fish around in what it did.</li>
+      <li><strong>Only the final message comes back.</strong> All the intermediate work is gone once it finishes. That's the feature, but you can't go fish around in what it did.</li>
       <li><strong>Startup overhead is real.</strong> Don't use one for a task you could finish inline in 30 seconds.</li>
       <li><strong>Hand-edited files need a session restart.</strong> Files made via <code>/agents</code> don't.</li>
       <li><strong>They cannot talk to each other.</strong> Two running agents are blind to each other. Everything routes through the main chat.</li>
@@ -1368,10 +1368,10 @@ You are a [role]. When invoked: [steps]. Return: [format]. Do not: [constraints]
       <div>
         <h4>Community deep-dives</h4>
         <ul>
-          <li><a href="https://www.tembo.io/blog/claude-code-subagents" target="_blank" rel="noopener">Tembo — Claude Code subagents</a></li>
-          <li><a href="https://www.pubnub.com/blog/best-practices-for-claude-code-sub-agents/" target="_blank" rel="noopener">PubNub — Best practices</a></li>
-          <li><a href="https://claudefa.st/blog/guide/agents/agent-patterns" target="_blank" rel="noopener">claudefast — Orchestration patterns</a></li>
-          <li><a href="https://claudekit.cc/blog/vc-04-subagents-from-basic-to-deep-dive-i-misunderstood" target="_blank" rel="noopener">Claudekit — Common mistakes</a></li>
+          <li><a href="https://www.tembo.io/blog/claude-code-subagents" target="_blank" rel="noopener">Tembo: Claude Code subagents</a></li>
+          <li><a href="https://www.pubnub.com/blog/best-practices-for-claude-code-sub-agents/" target="_blank" rel="noopener">PubNub: Best practices</a></li>
+          <li><a href="https://claudefa.st/blog/guide/agents/agent-patterns" target="_blank" rel="noopener">claudefast: Orchestration patterns</a></li>
+          <li><a href="https://claudekit.cc/blog/vc-04-subagents-from-basic-to-deep-dive-i-misunderstood" target="_blank" rel="noopener">Claudekit: Common mistakes</a></li>
         </ul>
       </div>
     </div>
@@ -1401,7 +1401,7 @@ You are a [role]. When invoked: [steps]. Return: [format]. Do not: [constraints]
     <button class="chat-close-btn" id="chatClose" aria-label="Close chat">✕</button>
   </div>
   <div class="chat-messages" id="chatMessages">
-    <div class="chat-msg assistant">Hi! I've read this entire guide. Ask me anything about Claude Code subagents — when to use them, how to build one, cost tips, the difference between a skill and a subagent, anything.</div>
+    <div class="chat-msg assistant">Hi! I've read this entire guide. Ask me anything about Claude Code subagents: when to use them, how to build one, cost tips, the difference between a skill and a subagent, anything.</div>
   </div>
   <div class="chat-input-area">
     <div class="chat-input-row">
