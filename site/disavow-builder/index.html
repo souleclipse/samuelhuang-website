@@ -94,7 +94,7 @@
 
   <div class="wrap">
     <h1>Disavow Builder</h1>
-    <p class="lede">Turn a list of toxic referring domains into a Google-ready <code>disavow.txt</code>. Paste domains or an Ahrefs referring-domains CSV export, and it strips protocols and paths, keeps the root domain, dedupes, and writes one <code>domain:</code> directive per line in the format Search Console expects.</p>
+    <p class="lede">Turn a list of toxic referring domains into a Google-ready <code>disavow.txt</code>. Pick a saved domain from the dropdown to load its pre-built spam set, or paste your own domains or an Ahrefs referring-domains CSV export. It strips protocols and paths, keeps the root domain, dedupes, and writes one <code>domain:</code> directive per line in the format Search Console expects.</p>
 
     <div class="note">
       <strong>Read before you upload.</strong> Disavowing is a blunt, hard-to-reverse tool. It tells Google to ignore links from these domains permanently. Only disavow domains you are confident are spam or part of a negative-SEO attack. A wrong entry throws away a real link. Google also says most sites never need this file, its spam systems already ignore obvious junk. Review every line.
@@ -104,7 +104,7 @@
       <div class="panel">
         <div class="panel-head">
           <h2>Input — domains or Ahrefs CSV</h2>
-          <button id="loadExample" style="font-size:12px;padding:5px 10px;">Load petmedaily.com set</button>
+          <select id="domainPicker" style="font-size:12px;padding:5px 10px;background:var(--surface-2);color:var(--ink);border:1px solid var(--line);border-radius:8px;"></select>
         </div>
         <div class="panel-body">
           <textarea id="input" placeholder="Paste one domain per line, or paste an Ahrefs referring-domains CSV export.
@@ -149,9 +149,13 @@ https://some-pbn.net/page?ref=123"></textarea>
   </div>
 
 <script>
-// petmedaily.com — referring domains flagged is_spam=true in Ahrefs (pulled 2026-06-21).
-// Review before use. Shared-host entries (pages.dev, screenshots.wiki, quero.party) disavow the whole host.
-const PETMEDAILY = ["pages.dev","itxoft.com","mex.com","example3.com","rankyour.website","factmags.com","linkcentre.com","rankva.com","buybacklinks.agency","bizidex.com","developmentmi.com","britishforcesdiscounts.co.uk","sparltech.com","xf0371.com","rank-top.click","yelpad.com","gigbic.com","zlutag.com","ylutag.com","sabns.com","dotpim.com","aligow.com","clicktohigh.com","hotfri.com","zomatt.com","apsoz.com","mantaw.com","dyrectory.com","golocalezservices.com","socastsrm.com","toptohigh.com","raretopsitesdirectory.com","toplinksdirectory.com","seodaro.com","rankdirectorysite.com","starsarticle.com","directorycell.com","postlinkdirectory.com","linkpitcherdirectory.com","chartsattack.com","socialzonedirectory.com","smartwaydirectory.com","superbhubdirectory.com","linkhubdirectory.com","viralzonedirectory.com","busniessdirectory.com","webguestpostsdirectory.com","99sitedirectory.com","rankxlinks.shop","linkrankpro.shop","ranklinkerpro.shop","clicktoselldirectoy.com","rankmakerdirectory.com","authoritybacklinks.shop","eurekster.com","seohelperdirectory.com","postsdirectory.com","rankfastdirectory.com","bitcoinmix.biz","starcourts.com","backlinker.shop","exlinko.net","seoflx.net","pbnseolinks.shop","linkpointdirectory.com","linkrankboost.shop","ranklinkpro.shop","seolinkpro.shop","linkrankseo.shop","linkseopro.shop","toplinkranker.shop","premiumseolinks.shop","sureprofitscoach.com","worldzonedirectory.com","besttopdirectory.com","topviraldirectory.com","topworlddirectory.com","rankingwebdirectory.com","worldwebsitesdirectory.com","websiteworlddirectory.com","mostrankingdirectory.com","mediapostdirectory.com","mostrankddirectory.com","topdomaindirectory.com","quero.party","rolandfoods.com","opptrends.org","giitsss.com","techmentorsite.com","tastefulspace.com","harborxs.com","iosmioff.xyz","faucre.com","sport-life.club","worldwidetopsite.com","dltech.forum","creativeposts.top","rakily.com","xyloyl.com","bestsitesdirectory.com","yercum.com","classifieddirectoy.com","absmho.com","atomizelink.icu","metamagic.top","mushlovesocial.com","veethemes.co.in","analyticshaven.top","onecooldir.com","ageddomainsforeverytaste.club","idyler.com","rankwebdirectory.com","socialnewsdirectory.com","beegdirectory.com","socialyta.com","deepbluedirectory.com","melodong.com","screenshots.wiki","indonesia-gov-links.eu","crossover-p.com","nfh.ca","seosubmitbookmark.com","addgoodsites.com","optimizeflow.top","jake.eu","free-weblink.com","pick4d.live","addirectory.org","worldrankdirectory.com","alive2directory.com","brownedgedirectory.com","prolinkbox.com","kazak.kz","qhtycw.com","hzdlpq.com","kgzxkf.com","dsnylu.com","aquarius-dir.com","dbsdirectory.com","zc16shmm.cc","bluesparkledirectory.com","obmain.com","blackgreendirectory.com","ecodir.net","seozonedirectory.com","rankmeetsitesdirectory.com","direct-directory.com","businessfreedirectory.biz","celestialdirectory.com","adspostfree.com","comocucine.com","aurora-directory.com","blackandbluedirectory.com","clicksordirectory.com","rankerdirectory.com","reddit-directory.com","prolink-directory.com","advertiseyourdomain.com","linksjump.com","websolutions4you.com","backpagedir.com","bmwyng.com","adzbusiness.com","bluebook-directory.com","webguiding.net","ronaldreck.com","pablo4djitu.site","linksjump.info","webpostdirectory.com","gowwwlist.com","globalseodirectory.com","worldtopwebsite.com","marketinghubdirectoy.com","clicktobuydirectory.com","mediazonedirectory.com","emyfriend.com","arcticdirectory.com","businesswebsitesdirectory.com","worldsitedirectory.com","webzonedirectory.com","clicktorankdirectoy.com","topsitedirectoy.com","mediedirectory.com","websiteslinkdirectory.com","marketingdirectoy.com","websitedirectoy.com","guestpostsdirectory.com","mostrankdirectory.com","worldmarketingdirectoy.com","rankzonedirectory.com","poordirectory.com","earthlydirectory.com","trafficdirectory.org","nettools.guru","faithscienceonline.com","websitesnewses.com","wayseolinks.com","advancedseodirectory.com","sergechel.info","seoagency.sale"];
+// Pre-built disavow sets, keyed by target domain. Each array is the toxic referring-domain
+// list pulled via Ahrefs (is_spam=true plus pattern-classified link sellers, directory spam,
+// gibberish, and low-DR junk). Pulled 2026-06-21. Review before use. Shared-host entries
+// (pages.dev, screenshots.wiki, quero.party) disavow the whole host.
+const DATASETS = {
+  "petmedaily.com": ["pages.dev","itxoft.com","mex.com","example3.com","rankyour.website","factmags.com","linkcentre.com","rankva.com","buybacklinks.agency","bizidex.com","developmentmi.com","britishforcesdiscounts.co.uk","sparltech.com","xf0371.com","rank-top.click","yelpad.com","gigbic.com","zlutag.com","ylutag.com","sabns.com","dotpim.com","aligow.com","clicktohigh.com","hotfri.com","zomatt.com","apsoz.com","mantaw.com","dyrectory.com","golocalezservices.com","socastsrm.com","toptohigh.com","raretopsitesdirectory.com","toplinksdirectory.com","seodaro.com","rankdirectorysite.com","starsarticle.com","directorycell.com","postlinkdirectory.com","linkpitcherdirectory.com","chartsattack.com","socialzonedirectory.com","smartwaydirectory.com","superbhubdirectory.com","linkhubdirectory.com","viralzonedirectory.com","busniessdirectory.com","webguestpostsdirectory.com","99sitedirectory.com","rankxlinks.shop","linkrankpro.shop","ranklinkerpro.shop","clicktoselldirectoy.com","rankmakerdirectory.com","authoritybacklinks.shop","eurekster.com","seohelperdirectory.com","postsdirectory.com","rankfastdirectory.com","bitcoinmix.biz","starcourts.com","backlinker.shop","exlinko.net","seoflx.net","pbnseolinks.shop","linkpointdirectory.com","linkrankboost.shop","ranklinkpro.shop","seolinkpro.shop","linkrankseo.shop","linkseopro.shop","toplinkranker.shop","premiumseolinks.shop","sureprofitscoach.com","worldzonedirectory.com","besttopdirectory.com","topviraldirectory.com","topworlddirectory.com","rankingwebdirectory.com","worldwebsitesdirectory.com","websiteworlddirectory.com","mostrankingdirectory.com","mediapostdirectory.com","mostrankddirectory.com","topdomaindirectory.com","quero.party","rolandfoods.com","opptrends.org","giitsss.com","techmentorsite.com","tastefulspace.com","harborxs.com","iosmioff.xyz","faucre.com","sport-life.club","worldwidetopsite.com","dltech.forum","creativeposts.top","rakily.com","xyloyl.com","bestsitesdirectory.com","yercum.com","classifieddirectoy.com","absmho.com","atomizelink.icu","metamagic.top","mushlovesocial.com","veethemes.co.in","analyticshaven.top","onecooldir.com","ageddomainsforeverytaste.club","idyler.com","rankwebdirectory.com","socialnewsdirectory.com","beegdirectory.com","socialyta.com","deepbluedirectory.com","melodong.com","screenshots.wiki","indonesia-gov-links.eu","crossover-p.com","nfh.ca","seosubmitbookmark.com","addgoodsites.com","optimizeflow.top","jake.eu","free-weblink.com","pick4d.live","addirectory.org","worldrankdirectory.com","alive2directory.com","brownedgedirectory.com","prolinkbox.com","kazak.kz","qhtycw.com","hzdlpq.com","kgzxkf.com","dsnylu.com","aquarius-dir.com","dbsdirectory.com","zc16shmm.cc","bluesparkledirectory.com","obmain.com","blackgreendirectory.com","ecodir.net","seozonedirectory.com","rankmeetsitesdirectory.com","direct-directory.com","businessfreedirectory.biz","celestialdirectory.com","adspostfree.com","comocucine.com","aurora-directory.com","blackandbluedirectory.com","clicksordirectory.com","rankerdirectory.com","reddit-directory.com","prolink-directory.com","advertiseyourdomain.com","linksjump.com","websolutions4you.com","backpagedir.com","bmwyng.com","adzbusiness.com","bluebook-directory.com","webguiding.net","ronaldreck.com","pablo4djitu.site","linksjump.info","webpostdirectory.com","gowwwlist.com","globalseodirectory.com","worldtopwebsite.com","marketinghubdirectoy.com","clicktobuydirectory.com","mediazonedirectory.com","emyfriend.com","arcticdirectory.com","businesswebsitesdirectory.com","worldsitedirectory.com","webzonedirectory.com","clicktorankdirectoy.com","topsitedirectoy.com","mediedirectory.com","websiteslinkdirectory.com","marketingdirectoy.com","websitedirectoy.com","guestpostsdirectory.com","mostrankdirectory.com","worldmarketingdirectoy.com","rankzonedirectory.com","poordirectory.com","earthlydirectory.com","trafficdirectory.org","nettools.guru","faithscienceonline.com","websitesnewses.com","wayseolinks.com","advancedseodirectory.com","sergechel.info","seoagency.sale"],
+};
 
 const $ = id => document.getElementById(id);
 const input = $("input"), output = $("output");
@@ -208,10 +212,28 @@ function updateInStat() {
   $("inStat").textContent = n + " line" + (n === 1 ? "" : "s") + " in";
 }
 
+let currentDomain = "";  // selected target, used for the download filename
+
+const picker = $("domainPicker");
+const MANUAL = "— manual paste —";
+function populatePicker() {
+  const keys = Object.keys(DATASETS);
+  picker.innerHTML = "";
+  for (const k of keys) picker.add(new Option(k, k));
+  picker.add(new Option(MANUAL, MANUAL));
+}
+function loadDomain(key) {
+  if (key === MANUAL) { currentDomain = ""; input.value = ""; output.value = ""; $("outStat").innerHTML = "<b>0</b> domains"; updateInStat(); input.focus(); return; }
+  currentDomain = key;
+  input.value = (DATASETS[key] || []).join("\n");
+  updateInStat();
+  build();
+}
+picker.onchange = () => loadDomain(picker.value);
+
 $("build").onclick = build;
 $("clear").onclick = () => { input.value = ""; output.value = ""; $("outStat").innerHTML = "<b>0</b> domains"; updateInStat(); };
-$("loadExample").onclick = () => { input.value = PETMEDAILY.join("\n"); updateInStat(); build(); };
-input.addEventListener("input", updateInStat);
+input.addEventListener("input", () => { currentDomain = ""; updateInStat(); });
 
 $("copy").onclick = async () => {
   if (!output.value) return;
@@ -225,15 +247,14 @@ $("download").onclick = () => {
   const blob = new Blob([output.value], { type: "text/plain" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "disavow.txt";
+  a.download = currentDomain ? "disavow-" + currentDomain + ".txt" : "disavow.txt";
   a.click();
   URL.revokeObjectURL(a.href);
 };
 
-// Load the petmedaily set by default so the page is useful on open.
-input.value = PETMEDAILY.join("\n");
-updateInStat();
-build();
+// Populate the dropdown and load the first dataset so the page is useful on open.
+populatePicker();
+loadDomain(picker.value);
 </script>
 </body>
 </html>
