@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two Macs, One Workflow · Samuel Huang</title>
+<meta name="description" content="How to work across a portable MacBook Pro and an always-on Mac Mini: make the Mini your home base, reach it from anywhere with Tailscale, and drive Claude Code on it with the Desktop app, SSH, and Remote Control.">
+<link rel="canonical" href="https://samuelhuang.org/guide/multi-computer-setup">
+<meta property="og:title" content="Two Macs, One Workflow">
+<meta property="og:description" content="Make the always-on Mac Mini your home base, reach it from the MacBook Pro anywhere, and route Claude Code through it.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://samuelhuang.org/guide/multi-computer-setup">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0B0C10;
+    --surface: #14161C;
+    --surface-2: #1B1E26;
+    --line: #262932;
+    --ink: #F2F3F5;
+    --ink-soft: #B4B7C1;
+    --ink-mute: #767986;
+    --claude: #E08A6A;
+    --claude-bg: #2A1C16;
+    --codex: #2BC79A;
+    --codex-bg: #11271F;
+    --shared: #8B93FF;
+    --shared-bg: #1A1B30;
+    --warn: #E0B36A;
+    --warn-bg: #2A2316;
+    --code-bg: #06070A;
+    --code-ink: #DCDEE3;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* TOP BAR */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 24px;
+    margin-bottom: 44px;
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar .brand-mark { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute); font-weight: 600; }
+  .topbar .back { font-size: 14px; color: var(--ink-mute); text-decoration: none; transition: color .2s; }
+  .topbar .back:hover { color: var(--codex); }
+
+  /* HERO */
+  header.hero { padding: 8px 0 52px; }
+  .hero .eyebrow {
+    display: inline-block; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--shared); margin-bottom: 18px; font-weight: 600;
+  }
+  .hero h1 { font-size: clamp(34px, 6vw, 48px); line-height: 1.08; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 18px; }
+  .hero p.sub { font-size: 18px; color: var(--ink-soft); max-width: 680px; }
+  .hero .meta-line { margin-top: 22px; font-size: 13px; color: var(--ink-mute); }
+
+  /* SECTIONS */
+  section { margin-bottom: 64px; }
+  h2 { font-size: 25px; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; }
+  h2 .num {
+    flex: 0 0 32px; height: 32px; border-radius: 50%; background: var(--surface-2);
+    border: 1px solid var(--line); color: var(--ink); text-align: center; line-height: 30px; font-size: 14px; font-weight: 600;
+  }
+  .section-sub { font-size: 16px; color: var(--ink-soft); margin-bottom: 26px; max-width: 740px; }
+
+  /* EXPLAINER */
+  .explainer { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px 28px; }
+  .explainer p { color: var(--ink-soft); margin-bottom: 12px; }
+  .explainer p:last-child { margin-bottom: 0; }
+  .explainer strong { color: var(--ink); }
+  .explainer code, .inline-code { color: var(--shared); background: var(--shared-bg); padding: 2px 7px; border-radius: 4px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+
+  /* TWO-PROBLEM SPLIT */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+  .prob {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px 26px;
+  }
+  .prob.access { border-top: 3px solid var(--codex); }
+  .prob.storage { border-top: 3px solid var(--claude); }
+  .prob .ptag { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 999px; margin-bottom: 14px; }
+  .prob.access .ptag { background: var(--codex-bg); color: var(--codex); }
+  .prob.storage .ptag { background: var(--claude-bg); color: var(--claude); }
+  .prob h3 { font-size: 18px; margin-bottom: 8px; }
+  .prob p { font-size: 14.5px; color: var(--ink-soft); }
+  .prob p + p { margin-top: 10px; }
+  .prob .fix { margin-top: 14px; font-size: 14px; color: var(--ink); }
+  .prob .fix b { color: var(--codex); }
+  .prob.storage .fix b { color: var(--claude); }
+
+  /* FEATURE CARDS */
+  .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 860px) { .feat-grid { grid-template-columns: 1fr; } }
+  .feat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px 22px 20px; display: flex; flex-direction: column; }
+  .feat .badge { display: inline-flex; align-self: flex-start; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; padding: 4px 9px; border-radius: 999px; margin-bottom: 14px; }
+  .feat.best { border-top: 3px solid var(--codex); }
+  .feat.best .badge { background: var(--codex-bg); color: var(--codex); }
+  .feat.ok { border-top: 3px solid var(--shared); }
+  .feat.ok .badge { background: var(--shared-bg); color: var(--shared); }
+  .feat.aux { border-top: 3px solid var(--warn); }
+  .feat.aux .badge { background: var(--warn-bg); color: var(--warn); }
+  .feat h3 { font-size: 17px; margin-bottom: 8px; }
+  .feat p { font-size: 13.8px; color: var(--ink-soft); flex: 1; }
+  .feat .when { margin-top: 14px; font-size: 12.5px; color: var(--ink-mute); border-top: 1px dashed var(--line); padding-top: 12px; }
+  .feat .when b { color: var(--ink-soft); font-weight: 600; }
+
+  /* LAYERS */
+  .solution { background: var(--shared-bg); border: 1px solid #2D2F50; border-radius: 14px; padding: 28px; }
+  .solution h3 { font-size: 18px; color: var(--shared); margin-bottom: 6px; }
+  .solution > p { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 22px; }
+  .layers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 760px) { .layers { grid-template-columns: 1fr; } }
+  .layer { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; border-top: 3px solid var(--shared); }
+  .layer .lnum { display: inline-block; width: 22px; height: 22px; line-height: 22px; text-align: center; border-radius: 50%; background: var(--shared); color: var(--bg); font-size: 11px; font-weight: 700; margin-bottom: 10px; }
+  .layer h4 { font-size: 14.5px; margin-bottom: 6px; }
+  .layer p { font-size: 13px; color: var(--ink-soft); line-height: 1.55; }
+  .layer code { background: var(--code-bg); border: 1px solid var(--line); padding: 1px 6px; border-radius: 3px; font-size: 12px; color: var(--ink); font-family: "SF Mono", Menlo, Consolas, monospace; }
+
+  /* DIAGRAM */
+  .diagram { background: var(--code-bg); border: 1px solid var(--line); color: var(--code-ink); padding: 22px 24px; border-radius: 12px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; line-height: 1.8; overflow-x: auto; margin-top: 20px; }
+  .diagram .c-codex { color: #3FD5A8; }
+  .diagram .c-claude { color: #F5A488; }
+  .diagram .c-shared { color: #A5ACFF; }
+  .diagram .c-dim { color: #6A6E7C; }
+
+  /* TABLE */
+  .table-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  thead th { background: var(--surface-2); text-align: left; padding: 14px 18px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); border-bottom: 1px solid var(--line); }
+  tbody td { padding: 14px 18px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-soft); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody td code { background: var(--code-bg); border: 1px solid var(--line); padding: 2px 7px; border-radius: 4px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 13px; color: var(--ink); }
+  td.col-need { font-weight: 600; color: var(--ink); }
+
+  /* STEPS */
+  .steps { counter-reset: step; }
+  .step { display: flex; gap: 18px; padding: 20px 0; border-top: 1px solid var(--line); }
+  .step:first-child { border-top: none; }
+  .step .sidx { counter-increment: step; flex: 0 0 34px; height: 34px; border-radius: 50%; background: var(--codex-bg); color: var(--codex); border: 1px solid #1C5A48; text-align: center; line-height: 32px; font-weight: 700; font-size: 14px; }
+  .step .sidx::before { content: counter(step); }
+  .step .sbody { flex: 1; }
+  .step h4 { font-size: 16px; margin-bottom: 6px; }
+  .step p { font-size: 14px; color: var(--ink-soft); margin-bottom: 10px; }
+  .step p:last-child { margin-bottom: 0; }
+  .step code { background: var(--code-bg); border: 1px solid var(--line); padding: 2px 7px; border-radius: 4px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.8px; color: var(--ink); }
+  .cmd { display: block; background: var(--code-bg); border: 1px solid var(--line); color: var(--code-ink); padding: 12px 14px; border-radius: 8px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.8px; margin: 6px 0; overflow-x: auto; }
+
+  /* GOTCHAS */
+  .gotcha-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (max-width: 760px) { .gotcha-grid { grid-template-columns: 1fr; } }
+  .gotcha { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--warn); border-radius: 8px; padding: 18px 20px; }
+  .gotcha h4 { font-size: 15px; margin-bottom: 6px; color: var(--ink); }
+  .gotcha p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; }
+  .gotcha code { background: var(--surface-2); border: 1px solid var(--line); padding: 1px 6px; border-radius: 4px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; color: var(--ink); }
+
+  .callout { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--shared); border-radius: 10px; padding: 18px 20px; margin-top: 20px; }
+  .callout p { color: var(--ink-soft); font-size: 14.5px; }
+  .callout p + p { margin-top: 10px; }
+  .callout strong { color: var(--ink); }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--line); padding: 26px 0 0; text-align: center; color: var(--ink-mute); font-size: 12.5px; }
+  footer a { color: var(--ink-mute); text-decoration: none; }
+  footer a:hover { color: var(--codex); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <span class="brand-mark">Setup Guide</span>
+    <a class="back" href="/guide">← all guides</a>
+  </div>
+
+  <header class="hero">
+    <span class="eyebrow">Multi-Computer Workflow</span>
+    <h1>Two Macs, one workflow.</h1>
+    <p class="sub">You have a MacBook Pro you carry out and shut down, and a Mac Mini that stays on at home. Here is how to make the Mini your home base, reach it from the laptop anywhere, and route Claude Code through it so the work keeps going even when the lid is closed.</p>
+    <p class="meta-line">For: portable laptop + always-on desktop · Tools: Tailscale, Claude Code Desktop, SSH, Jump Desktop</p>
+  </header>
+
+  <!-- 1 -->
+  <section>
+    <h2><span class="num">1</span>It is two problems, not one</h2>
+    <p class="section-sub">The mess feels like one thing, but it is two, and each has a different fix. Solve only the first and your files stay scattered. Solve both and the Mini becomes the place everything lives and runs.</p>
+
+    <div class="split">
+      <div class="prob access">
+        <span class="ptag">Problem A · Access</span>
+        <h3>Where the work runs</h3>
+        <p>You want the heavy work to happen on the Mac Mini but to drive it from the MacBook Pro, even when you are out of the house.</p>
+        <p class="fix">Fix: a <b>remote-access layer</b>. Tailscale plus SSH and the Claude Desktop app.</p>
+      </div>
+      <div class="prob storage">
+        <span class="ptag">Problem B · Storage</span>
+        <h3>Where the files live</h3>
+        <p>Some files are on the laptop, some on the Mini, and you are never sure which copy is current.</p>
+        <p class="fix">Fix: a <b>single source of truth</b>. Git for code, one synced store for everything else. Not remote desktop.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p><strong>The order matters.</strong> Remote access without a single source of truth just lets you reach the same mess from more places. Set the Mini as home first, then bolt access on top.</p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <h2><span class="num">2</span>What Claude Code can do across machines now</h2>
+    <p class="section-sub">Your hunch was right: the Desktop app can reach another machine. Three features matter here, and they do different jobs. The first is the one you want as your daily driver.</p>
+
+    <div class="feat-grid">
+      <div class="feat best">
+        <span class="badge">Daily driver</span>
+        <h3>Desktop app, SSH to the Mini</h3>
+        <p>Point a Claude Code Desktop session on the MacBook Pro straight at the Mac Mini. Files, tools, and the agent all live on the Mini. The laptop is just the window. SSH for Mac desktop sessions shipped in April 2026.</p>
+        <p class="when"><b>Use for:</b> normal coding and agent work routed through the Mini.</p>
+      </div>
+      <div class="feat ok">
+        <span class="badge">Phone / away</span>
+        <h3>Remote Control</h3>
+        <p>Bridges a session already running on a machine to claude.ai/code and the iOS and Android apps. Outbound HTTPS only, no inbound ports. The catch: the terminal must stay open and it is one session per machine at a time.</p>
+        <p class="when"><b>Use for:</b> checking in or steering from your phone while away.</p>
+      </div>
+      <div class="feat aux">
+        <span class="badge">Handy extras</span>
+        <h3>Teleport &amp; Dispatch</h3>
+        <p>Start a task on the web or iOS app, then pull it into a terminal later with <span class="inline-code">claude --teleport</span>. Dispatch lets you fire a task from your phone and open the Desktop session it creates.</p>
+        <p class="when"><b>Use for:</b> kicking off long jobs before you get to a keyboard.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p><strong>Why the Desktop-SSH route wins for you:</strong> the Mini is always on and the files already live there. Running the agent on the Mini means it keeps working after you close the laptop and walk out the door. Remote Control is the opposite shape, it runs where you start it, so it is a companion, not the backbone.</p>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <h2><span class="num">3</span>The setup, in three layers</h2>
+    <p class="section-sub">Same idea as a good project structure. One layer for the network, one for where things live, one for how you reach in.</p>
+
+    <div class="solution">
+      <h3>The Mini is home. The laptop is a client.</h3>
+      <p>Build it in this order and each layer stands on the one below it.</p>
+      <div class="layers">
+        <div class="layer">
+          <span class="lnum">1</span>
+          <h4>Network: Tailscale</h4>
+          <p>Free mesh VPN on both Macs. Gives the Mini a stable name like <code>macmini</code> that works at home or from a cafe, with no port forwarding and nothing exposed to the public internet.</p>
+        </div>
+        <div class="layer">
+          <span class="lnum">2</span>
+          <h4>Home base: the Mini</h4>
+          <p>Code lives in <code>git</code>, pushed to GitHub. Documents live in one synced store such as iCloud Drive. The laptop clones or syncs what it needs and never holds the only copy.</p>
+        </div>
+        <div class="layer">
+          <span class="lnum">3</span>
+          <h4>Access: pick the door</h4>
+          <p>SSH or the Desktop app for terminal and agent work. Jump Desktop when you need the full screen. Remote Control or the web app from your phone.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram" aria-label="How the two Macs connect">
+<span class="c-dim">  Anywhere                         Home (always on)</span>
+<span class="c-dim">  ┌──────────────────┐             ┌──────────────────┐</span>
+  │  <span class="c-codex">MacBook Pro</span>     │   Tailscale  │   <span class="c-claude">Mac Mini</span>       │
+  │  carry / shut    │ ───────────▶│   files + git    │
+  │  down anytime    │   SSH /     │   Claude Code     │
+  │  (thin client)   │   Desktop   │   runs here       │
+<span class="c-dim">  └──────────────────┘   app       └──────────────────┘</span>
+<span class="c-dim">          ▲                                 ▲</span>
+          │  Remote Control / web / iOS      │
+          └────────────── <span class="c-shared">phone</span> ───────────────┘
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <h2><span class="num">4</span>Which door for which task</h2>
+    <p class="section-sub">All of these ride on Tailscale. Reach for the lightest one that does the job. Save full screen sharing for when you actually need the GUI.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>What you are doing</th><th>Use</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="col-need">Claude Code / terminal on the Mini</td><td><code>ssh macmini</code> or Desktop app SSH session</td><td>Lightest, fastest, runs on the Mini so it survives the laptop sleeping</td></tr>
+          <tr><td class="col-need">Visual diff review of agent work</td><td>Claude Desktop app, pointed at the Mini</td><td>Same engine as the CLI, nicer review surface</td></tr>
+          <tr><td class="col-need">Full GUI: Finder, native apps</td><td>Jump Desktop over Tailscale</td><td>You already have it; only needed for real screen sharing</td></tr>
+          <tr><td class="col-need">Steer a job from your phone</td><td>Remote Control or claude.ai/code</td><td>Attaches to the Mini's running session, no laptop needed</td></tr>
+          <tr><td class="col-need">Move a file between the two</td><td>git push/pull, or iCloud Drive</td><td>One source of truth beats copying by hand</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section>
+    <h2><span class="num">5</span>The setup checklist</h2>
+    <p class="section-sub">The full walk-through happens live when you are at both machines. This is the map so you know what is coming.</p>
+
+    <div class="steps">
+      <div class="step">
+        <span class="sidx"></span>
+        <div class="sbody">
+          <h4>Install Tailscale on both Macs</h4>
+          <p>Sign in with the same account on the Mini and the MacBook Pro. The Mini shows up under a name you can reach from anywhere. Turn on its always-on / login-item setting so it reconnects after a reboot.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="sidx"></span>
+        <div class="sbody">
+          <h4>Turn on Remote Login on the Mini</h4>
+          <p>System Settings, General, Sharing, Remote Login. That enables SSH. Then from the laptop, confirm it works:</p>
+          <span class="cmd">ssh your-user@macmini   # the Tailscale name of the Mini</span>
+        </div>
+      </div>
+      <div class="step">
+        <span class="sidx"></span>
+        <div class="sbody">
+          <h4>Make the Mini the canonical home for files</h4>
+          <p>Put project and code work in <code>git</code> and push to GitHub. Pick one synced store for documents so "where is this file" has a single answer. Stop keeping the only copy on the laptop you carry out.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="sidx"></span>
+        <div class="sbody">
+          <h4>Install Claude Code on the Mini and connect from the laptop</h4>
+          <p>Install the CLI on the Mini so the agent runs where the files are. Then open the Desktop app on the MacBook Pro and start an SSH session pointed at the Mini. Same CLAUDE.md, settings, and MCP servers as your local setup.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="sidx"></span>
+        <div class="sbody">
+          <h4>Add the phone path</h4>
+          <p>Start a session on the Mini, attach Remote Control, and confirm you can pick it up from claude.ai/code or the iOS app. Now you can close the laptop and keep steering.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section>
+    <h2><span class="num">6</span>Trade-offs worth knowing</h2>
+    <p class="section-sub">The honest edges, so nothing surprises you later.</p>
+
+    <div class="gotcha-grid">
+      <div class="gotcha">
+        <h4>Remote Control runs one session at a time</h4>
+        <p>And the terminal must stay open. For several parallel agents on the Mini, drive them over SSH or Desktop sessions instead.</p>
+      </div>
+      <div class="gotcha">
+        <h4>The file cleanup is the real work</h4>
+        <p>It is the unglamorous step, but it is the one that fixes "all over the place." Access is easy once there is a single source of truth.</p>
+      </div>
+      <div class="gotcha">
+        <h4>Jump Desktop is the heaviest door</h4>
+        <p>Full screen sharing uses the most bandwidth. Prefer SSH or the Desktop app when you only need a terminal or a diff.</p>
+      </div>
+      <div class="gotcha">
+        <h4>Keep the Mini awake</h4>
+        <p>Set it to never sleep on power, and enable wake on network. An always-on home base only works if it stays on.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Two Macs, one workflow &middot; <a href="/guide">Guides</a> &middot; <a href="/">Samuel Huang</a>
+  </footer>
+
+</div>
+</body>
+</html>
