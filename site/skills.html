@@ -130,9 +130,10 @@
     <h1>Skills Library</h1>
     <p class="lede">Every Claude Code skill I run — what each one actually does and where it lives. Skills aren't one list: they load from different sources, and each source is active in a different context.</p>
     <div class="stat-row">
-      <div class="stat"><b>52</b><span>total skills</span></div>
+      <div class="stat"><b>58</b><span>total skills</span></div>
       <div class="stat"><b>32</b><span>user-level</span></div>
-      <div class="stat"><b>20</b><span>project</span></div>
+      <div class="stat"><b>20</b><span>WorkOS</span></div>
+      <div class="stat"><b>6</b><span>other repos</span></div>
       <div class="stat"><b>1</b><span>plugin</span></div>
     </div>
   </section>
@@ -141,9 +142,10 @@
 <div class="controls">
   <div class="wrap controls-inner">
     <div class="tabs" id="tabs">
-      <button class="tab active" data-tab="all">All <span class="n">52</span></button>
+      <button class="tab active" data-tab="all">All <span class="n">58</span></button>
       <button class="tab" data-tab="user">User-level <span class="n">32</span></button>
-      <button class="tab" data-tab="project">Project <span class="n">20</span></button>
+      <button class="tab" data-tab="project">WorkOS <span class="n">20</span></button>
+      <button class="tab" data-tab="other">Other repos <span class="n">6</span></button>
       <button class="tab" data-tab="plugin">Plugins <span class="n">1</span></button>
     </div>
     <div class="search">
@@ -263,6 +265,29 @@
     </div>
   </section>
 
+  <!-- OTHER REPOS -->
+  <section class="bucket-block" data-bucket="other">
+    <div class="bucket-title"><h2>Other-repo skills</h2><span class="badge">6</span></div>
+    <p class="bucket-meta">Project-scoped skills living in <em>other</em> repos — they load only when working inside that project, not in WorkOS.</p>
+
+    <div class="group">
+      <h3>Codex / LLM &nbsp;·&nbsp; <span class="mono" style="text-transform:none;letter-spacing:0;color:var(--dim)">~/Documents/Codex/LLM/.claude/skills/</span></h3>
+      <div class="grid">
+        <div class="card" data-bucket="other"><div class="card-top"><span class="name mono">db-migrate</span><span class="chip">supabase</span></div><div class="desc">The <span class="mono">/db-migrate</span> slash command — pushes Supabase database migrations to the remote project via <span class="mono">supabase db push</span>, after confirming the target project ref so you don't migrate the wrong environment.</div></div>
+        <div class="card" data-bucket="other"><div class="card-top"><span class="name mono">deploy</span><span class="chip">vercel</span></div><div class="desc">The <span class="mono">/deploy</span> slash command — deploys the app to Vercel production with <span class="mono">vercel deploy --prod</span> after an explicit confirm, then reports the live URL. Stops on failure rather than retrying.</div></div>
+        <div class="card" data-bucket="other"><div class="card-top"><span class="name mono">dev</span><span class="chip">vercel</span></div><div class="desc">The <span class="mono">/dev</span> slash command — starts the local dev server with <span class="mono">vercel dev</span> so API routes run alongside the frontend, after checking <span class="mono">.env.local</span> has every required key.</div></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Claude E-Reader &nbsp;·&nbsp; <span class="mono" style="text-transform:none;letter-spacing:0;color:var(--dim)">Claude_E-Reader/.agents/skills/</span></h3>
+      <div class="grid">
+        <div class="card" data-bucket="other"><div class="card-top"><span class="name mono">e-reader-chapter-audit</span><span class="chip">e-reader</span></div><div class="desc">Audits and repairs the e-reader's chapter outline, table of contents, chapter-jump, transcript boundaries, and R2 word-timing sync. Triggers when a book's chapters, labels, or transcript sync stop making sense.</div></div>
+        <div class="card" data-bucket="other"><div class="card-top"><span class="name mono">push</span><span class="chip">git</span></div><div class="desc">A <span class="mono">/push</span> shortcut — stages all changes, commits, and pushes to GitHub in one step.</div></div>
+      </div>
+    </div>
+  </section>
+
   <!-- PLUGIN -->
   <section class="bucket-block" data-bucket="plugin">
     <div class="bucket-title"><h2>Installed plugins</h2><span class="badge">1</span></div>
@@ -280,7 +305,7 @@
 
 <div class="wrap">
   <footer>
-    52 skills across 3 sources — 32 user-level, 20 project, 1 installed plugin.<br>
+    58 skills across 4 sources — 32 user-level, 20 WorkOS, 6 in other repos, 1 installed plugin.<br>
     The whole site sends a <span class="mono">noindex</span> header, so this page is reachable by URL but not indexed by search engines.
   </footer>
 </div>
