@@ -4,33 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Skills — Samuel Huang</title>
-<meta name="description" content="The full library of Claude Code skills Samuel Huang runs — what each one does and where it lives.">
+<meta name="description" content="The full library of Claude Code skills Samuel Huang runs — what each does, when it fires, and why to reach for it.">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #0B0C10;
-    --bg-2: #0E1016;
-    --panel: #131520;
-    --panel-2: #181B29;
-    --border: #232636;
-    --border-soft: #1B1E2B;
-    --text: #F2F3F5;
-    --muted: #AEB2BE;
-    --dim: #6E7280;
-    --accent: #2BC79A;
-    --accent-2: #36D9F0;
-    --accent-soft: rgba(43, 199, 154, 0.12);
-    --warn: #E0A458;
-    --radius: 14px;
+    --bg: #0B0C10; --bg-2: #0E1016; --panel: #131520; --panel-2: #181B29;
+    --border: #232636; --border-soft: #1B1E2B;
+    --text: #F2F3F5; --muted: #AEB2BE; --dim: #6E7280;
+    --accent: #2BC79A; --accent-2: #36D9F0; --accent-soft: rgba(43,199,154,.12);
+    --warn: #E0A458; --radius: 14px;
   }
   html { scroll-behavior: smooth; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.55; -webkit-font-smoothing: antialiased; }
   .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
@@ -38,53 +24,40 @@
 
   /* hero */
   .hero { position: relative; padding: 72px 0 36px; overflow: hidden; }
-  .hero::before {
-    content: ""; position: absolute; inset: -40% 0 auto 0; height: 360px;
+  .hero::before { content: ""; position: absolute; inset: -40% 0 auto 0; height: 360px;
     background: radial-gradient(60% 100% at 20% 0%, rgba(43,199,154,.14), transparent 70%),
                 radial-gradient(50% 100% at 90% 0%, rgba(54,217,240,.10), transparent 70%);
-    pointer-events: none; z-index: 0;
-  }
+    pointer-events: none; z-index: 0; }
   .hero > * { position: relative; z-index: 1; }
   .crumb { font-size: 13px; color: var(--dim); margin-bottom: 22px; }
   h1 { font-size: 44px; font-weight: 760; letter-spacing: -0.025em; line-height: 1.05; }
-  .lede { color: var(--muted); font-size: 17px; margin-top: 14px; max-width: 660px; }
-  .stat-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
-  .stat {
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 11px; padding: 11px 16px; min-width: 96px;
-  }
+  .lede { color: var(--muted); font-size: 17px; margin-top: 14px; max-width: 680px; }
+  .hint { color: var(--dim); font-size: 13.5px; margin-top: 10px; }
+  .stat-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 11px; padding: 11px 16px; min-width: 92px; }
   .stat b { color: var(--text); font-size: 22px; font-weight: 700; display: block; letter-spacing: -0.02em; }
   .stat span { font-size: 12.5px; color: var(--dim); }
 
-  /* controls bar */
-  .controls {
-    position: sticky; top: 0; z-index: 20;
-    background: rgba(11,12,16,.82); backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-soft);
-    padding: 12px 0;
-  }
+  /* controls */
+  .controls { position: sticky; top: 0; z-index: 20; background: rgba(11,12,16,.82);
+    backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-soft); padding: 12px 0; }
   .controls-inner { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-  .tab {
-    background: transparent; border: 1px solid var(--border); color: var(--muted);
-    border-radius: 999px; padding: 7px 15px; font-size: 13.5px; font-weight: 600;
-    cursor: pointer; transition: all .15s; font-family: inherit; white-space: nowrap;
-  }
+  .tab { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 999px;
+    padding: 7px 15px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all .15s; font-family: inherit; white-space: nowrap; }
   .tab:hover { border-color: var(--dim); color: var(--text); }
   .tab.active { background: var(--accent); border-color: var(--accent); color: #04130D; }
-  .tab .n { opacity: .65; font-weight: 600; margin-left: 4px; }
+  .tab .n { opacity: .65; margin-left: 4px; }
   .tab.active .n { opacity: .8; }
-  .search {
-    flex: 1; min-width: 200px; position: relative;
-  }
-  .search input {
-    width: 100%; background: var(--panel); border: 1px solid var(--border);
-    color: var(--text); border-radius: 10px; padding: 9px 14px 9px 36px;
-    font-size: 14px; font-family: inherit; outline: none; transition: border-color .15s;
-  }
+  .search { flex: 1; min-width: 200px; position: relative; }
+  .search input { width: 100%; background: var(--panel); border: 1px solid var(--border); color: var(--text);
+    border-radius: 10px; padding: 9px 14px 9px 36px; font-size: 14px; font-family: inherit; outline: none; transition: border-color .15s; }
   .search input:focus { border-color: var(--accent); }
   .search input::placeholder { color: var(--dim); }
   .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: .5; }
+  .expand-all { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 10px;
+    padding: 9px 13px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .expand-all:hover { border-color: var(--dim); color: var(--text); }
 
   main { padding: 8px 0 100px; }
   .count-line { color: var(--dim); font-size: 13px; margin: 22px 0 4px; }
@@ -96,29 +69,34 @@
   .bucket-meta { color: var(--dim); font-size: 13.5px; margin-bottom: 6px; }
 
   .group { margin-top: 24px; }
-  .group > h3 {
-    font-size: 12px; text-transform: uppercase; letter-spacing: 0.09em;
-    color: var(--accent); font-weight: 700; margin-bottom: 13px; opacity: .85;
-  }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+  .group > h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--accent);
+    font-weight: 700; margin-bottom: 13px; opacity: .85; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; align-items: start; }
   @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 34px; } }
 
-  .card {
-    background: linear-gradient(180deg, var(--panel), var(--bg-2));
-    border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 17px 18px; transition: transform .14s, border-color .14s, box-shadow .14s;
-  }
-  .card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 8px 28px -14px rgba(43,199,154,.5); }
-  .card-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .card { background: linear-gradient(180deg, var(--panel), var(--bg-2)); border: 1px solid var(--border);
+    border-radius: var(--radius); transition: border-color .14s, box-shadow .14s; }
+  .card:hover { border-color: var(--accent); box-shadow: 0 8px 28px -16px rgba(43,199,154,.5); }
+  .card details { padding: 16px 18px; }
+  .card summary { list-style: none; cursor: pointer; outline: none; }
+  .card summary::-webkit-details-marker { display: none; }
+  .sum-head { display: flex; align-items: center; gap: 8px; }
   .card .name { font-size: 14.5px; font-weight: 600; color: var(--text); }
-  .chip { font-size: 10.5px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase;
-          color: var(--dim); border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; }
-  .card .desc { color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+  .chip { font-size: 10.5px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--dim);
+    border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; }
+  .chev { margin-left: auto; color: var(--dim); transition: transform .18s; font-size: 11px; flex-shrink: 0; }
+  .card details[open] .chev { transform: rotate(90deg); color: var(--accent); }
+  .card .desc { color: var(--muted); font-size: 13.5px; line-height: 1.55; margin-top: 8px; }
+  .detail { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-soft); }
+  .detail p { font-size: 13px; line-height: 1.6; color: var(--muted); margin-top: 7px; }
+  .detail p:first-child { margin-top: 0; }
+  .lbl { display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--accent); font-weight: 700; margin-right: 7px; vertical-align: 1px; }
+  .lbl.why { color: var(--accent-2); }
   .card.broken { opacity: .72; }
   .chip.broken { color: var(--warn); border-color: rgba(224,164,88,.4); }
 
   .empty { display: none; text-align: center; color: var(--dim); padding: 60px 0; font-size: 15px; }
-
   footer { border-top: 1px solid var(--border-soft); color: var(--dim); font-size: 13px; padding: 26px 0 60px; line-height: 1.7; }
 </style>
 </head>
@@ -128,7 +106,8 @@
   <section class="hero">
     <div class="crumb"><a href="/">Samuel Huang</a> &nbsp;/&nbsp; Skills</div>
     <h1>Skills Library</h1>
-    <p class="lede">Every Claude Code skill I run — what each one actually does and where it lives. Skills aren't one list: they load from different sources, and each source is active in a different context.</p>
+    <p class="lede">Every Claude Code skill I run — what each one does, when it fires, and why I reach for it. Skills aren't one list: they load from different sources, and each is active in a different context.</p>
+    <p class="hint">Tap any skill to expand <strong>When to use</strong> and <strong>Why</strong>.</p>
     <div class="stat-row">
       <div class="stat"><b>58</b><span>total skills</span></div>
       <div class="stat"><b>32</b><span>user-level</span></div>
@@ -150,8 +129,9 @@
     </div>
     <div class="search">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="q" type="search" placeholder="Search skills by name or what they do…" autocomplete="off">
+      <input id="q" type="search" placeholder="Search by name, what it does, or trigger…" autocomplete="off">
     </div>
+    <button class="expand-all" id="toggleAll">Expand all</button>
   </div>
 </div>
 
@@ -167,100 +147,100 @@
     <div class="group">
       <h3>AI &amp; Agent Tooling</h3>
       <div class="grid">
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">agent-goal</span><span class="chip">prompting</span></div><div class="desc">Turns a rough idea into a tightly structured agent brief using the Ask / Goal / Examples / Negations / Tools framework. Run it before handing a big task to a coding or creative agent so the instructions are unambiguous and it doesn't wander off-spec.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">agents-sdk</span><span class="chip">cloudflare</span></div><div class="desc">Builds stateful AI agents on Cloudflare Workers — the Agent class, durable Workflows, scheduled tasks, MCP servers, real-time WebSocket apps, and React hooks. Pulls from live Cloudflare docs so the API usage is current, not from memory.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">calibrate</span><span class="chip">meta</span></div><div class="desc">Reviews the current conversation for corrections, preferences, and repeated patterns, then proposes concrete updates to your skills and setup. Run it at the end of a session so what was learned gets captured instead of lost.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">align</span><span class="chip">meta</span></div><div class="desc">Forces a short clarifying-questions step before any work starts, so direction is locked in before effort is spent. Best for ambiguous requests where guessing wrong is expensive to undo.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">onboard</span><span class="chip">meta</span></div><div class="desc">Locates a project folder, reads its context, and asks questions until intent is clear before touching anything. Use it when picking up an unfamiliar or dormant project cold.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">coordinate</span><span class="chip">meta</span></div><div class="desc">Loads or creates a shared project workspace so multiple Claude sessions read and write the same context, decisions, and output. Keeps parallel sessions from drifting apart on the same project.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">session-handoff</span><span class="chip">meta</span></div><div class="desc">Produces a structured end-of-session summary, updates CLAUDE.md and memory, and writes a handoff so a fresh agent continues seamlessly. Use it before clearing context or stopping for the day.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">burst</span><span class="chip">ideation</span></div><div class="desc">Generates N distinct variations of any request instead of a single answer. Good for ideation — names, headlines, layouts, approaches — when you want a spread of options to choose from.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">devil</span><span class="chip">review</span></div><div class="desc">Red-teams a finished artifact with sharp, blunt criticism only — no fixes, no padding. Point it at a draft right before it ships to surface the holes you stopped seeing.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">humanizer</span><span class="chip">writing</span></div><div class="desc">Strips the tells of AI writing — em-dash overuse, rule-of-three, inflated vocabulary, vague attributions, negative parallelisms. Run it over text to make it read like a person actually wrote it.</div></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">agent-goal</span><span class="chip">prompting</span><span class="chev">▶</span></div><div class="desc">Turns a rough idea into a tightly structured agent brief using Ask / Goal / Examples / Negations / Tools.</div></summary><div class="detail"><p><span class="lbl">When</span> <span class="mono">/agent-goal</span>, "craft me a /goal prompt", or any time you're about to hand a big task to a coding or creative agent.</p><p><span class="lbl why">Why</span> Vague briefs make agents wander and waste runs. A structured brief gets the right output on the first attempt.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">agents-sdk</span><span class="chip">cloudflare</span><span class="chev">▶</span></div><div class="desc">Builds stateful AI agents on Cloudflare Workers — Agent class, Workflows, scheduled tasks, MCP servers, WebSockets.</div></summary><div class="detail"><p><span class="lbl">When</span> Creating stateful agents, durable workflows, real-time WebSocket apps, scheduled tasks, MCP servers, or chat/voice agents on Cloudflare.</p><p><span class="lbl why">Why</span> Pulls current Cloudflare API patterns from live docs, so the agent actually deploys instead of failing on stale syntax.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">calibrate</span><span class="chip">meta</span><span class="chev">▶</span></div><div class="desc">Reviews the conversation for corrections and patterns, then proposes concrete skill / setup updates.</div></summary><div class="detail"><p><span class="lbl">When</span> "calibrate", "what can you improve", "what did we learn", or at the end of a session that had corrections.</p><p><span class="lbl why">Why</span> Turns one-off corrections into permanent fixes, so you stop repeating the same instruction every session.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">align</span><span class="chip">meta</span><span class="chev">▶</span></div><div class="desc">Forces a short clarifying-questions step before any work starts.</div></summary><div class="detail"><p><span class="lbl">When</span> <span class="mono">/align</span> or any ambiguous request, before effort is spent.</p><p><span class="lbl why">Why</span> Catches a wrong assumption while it's still cheap — before it becomes a rebuild.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">onboard</span><span class="chip">meta</span><span class="chev">▶</span></div><div class="desc">Locates a project folder, reads its context, and asks questions until intent is clear.</div></summary><div class="detail"><p><span class="lbl">When</span> <span class="mono">/onboard [project]</span> — picking up an unfamiliar or dormant project cold.</p><p><span class="lbl why">Why</span> Stops you from acting on half-understood context and breaking something you didn't know was load-bearing.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">coordinate</span><span class="chip">meta</span><span class="chev">▶</span></div><div class="desc">Loads or creates a shared workspace so multiple sessions share context, decisions, and output.</div></summary><div class="detail"><p><span class="lbl">When</span> <span class="mono">/coordinate [ID]</span>, "load project [ID]", "pick up [ID]" — multi-session work on one project.</p><p><span class="lbl why">Why</span> Parallel sessions stay in sync instead of overwriting each other's work.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">session-handoff</span><span class="chip">meta</span><span class="chev">▶</span></div><div class="desc">End-of-session summary that updates CLAUDE.md and memory and writes a clean handoff.</div></summary><div class="detail"><p><span class="lbl">When</span> "session handoff", "wrap up session", or before clearing context for the day.</p><p><span class="lbl why">Why</span> The next session starts warm — no re-explaining where things stood.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">burst</span><span class="chip">ideation</span><span class="chev">▶</span></div><div class="desc">Generates N distinct variations of any request instead of a single answer.</div></summary><div class="detail"><p><span class="lbl">When</span> <span class="mono">/burst N [thing]</span> — names, headlines, layouts, approaches where you want options.</p><p><span class="lbl why">Why</span> Widens the idea space fast; a spread beats one guess.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">devil</span><span class="chip">review</span><span class="chev">▶</span></div><div class="desc">Red-teams a finished artifact with sharp, blunt criticism only — no fixes, no padding.</div></summary><div class="detail"><p><span class="lbl">When</span> <span class="mono">/devil [artifact]</span> right before something ships.</p><p><span class="lbl why">Why</span> Surfaces the flaws you've gone blind to after staring at your own work.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">humanizer</span><span class="chip">writing</span><span class="chev">▶</span></div><div class="desc">Strips the tells of AI writing — em-dash overuse, rule-of-three, inflated vocabulary, vague attributions.</div></summary><div class="detail"><p><span class="lbl">When</span> Editing or reviewing text that reads robotic or machine-generated.</p><p><span class="lbl why">Why</span> Copy that reads like a person keeps reader trust; AI-tells quietly erode it.</p></div></details></div>
       </div>
     </div>
 
     <div class="group">
       <h3>Cloudflare Stack</h3>
       <div class="grid">
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">cloudflare</span><span class="chip">cloudflare</span></div><div class="desc">The umbrella platform skill — Workers, Pages, KV / D1 / R2 storage, Workers AI, Vectorize, security (WAF/DDoS), and infrastructure-as-code. The starting point for any Cloudflare build; retrieves from current docs.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">workers-best-practices</span><span class="chip">cloudflare</span></div><div class="desc">Reviews and authors Worker code against production standards — streaming, floating promises, global state, secrets, bindings, observability. Catches the anti-patterns that only bite once you're live.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">durable-objects</span><span class="chip">cloudflare</span></div><div class="desc">Builds and reviews Durable Objects for stateful coordination — chat rooms, multiplayer games, booking systems — with RPC methods, SQLite storage, alarms, and WebSockets.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">sandbox-sdk</span><span class="chip">cloudflare</span></div><div class="desc">Builds sandboxed apps for secure code execution — AI code interpreters, CI/CD systems, runners for untrusted code — covering lifecycle, commands, files, and preview URLs.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">wrangler</span><span class="chip">cloudflare</span></div><div class="desc">The Workers CLI playbook for deploying and managing Workers, KV, R2, D1, Vectorize, Queues, Workflows, and Secrets. Load it before running wrangler commands to get the syntax right the first time.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">cloudflare-email-service</span><span class="chip">cloudflare</span></div><div class="desc">Sends and receives transactional email on Cloudflare — Workers binding or REST API, email routing, and the deliverability config (SPF / DKIM / DMARC) that usually trips people up.</div></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">cloudflare</span><span class="chip">cloudflare</span><span class="chev">▶</span></div><div class="desc">Umbrella platform skill — Workers, Pages, KV / D1 / R2, Workers AI, Vectorize, security, infrastructure-as-code.</div></summary><div class="detail"><p><span class="lbl">When</span> Any Cloudflare development task — the default starting point.</p><p><span class="lbl why">Why</span> One current-docs reference instead of scattered, possibly-stale guesses.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">workers-best-practices</span><span class="chip">cloudflare</span><span class="chev">▶</span></div><div class="desc">Reviews and authors Worker code against production standards.</div></summary><div class="detail"><p><span class="lbl">When</span> Writing a new Worker, configuring <span class="mono">wrangler.jsonc</span>, or reviewing for anti-patterns.</p><p><span class="lbl why">Why</span> Catches streaming, floating-promise, global-state, and secret bugs before they reach production.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">durable-objects</span><span class="chip">cloudflare</span><span class="chev">▶</span></div><div class="desc">Builds and reviews Durable Objects — RPC methods, SQLite storage, alarms, WebSockets.</div></summary><div class="detail"><p><span class="lbl">When</span> Stateful coordination — chat rooms, multiplayer games, booking systems.</p><p><span class="lbl why">Why</span> Gets concurrency and state right where it's notoriously easy to get wrong.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">sandbox-sdk</span><span class="chip">cloudflare</span><span class="chev">▶</span></div><div class="desc">Builds sandboxed apps for secure code execution — lifecycle, commands, files, preview URLs.</div></summary><div class="detail"><p><span class="lbl">When</span> Building AI code interpreters, CI/CD systems, or runners for untrusted code.</p><p><span class="lbl why">Why</span> Safe execution without rolling your own isolation layer.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">wrangler</span><span class="chip">cloudflare</span><span class="chev">▶</span></div><div class="desc">The Workers CLI playbook — deploy and manage Workers, KV, R2, D1, Queues, Workflows, Secrets.</div></summary><div class="detail"><p><span class="lbl">When</span> Before running any <span class="mono">wrangler</span> command.</p><p><span class="lbl why">Why</span> Correct syntax the first time means fewer failed deploys.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">cloudflare-email-service</span><span class="chip">cloudflare</span><span class="chev">▶</span></div><div class="desc">Sends and receives transactional email on Cloudflare — Workers binding or REST, routing, deliverability.</div></summary><div class="detail"><p><span class="lbl">When</span> Adding email send/receive to a Worker or app, even "just add email to my Worker".</p><p><span class="lbl why">Why</span> Handles the SPF / DKIM / DMARC config that silently breaks deliverability.</p></div></details></div>
       </div>
     </div>
 
     <div class="group">
       <h3>n8n Automation</h3>
       <div class="grid">
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">n8n-workflow-patterns</span><span class="chip">n8n</span></div><div class="desc">The five core architectural patterns from real n8n workflows — webhook processing, HTTP API integration, database ops, AI-agent workflows, scheduled tasks. Use it when designing a new workflow's structure.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">n8n-node-configuration</span><span class="chip">n8n</span></div><div class="desc">Operation-aware guidance on configuring nodes — which fields are required, how properties depend on each other, and the common patterns grouped by node type.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">n8n-validation-expert</span><span class="chip">n8n</span></div><div class="desc">Reads n8n validation errors and warnings and walks through fixing them — including false positives, operator-structure issues, and the validation loop.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">n8n-expression-syntax</span><span class="chip">n8n</span></div><div class="desc">Validates and fixes n8n's <span class="mono">{{ }}</span> expression syntax and the common mistakes around <span class="mono">$json</span> / <span class="mono">$node</span> and webhook data.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">n8n-mcp-tools-expert</span><span class="chip">n8n</span></div><div class="desc">A guide to using the n8n-mcp tools well — searching nodes, validating configs, pulling templates, managing workflows — with the right parameter formats and patterns.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">n8n-code-javascript</span><span class="chip">n8n</span></div><div class="desc">Writing JavaScript in n8n Code nodes — <span class="mono">$input/$json/$node</span>, HTTP via <span class="mono">$helpers</span>, dates with DateTime, and choosing between Code-node modes.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">n8n-code-python</span><span class="chip">n8n</span></div><div class="desc">Writing Python in n8n Code nodes — <span class="mono">_input/_json/_node</span>, the standard library, and the real limitations of Python inside n8n.</div></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">n8n-workflow-patterns</span><span class="chip">n8n</span><span class="chev">▶</span></div><div class="desc">The five core architectural patterns from real n8n workflows.</div></summary><div class="detail"><p><span class="lbl">When</span> Designing a new workflow's structure — webhook, HTTP API, database, AI-agent, or scheduled.</p><p><span class="lbl why">Why</span> Start from a proven shape instead of a blank canvas.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">n8n-node-configuration</span><span class="chip">n8n</span><span class="chev">▶</span></div><div class="desc">Operation-aware node config — required fields, property dependencies, patterns by node type.</div></summary><div class="detail"><p><span class="lbl">When</span> Configuring a node and unsure which fields are required or how they interact.</p><p><span class="lbl why">Why</span> Ends the trial-and-error on node setup.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">n8n-validation-expert</span><span class="chip">n8n</span><span class="chev">▶</span></div><div class="desc">Reads validation errors and warnings and walks through the fix.</div></summary><div class="detail"><p><span class="lbl">When</span> Hitting validation errors, warnings, false positives, or operator-structure issues.</p><p><span class="lbl why">Why</span> Turns a cryptic error into a clear fix path.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">n8n-expression-syntax</span><span class="chip">n8n</span><span class="chev">▶</span></div><div class="desc">Validates and fixes <span class="mono">{{ }}</span> expression syntax and common errors.</div></summary><div class="detail"><p><span class="lbl">When</span> Writing expressions or debugging <span class="mono">$json</span> / <span class="mono">$node</span> / webhook-data errors.</p><p><span class="lbl why">Why</span> Kills the single most common n8n failure — a broken expression.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">n8n-mcp-tools-expert</span><span class="chip">n8n</span><span class="chev">▶</span></div><div class="desc">Guide to using the n8n-mcp tools well — search, validate, templates, manage workflows.</div></summary><div class="detail"><p><span class="lbl">When</span> Searching for nodes, validating configs, or managing workflows via the n8n-mcp tools.</p><p><span class="lbl why">Why</span> Right tool and parameter format, fewer wasted calls.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">n8n-code-javascript</span><span class="chip">n8n</span><span class="chev">▶</span></div><div class="desc">Writing JavaScript in n8n Code nodes.</div></summary><div class="detail"><p><span class="lbl">When</span> Writing JS in a Code node — <span class="mono">$input/$json/$node</span>, HTTP via <span class="mono">$helpers</span>, dates with DateTime.</p><p><span class="lbl why">Why</span> Correct syntax for n8n's non-standard runtime, not generic JS that fails there.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">n8n-code-python</span><span class="chip">n8n</span><span class="chev">▶</span></div><div class="desc">Writing Python in n8n Code nodes.</div></summary><div class="detail"><p><span class="lbl">When</span> Writing Python in a Code node — <span class="mono">_input/_json</span>, standard library only.</p><p><span class="lbl why">Why</span> Know the real limitations before you hit them mid-build.</p></div></details></div>
       </div>
     </div>
 
     <div class="group">
       <h3>Frontend, Design &amp; Performance</h3>
       <div class="grid">
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">frontend-design</span><span class="chip">design</span></div><div class="desc">Generates distinctive, production-grade UI that deliberately avoids the generic AI aesthetic — strong typography, intentional layout, and polished, non-templated components.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">ui-ux-pro-max</span><span class="chip">design</span></div><div class="desc">A design-intelligence library — 67 styles, 161 palettes, 57 font pairings, 99 UX guidelines, and 25 chart types across 15+ stacks. Plans, builds, and reviews UI with concrete tokens.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">web-design-guidelines</span><span class="chip">design</span></div><div class="desc">Audits UI code against the Web Interface Guidelines — accessibility, color contrast, keyboard navigation, touch-target size, and interaction states.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">web-perf</span><span class="chip">performance</span></div><div class="desc">Measures Core Web Vitals (LCP, INP, CLS) via the Chrome DevTools MCP, then pinpoints render-blocking resources, network dependency chains, layout shifts, and caching gaps.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">react-best-practices</span><span class="chip">performance</span></div><div class="desc">React / Next.js performance patterns from Vercel Engineering — data fetching, bundle size, and re-render control. Use it when writing or refactoring React components.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">tweak</span><span class="chip">design</span></div><div class="desc">Injects a live slider panel into any HTML page so you can dial in spacing, color, and type in the browser, then bakes the chosen values back into the source CSS and removes the panel.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">canvas-design</span><span class="chip">design</span></div><div class="desc">Creates original visual art as PNG or PDF — posters, designs, static pieces — using a real design philosophy rather than clip-art defaults.</div></div>
-        <div class="card" data-bucket="user"><div class="card-top"><span class="name mono">brand-guidelines</span><span class="chip">design</span></div><div class="desc">Applies Anthropic's official brand colors and typography to any artifact that should carry that look-and-feel.</div></div>
-        <div class="card broken" data-bucket="user"><div class="card-top"><span class="name mono">wat-init</span><span class="chip broken">empty</span></div><div class="desc">Was meant to scaffold the WAT framework's <span class="mono">tools/</span> and <span class="mono">workflows/</span> folders, but the skill is currently empty (no SKILL.md), so it does nothing until rebuilt.</div></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">frontend-design</span><span class="chip">design</span><span class="chev">▶</span></div><div class="desc">Generates distinctive, production-grade UI that avoids the generic AI aesthetic.</div></summary><div class="detail"><p><span class="lbl">When</span> Building web components, pages, or applications.</p><p><span class="lbl why">Why</span> Output doesn't read as templated AI slop — strong type, intentional layout.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">ui-ux-pro-max</span><span class="chip">design</span><span class="chev">▶</span></div><div class="desc">Design-intelligence library — 67 styles, 161 palettes, 57 font pairings, 99 UX guidelines, 25 chart types.</div></summary><div class="detail"><p><span class="lbl">When</span> Planning, building, or reviewing UI and you want concrete styles, palettes, fonts, or charts.</p><p><span class="lbl why">Why</span> Replaces default choices with deliberate, proven design decisions.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">web-design-guidelines</span><span class="chip">design</span><span class="chev">▶</span></div><div class="desc">Audits UI code against the Web Interface Guidelines.</div></summary><div class="detail"><p><span class="lbl">When</span> "review my UI", "check accessibility", "audit design", "review UX".</p><p><span class="lbl why">Why</span> Catches contrast, keyboard, touch-target, and state failures before users do.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">web-perf</span><span class="chip">performance</span><span class="chev">▶</span></div><div class="desc">Measures Core Web Vitals via Chrome DevTools and pinpoints the bottlenecks.</div></summary><div class="detail"><p><span class="lbl">When</span> Auditing, profiling, or optimizing page load, Lighthouse scores, or site speed.</p><p><span class="lbl why">Why</span> Finds what's actually slow — render-blocking, network chains, layout shifts — with numbers.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">react-best-practices</span><span class="chip">performance</span><span class="chev">▶</span></div><div class="desc">React / Next.js performance patterns from Vercel Engineering.</div></summary><div class="detail"><p><span class="lbl">When</span> Writing, reviewing, or refactoring React / Next.js code.</p><p><span class="lbl why">Why</span> Avoids the re-render and bundle traps that quietly tank performance.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">tweak</span><span class="chip">design</span><span class="chev">▶</span></div><div class="desc">Injects a live slider panel into any HTML, then bakes the chosen CSS back into source.</div></summary><div class="detail"><p><span class="lbl">When</span> <span class="mono">tweak light</span> / <span class="mono">tweak max</span> on slides, websites, or mockups.</p><p><span class="lbl why">Why</span> Dial in spacing, color, and type in-browser — no guess-edit-reload loop.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">canvas-design</span><span class="chip">design</span><span class="chev">▶</span></div><div class="desc">Creates original visual art as PNG or PDF using a real design philosophy.</div></summary><div class="detail"><p><span class="lbl">When</span> "create a poster / design / art piece".</p><p><span class="lbl why">Why</span> Original, considered design — not clip-art defaults or copyright lifts.</p></div></details></div>
+        <div class="card" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">brand-guidelines</span><span class="chip">design</span><span class="chev">▶</span></div><div class="desc">Applies Anthropic's official brand colors and typography to an artifact.</div></summary><div class="detail"><p><span class="lbl">When</span> An artifact should carry Anthropic's look-and-feel.</p><p><span class="lbl why">Why</span> On-brand output without manually looking up colors and type.</p></div></details></div>
+        <div class="card broken" data-bucket="user"><details><summary><div class="sum-head"><span class="name mono">wat-init</span><span class="chip broken">empty</span><span class="chev">▶</span></div><div class="desc">Was meant to scaffold the WAT framework's <span class="mono">tools/</span> and <span class="mono">workflows/</span> folders.</div></summary><div class="detail"><p><span class="lbl">When</span> Currently never — the folder has no SKILL.md, so it does nothing.</p><p><span class="lbl why">Why</span> Flagged here so it's clear it needs a rebuild or removal, not that it's hidden.</p></div></details></div>
       </div>
     </div>
   </section>
 
-  <!-- PROJECT -->
+  <!-- WORKOS -->
   <section class="bucket-block" data-bucket="project">
-    <div class="bucket-title"><h2>Project skills</h2><span class="badge">20</span></div>
+    <div class="bucket-title"><h2>WorkOS project skills</h2><span class="badge">20</span></div>
     <p class="bucket-meta"><span class="mono">.claude/skills/</span> in the WorkOS folder — load only when working inside that project. The business operating system.</p>
 
     <div class="group">
       <h3>Workspace Management</h3>
       <div class="grid">
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">setup-workos</span><span class="chip">workos</span></div><div class="desc">The first-run wizard for the WorkOS template — auto-detects existing workspaces, offers to mine them, then interviews only for the gaps to bootstrap <span class="mono">00-brain/</span>.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">cleanup-workos</span><span class="chip">workos</span></div><div class="desc">A full housekeeping sweep — file placement, stale overviews, duplicate brain facts, rule / skill drift, lab-app promotion, and archive candidates. Run it whenever the workspace feels messy.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">migrate-existing-workspace</span><span class="chip">workos</span></div><div class="desc">Audits and migrates an old Claude / Codex / Cursor / PARA / Notion setup into WorkOS without recreating the old folder debt that came with it.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">work-map</span><span class="chip">workos</span></div><div class="desc">Generates the live map of areas, projects, and lab work — what's active, what owns what, and how everything relates.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">new-area</span><span class="chip">workos</span></div><div class="desc">Creates an ongoing business function (marketing, sales, ops, support) with an <span class="mono">_overview.md</span> entrypoint and housekeeping rules. For work with no finish line.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">new-project</span><span class="chip">workos</span></div><div class="desc">Creates a time-bound project with success criteria, canonical inputs, and archive rules. For anything with a deadline — a launch, a migration, a campaign.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">process-inbox</span><span class="chip">workos</span></div><div class="desc">Clears <span class="mono">01-inbox/</span> by triaging unsorted files into canonical homes, extracting durable facts, and archiving stale inputs.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">workos-reflect</span><span class="chip">workos</span></div><div class="desc">A lightweight capture pass that decides what durable residue from recent work should survive — and routes it to its canonical home (brain, overview, skill, rule, or memory).</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">check-later</span><span class="chip">workos</span></div><div class="desc">Creates a follow-up check in the local registry — both explicit reminders ("check X on Friday") and the autonomous "verify this later" ones after queued or external work.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">follow-up-runner</span><span class="chip">workos</span></div><div class="desc">Walks the follow-up registry on a schedule and executes any check whose due time has passed — archiving done tasks and leaving blockers in place.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">consolidate-memory</span><span class="chip">workos</span></div><div class="desc">A gardening pass over auto-memory — merges duplicates, retires stale or contradicted entries, fixes dates, and rebuilds the index before it gets too long to load.</div></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">setup-workos</span><span class="chip">workos</span><span class="chev">▶</span></div><div class="desc">First-run wizard — auto-detects existing workspaces, mines them, interviews only for the gaps.</div></summary><div class="detail"><p><span class="lbl">When</span> "set up the workos", first run, "initialize my workspace", "onboard me".</p><p><span class="lbl why">Why</span> Bootstraps the whole system without hand-scaffolding folders.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">cleanup-workos</span><span class="chip">workos</span><span class="chev">▶</span></div><div class="desc">Full housekeeping sweep — placement, stale overviews, duplicate facts, rule drift, archive candidates.</div></summary><div class="detail"><p><span class="lbl">When</span> "cleanup", "tidy up", "what's stale", "things feel messy", "run the doctor".</p><p><span class="lbl why">Why</span> Stops the system rotting into duplicate, contradictory files.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">migrate-existing-workspace</span><span class="chip">workos</span><span class="chev">▶</span></div><div class="desc">Audits and migrates an old Claude / Codex / Cursor / PARA / Notion setup into WorkOS.</div></summary><div class="detail"><p><span class="lbl">When</span> "migrate", "import my old folders", "I already have a workspace".</p><p><span class="lbl why">Why</span> Brings the past in without dragging old folder debt along with it.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">work-map</span><span class="chip">workos</span><span class="chev">▶</span></div><div class="desc">Generates the live map of areas, projects, and lab work.</div></summary><div class="detail"><p><span class="lbl">When</span> "what's active", "what owns what", "how do areas and projects relate".</p><p><span class="lbl why">Why</span> The whole workspace at a glance, instead of spelunking folders.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">new-area</span><span class="chip">workos</span><span class="chev">▶</span></div><div class="desc">Creates an ongoing business function with an <span class="mono">_overview.md</span> entrypoint and housekeeping rules.</div></summary><div class="detail"><p><span class="lbl">When</span> "set up an area for X", or any recurring function with no finish line.</p><p><span class="lbl why">Why</span> Ongoing work gets a stable home and routing instead of scattering.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">new-project</span><span class="chip">workos</span><span class="chev">▶</span></div><div class="desc">Creates a time-bound project with success criteria, canonical inputs, and archive rules.</div></summary><div class="detail"><p><span class="lbl">When</span> Launch, ship, build, migrate, or publish — anything with a deadline.</p><p><span class="lbl why">Why</span> Finish-line work gets a clear definition of done and a clean exit.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">process-inbox</span><span class="chip">workos</span><span class="chev">▶</span></div><div class="desc">Clears <span class="mono">01-inbox/</span> by triaging files into canonical homes and extracting durable facts.</div></summary><div class="detail"><p><span class="lbl">When</span> "sort my inbox", "I dumped some files", a backlog of unfiled notes.</p><p><span class="lbl why">Why</span> Unsorted material becomes filed truth, not a growing pile.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">workos-reflect</span><span class="chip">workos</span><span class="chev">▶</span></div><div class="desc">Decides what durable residue from recent work should survive — and routes it to its canonical home.</div></summary><div class="detail"><p><span class="lbl">When</span> "capture this", "remember this", "reflect", or after a turn surfaced new business info.</p><p><span class="lbl why">Why</span> Useful learning survives instead of evaporating when the chat ends.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">check-later</span><span class="chip">workos</span><span class="chev">▶</span></div><div class="desc">Creates a follow-up check in the local registry — explicit reminders and autonomous verifications.</div></summary><div class="detail"><p><span class="lbl">When</span> "remind me to check X on Friday", or after queued / external work that needs verifying.</p><p><span class="lbl why">Why</span> Nothing important slips just because it left your screen.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">follow-up-runner</span><span class="chip">workos</span><span class="chev">▶</span></div><div class="desc">Walks the follow-up registry and executes any check whose due time has passed.</div></summary><div class="detail"><p><span class="lbl">When</span> The 8am / 3pm scheduled run, or "run follow-ups".</p><p><span class="lbl why">Why</span> Verifications happen on time, hands-off — no manual chasing.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">consolidate-memory</span><span class="chip">workos</span><span class="chev">▶</span></div><div class="desc">Gardens auto-memory — merges duplicates, retires stale entries, fixes dates, rebuilds the index.</div></summary><div class="detail"><p><span class="lbl">When</span> "clean up memory", "garden the memory", or when the index passes ~180 lines.</p><p><span class="lbl why">Why</span> Memory stays accurate and loadable instead of bloating past the load cap.</p></div></details></div>
       </div>
     </div>
 
     <div class="group">
       <h3>Build &amp; Connect</h3>
       <div class="grid">
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">skill-creator</span><span class="chip">skills</span></div><div class="desc">Creates new skills, edits and optimizes existing ones, and runs evals to benchmark performance and triggering accuracy. The skill that builds the rest.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">export-skill</span><span class="chip">skills</span></div><div class="desc">Packages a skill into a shareable file that installs cleanly in the Claude Desktop app, stripping anything that would otherwise cause an import error.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">import-skill</span><span class="chip">skills</span></div><div class="desc">Installs a skill from a downloaded zip or folder — yours or a teammate's — running a security review first, because skills execute code on your machine.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">mcp-setup</span><span class="chip">integrations</span></div><div class="desc">Walks a non-technical user through connecting an external tool via MCP — finding the right server, getting a token, and wiring it up safely (prefers hosted, falls back to npx).</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">codex</span><span class="chip">ai</span></div><div class="desc">Talks to the OpenAI Codex CLI for plan refinement, code review, research, and brainstorming — maintaining multi-turn sessions across a discussion.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">codex-image</span><span class="chip">ai</span></div><div class="desc">OpenAI's gpt-image-2 routed through the Codex CLI, so it bills to a ChatGPT subscription instead of an API key. For when you don't want to manage billing.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">gpt-image</span><span class="chip">ai</span></div><div class="desc">Expert guidance for gpt-image-2 — inpainting with masks, multi-reference edits, and the cases where its text rendering or face preservation beats other models.</div></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">skill-creator</span><span class="chip">skills</span><span class="chev">▶</span></div><div class="desc">Creates new skills, edits and optimizes existing ones, and runs evals to benchmark performance.</div></summary><div class="detail"><p><span class="lbl">When</span> Creating a skill from scratch, editing one, or testing triggering accuracy.</p><p><span class="lbl why">Why</span> The skill that builds the rest — and makes them fire reliably.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">export-skill</span><span class="chip">skills</span><span class="chev">▶</span></div><div class="desc">Packages a skill into a shareable file that installs cleanly in the Claude Desktop app.</div></summary><div class="detail"><p><span class="lbl">When</span> "export this skill", "package this skill", "share my skill with a teammate".</p><p><span class="lbl why">Why</span> Strips anything that would cause an import error on the other end.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">import-skill</span><span class="chip">skills</span><span class="chev">▶</span></div><div class="desc">Installs a skill from a downloaded zip or folder — after a security review.</div></summary><div class="detail"><p><span class="lbl">When</span> "install this skill", "I downloaded a skill", pointing at a .zip / .skill file.</p><p><span class="lbl why">Why</span> Skills execute code — the review runs first so you don't install something hostile.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">mcp-setup</span><span class="chip">integrations</span><span class="chev">▶</span></div><div class="desc">Walks through connecting an external tool via MCP — find the server, get a token, wire it up safely.</div></summary><div class="detail"><p><span class="lbl">When</span> "connect X", "add an MCP", "wire up Notion / Gmail / Drive / Stripe".</p><p><span class="lbl why">Why</span> A non-technical path to integrations that prefers hosted servers and stays safe.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">codex</span><span class="chip">ai</span><span class="chev">▶</span></div><div class="desc">Talks to the OpenAI Codex CLI for plan refinement, code review, research, and brainstorming.</div></summary><div class="detail"><p><span class="lbl">When</span> "ask codex", "have codex review", "continue with codex".</p><p><span class="lbl why">Why</span> A second model for review and research without leaving the session.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">codex-image</span><span class="chip">ai</span><span class="chev">▶</span></div><div class="desc">OpenAI's gpt-image-2 routed through the Codex CLI — uses a ChatGPT subscription, no API key.</div></summary><div class="detail"><p><span class="lbl">When</span> Generating images and you don't want to manage billing or keys.</p><p><span class="lbl why">Why</span> Bills to the ChatGPT sub — zero billing setup.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">gpt-image</span><span class="chip">ai</span><span class="chev">▶</span></div><div class="desc">Expert guidance for gpt-image-2 — inpainting with masks, multi-reference edits.</div></summary><div class="detail"><p><span class="lbl">When</span> Inpainting, editing with multiple reference images, or when text rendering / face preservation matters.</p><p><span class="lbl why">Why</span> Targets the cases where gpt-image clearly beats other models.</p></div></details></div>
       </div>
     </div>
 
     <div class="group">
       <h3>Business</h3>
       <div class="grid">
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">social-content</span><span class="chip">marketing</span></div><div class="desc">Generates social posts for X, Meta Threads, and LinkedIn with voice calibration, reusable post memory, structured image prompts, and optional draft queueing.</div></div>
-        <div class="card" data-bucket="project"><div class="card-top"><span class="name mono">bet-strategy</span><span class="chip">personal</span></div><div class="desc">Builds a sports-betting plan from a screenshot of a bookmaker's odds plus a unit ceiling — separate single bets judged on +EV merit — then settles them once results are in.</div></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">social-content</span><span class="chip">marketing</span><span class="chev">▶</span></div><div class="desc">Generates social posts for X, Threads, and LinkedIn with voice calibration and reusable post memory.</div></summary><div class="detail"><p><span class="lbl">When</span> "write a post", "turn this into social posts", "make this work for LinkedIn and X".</p><p><span class="lbl why">Why</span> On-voice posts with structured image prompts — not generic filler.</p></div></details></div>
+        <div class="card" data-bucket="project"><details><summary><div class="sum-head"><span class="name mono">bet-strategy</span><span class="chip">personal</span><span class="chev">▶</span></div><div class="desc">Builds a sports-betting plan from an odds screenshot plus a unit ceiling, then settles bets after results.</div></summary><div class="detail"><p><span class="lbl">When</span> Sharing odds + a unit amount, "give me your bets", or settling a finished match.</p><p><span class="lbl why">Why</span> Disciplined, separate +EV single bets with honest risk — not parlays and vibes.</p></div></details></div>
       </div>
     </div>
   </section>
@@ -268,22 +248,22 @@
   <!-- OTHER REPOS -->
   <section class="bucket-block" data-bucket="other">
     <div class="bucket-title"><h2>Other-repo skills</h2><span class="badge">6</span></div>
-    <p class="bucket-meta">Project-scoped skills living in <em>other</em> repos — they load only when working inside that project, not in WorkOS.</p>
+    <p class="bucket-meta">Project-scoped skills living in <em>other</em> repos — load only inside that project, not in WorkOS.</p>
 
     <div class="group">
       <h3>Codex / LLM &nbsp;·&nbsp; <span class="mono" style="text-transform:none;letter-spacing:0;color:var(--dim)">~/Documents/Codex/LLM/.claude/skills/</span></h3>
       <div class="grid">
-        <div class="card" data-bucket="other"><div class="card-top"><span class="name mono">db-migrate</span><span class="chip">supabase</span></div><div class="desc">The <span class="mono">/db-migrate</span> slash command — pushes Supabase database migrations to the remote project via <span class="mono">supabase db push</span>, after confirming the target project ref so you don't migrate the wrong environment.</div></div>
-        <div class="card" data-bucket="other"><div class="card-top"><span class="name mono">deploy</span><span class="chip">vercel</span></div><div class="desc">The <span class="mono">/deploy</span> slash command — deploys the app to Vercel production with <span class="mono">vercel deploy --prod</span> after an explicit confirm, then reports the live URL. Stops on failure rather than retrying.</div></div>
-        <div class="card" data-bucket="other"><div class="card-top"><span class="name mono">dev</span><span class="chip">vercel</span></div><div class="desc">The <span class="mono">/dev</span> slash command — starts the local dev server with <span class="mono">vercel dev</span> so API routes run alongside the frontend, after checking <span class="mono">.env.local</span> has every required key.</div></div>
+        <div class="card" data-bucket="other"><details><summary><div class="sum-head"><span class="name mono">db-migrate</span><span class="chip">supabase</span><span class="chev">▶</span></div><div class="desc">Pushes Supabase database migrations to the remote project via <span class="mono">supabase db push</span>.</div></summary><div class="detail"><p><span class="lbl">When</span> The <span class="mono">/db-migrate</span> slash command in that project.</p><p><span class="lbl why">Why</span> Confirms the target project ref first, so you don't migrate the wrong environment.</p></div></details></div>
+        <div class="card" data-bucket="other"><details><summary><div class="sum-head"><span class="name mono">deploy</span><span class="chip">vercel</span><span class="chev">▶</span></div><div class="desc">Deploys the app to Vercel production with <span class="mono">vercel deploy --prod</span>.</div></summary><div class="detail"><p><span class="lbl">When</span> The <span class="mono">/deploy</span> slash command in that project.</p><p><span class="lbl why">Why</span> Requires an explicit confirm, reports the live URL, and stops on failure instead of retrying blindly.</p></div></details></div>
+        <div class="card" data-bucket="other"><details><summary><div class="sum-head"><span class="name mono">dev</span><span class="chip">vercel</span><span class="chev">▶</span></div><div class="desc">Starts the local dev server with <span class="mono">vercel dev</span> so API routes run with the frontend.</div></summary><div class="detail"><p><span class="lbl">When</span> The <span class="mono">/dev</span> slash command in that project.</p><p><span class="lbl why">Why</span> Checks <span class="mono">.env.local</span> has every required key first, so the server doesn't half-start.</p></div></details></div>
       </div>
     </div>
 
     <div class="group">
       <h3>Claude E-Reader &nbsp;·&nbsp; <span class="mono" style="text-transform:none;letter-spacing:0;color:var(--dim)">Claude_E-Reader/.agents/skills/</span></h3>
       <div class="grid">
-        <div class="card" data-bucket="other"><div class="card-top"><span class="name mono">e-reader-chapter-audit</span><span class="chip">e-reader</span></div><div class="desc">Audits and repairs the e-reader's chapter outline, table of contents, chapter-jump, transcript boundaries, and R2 word-timing sync. Triggers when a book's chapters, labels, or transcript sync stop making sense.</div></div>
-        <div class="card" data-bucket="other"><div class="card-top"><span class="name mono">push</span><span class="chip">git</span></div><div class="desc">A <span class="mono">/push</span> shortcut — stages all changes, commits, and pushes to GitHub in one step.</div></div>
+        <div class="card" data-bucket="other"><details><summary><div class="sum-head"><span class="name mono">e-reader-chapter-audit</span><span class="chip">e-reader</span><span class="chev">▶</span></div><div class="desc">Audits and repairs chapter outline, TOC, chapter-jump, transcript boundaries, and R2 word-timing sync.</div></summary><div class="detail"><p><span class="lbl">When</span> A book's chapters, labels, chapter clicking, active-chapter header, or transcript sync stop making sense.</p><p><span class="lbl why">Why</span> Keeps the reader's navigation and audio-sync integrity intact.</p></div></details></div>
+        <div class="card" data-bucket="other"><details><summary><div class="sum-head"><span class="name mono">push</span><span class="chip">git</span><span class="chev">▶</span></div><div class="desc">Stages all changes, commits, and pushes to GitHub in one step.</div></summary><div class="detail"><p><span class="lbl">When</span> <span class="mono">/push</span> or "push my changes".</p><p><span class="lbl why">Why</span> One-step ship — no manual add / commit / push dance.</p></div></details></div>
       </div>
     </div>
   </section>
@@ -294,7 +274,7 @@
     <p class="bucket-meta"><span class="mono">~/.claude/plugins/</span> — the only installed plugin. Marketplace catalogs (anthropic-agent-skills, claude-plugins-official) are downloaded but not installed.</p>
     <div class="group">
       <div class="grid">
-        <div class="card" data-bucket="plugin"><div class="card-top"><span class="name mono">frontend-design</span><span class="chip">official</span></div><div class="desc">Anthropic's official plugin for distinctive, production-grade frontend interfaces — the packaged counterpart to the user-level <span class="mono">frontend-design</span> skill.</div></div>
+        <div class="card" data-bucket="plugin"><details><summary><div class="sum-head"><span class="name mono">frontend-design</span><span class="chip">official</span><span class="chev">▶</span></div><div class="desc">Anthropic's official plugin for distinctive, production-grade frontend interfaces.</div></summary><div class="detail"><p><span class="lbl">When</span> Building UI and you want the packaged, maintained version of the frontend-design skill.</p><p><span class="lbl why">Why</span> Official upstream — updates with the marketplace, no local maintenance.</p></div></details></div>
       </div>
     </div>
   </section>
@@ -318,41 +298,39 @@
   const q = document.getElementById('q');
   const empty = document.getElementById('empty');
   const countLine = document.getElementById('countLine');
+  const toggleAll = document.getElementById('toggleAll');
   let activeTab = 'all';
+  let allOpen = false;
 
   function apply() {
     const term = q.value.trim().toLowerCase();
     let visible = 0;
-
-    blocks.forEach(b => {
-      const inTab = activeTab === 'all' || b.dataset.bucket === activeTab;
-      b.style.display = inTab ? '' : 'none';
-    });
-
     cards.forEach(c => {
       const inTab = activeTab === 'all' || c.dataset.bucket === activeTab;
       const match = !term || c.textContent.toLowerCase().includes(term);
       const show = inTab && match;
       c.style.display = show ? '' : 'none';
-      if (show) visible++;
+      if (show) {
+        visible++;
+        const d = c.querySelector('details');
+        if (term) d.open = true;            // auto-open matches while searching
+        else if (!allOpen) d.open = false;  // collapse when search cleared (unless Expand all)
+      }
     });
-
-    // hide groups whose cards are all hidden
     groups.forEach(g => {
       const any = [...g.querySelectorAll('.card')].some(c => c.style.display !== 'none');
       g.style.display = any ? '' : 'none';
     });
-    // hide bucket blocks with nothing visible
     blocks.forEach(b => {
-      if (b.style.display === 'none') return;
+      const inTab = activeTab === 'all' || b.dataset.bucket === activeTab;
+      if (!inTab) { b.style.display = 'none'; return; }
       const any = [...b.querySelectorAll('.card')].some(c => c.style.display !== 'none');
       b.style.display = any ? '' : 'none';
     });
-
     empty.style.display = visible === 0 ? 'block' : 'none';
     countLine.textContent = term
-      ? `${visible} skill${visible === 1 ? '' : 's'} matching “${q.value.trim()}”`
-      : `Showing ${visible} skill${visible === 1 ? '' : 's'}`;
+      ? visible + ' skill' + (visible === 1 ? '' : 's') + ' matching “' + q.value.trim() + '”'
+      : 'Showing ' + visible + ' skill' + (visible === 1 ? '' : 's');
   }
 
   tabs.forEach(t => t.addEventListener('click', () => {
@@ -362,6 +340,11 @@
     apply();
   }));
   q.addEventListener('input', apply);
+  toggleAll.addEventListener('click', () => {
+    allOpen = !allOpen;
+    cards.forEach(c => { if (c.style.display !== 'none') c.querySelector('details').open = allOpen; });
+    toggleAll.textContent = allOpen ? 'Collapse all' : 'Expand all';
+  });
   apply();
 </script>
 
