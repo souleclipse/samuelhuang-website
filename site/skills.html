@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skills — Samuel Huang</title>
+<meta name="description" content="The full library of Claude Code skills Samuel Huang runs, grouped by where they live and what they do.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0B0C10;
+    --panel: #131520;
+    --panel-2: #171A27;
+    --border: #232636;
+    --text: #F2F3F5;
+    --muted: #B4B7C1;
+    --dim: #767A88;
+    --accent: #2BC79A;
+    --accent-soft: rgba(43, 199, 154, 0.12);
+    --warn: #E0A458;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 64px 24px 96px; }
+
+  header.page { margin-bottom: 12px; }
+  .crumb { font-size: 13px; color: var(--dim); margin-bottom: 20px; }
+  h1 { font-size: 40px; font-weight: 700; letter-spacing: -0.02em; }
+  .lede { color: var(--muted); font-size: 17px; margin-top: 12px; max-width: 680px; }
+  .stat-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .stat {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 16px; font-size: 13px; color: var(--muted);
+  }
+  .stat b { color: var(--text); font-size: 18px; display: block; }
+
+  .bucket { margin-top: 56px; }
+  .bucket-head {
+    display: flex; align-items: baseline; gap: 12px;
+    border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 8px;
+  }
+  .bucket-head h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
+  .badge {
+    background: var(--accent-soft); color: var(--accent);
+    border-radius: 999px; padding: 3px 11px; font-size: 13px; font-weight: 600;
+  }
+  .bucket-sub { color: var(--dim); font-size: 14px; margin: 6px 0 8px; }
+  .path { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+
+  .group { margin-top: 28px; }
+  .group h3 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--dim); font-weight: 600; margin-bottom: 12px;
+  }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 32px; } }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px; transition: border-color .15s, background .15s;
+  }
+  .card:hover { border-color: var(--accent); background: var(--panel-2); }
+  .card .name {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 14px; font-weight: 600; color: var(--text);
+  }
+  .card .purpose { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .card.broken { opacity: 0.7; }
+  .tag {
+    display: inline-block; font-size: 11px; font-weight: 600; border-radius: 6px;
+    padding: 1px 7px; margin-left: 8px; vertical-align: middle;
+  }
+  .tag.broken { background: rgba(224,164,88,.15); color: var(--warn); }
+
+  footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--dim); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page">
+    <div class="crumb"><a href="/">Samuel Huang</a> / Skills</div>
+    <h1>Skills Library</h1>
+    <p class="lede">Every Claude Code skill I run, grouped by where it lives and what it does. Skills aren't one list — they come from different sources, and each source loads in a different context.</p>
+    <div class="stat-row">
+      <div class="stat"><b>52</b> total skills</div>
+      <div class="stat"><b>32</b> user-level (global)</div>
+      <div class="stat"><b>20</b> project (WorkOS)</div>
+      <div class="stat"><b>1</b> installed plugin</div>
+    </div>
+  </header>
+
+  <!-- BUCKET 1 -->
+  <section class="bucket">
+    <div class="bucket-head"><h2>User-level skills</h2><span class="badge">32</span></div>
+    <p class="bucket-sub"><span class="path">~/.claude/skills/</span> · load in every Claude Code session on this machine</p>
+
+    <div class="group">
+      <h3>AI &amp; Agent Tooling</h3>
+      <div class="grid">
+        <div class="card"><div class="name">agent-goal</div><div class="purpose">Craft structured <span class="path">/goal</span> prompts (Ask, Goal, Examples, Negations, Tools) for coding and creative agents.</div></div>
+        <div class="card"><div class="name">agents-sdk</div><div class="purpose">Build AI agents on Cloudflare Workers — Agent class, Workflows, MCP servers, durable execution, WebSockets.</div></div>
+        <div class="card"><div class="name">calibrate</div><div class="purpose">In-session self-improvement; reviews the chat for corrections and proposes skill / setup updates.</div></div>
+        <div class="card"><div class="name">align</div><div class="purpose">Pre-work alignment check — asks numbered clarifying questions before effort is spent.</div></div>
+        <div class="card"><div class="name">onboard</div><div class="purpose">Onboard onto a project workspace; read context and ask questions until intent is clear.</div></div>
+        <div class="card"><div class="name">coordinate</div><div class="purpose">Cross-session project coordination via a shared workspace folder so every session shares context.</div></div>
+        <div class="card"><div class="name">session-handoff</div><div class="purpose">End-of-session summary; updates CLAUDE.md and memory so a fresh agent continues seamlessly.</div></div>
+        <div class="card"><div class="name">burst</div><div class="purpose">Generate N distinct variations of any request.</div></div>
+        <div class="card"><div class="name">devil</div><div class="purpose">Red-team an artifact before it ships — blunt criticism only, no fixes, no padding.</div></div>
+        <div class="card"><div class="name">humanizer</div><div class="purpose">Strip AI-writing tells from text — em-dash overuse, rule-of-three, filler, inflated vocabulary.</div></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Cloudflare Stack</h3>
+      <div class="grid">
+        <div class="card"><div class="name">cloudflare</div><div class="purpose">Full platform skill — Workers, Pages, KV / D1 / R2, AI, security, infrastructure-as-code.</div></div>
+        <div class="card"><div class="name">workers-best-practices</div><div class="purpose">Author and review Workers code against production best practices.</div></div>
+        <div class="card"><div class="name">durable-objects</div><div class="purpose">Build and review Cloudflare Durable Objects — stateful coordination, RPC, alarms, WebSockets.</div></div>
+        <div class="card"><div class="name">sandbox-sdk</div><div class="purpose">Build sandboxed code-execution apps — code interpreters, CI/CD, untrusted-code execution.</div></div>
+        <div class="card"><div class="name">wrangler</div><div class="purpose">Cloudflare Workers CLI guidance — deploy, dev, manage KV/R2/D1/Queues/Secrets.</div></div>
+        <div class="card"><div class="name">cloudflare-email-service</div><div class="purpose">Send and receive transactional email on Cloudflare — Workers binding or REST, SPF/DKIM/DMARC.</div></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>n8n Automation</h3>
+      <div class="grid">
+        <div class="card"><div class="name">n8n-workflow-patterns</div><div class="purpose">Proven workflow architecture patterns from real n8n workflows.</div></div>
+        <div class="card"><div class="name">n8n-node-configuration</div><div class="purpose">Operation-aware node configuration — required fields, property dependencies, patterns by node type.</div></div>
+        <div class="card"><div class="name">n8n-validation-expert</div><div class="purpose">Interpret and fix validation errors, warnings, and false positives.</div></div>
+        <div class="card"><div class="name">n8n-expression-syntax</div><div class="purpose">Validate and fix <span class="path">{{ }}</span> expression syntax and common errors.</div></div>
+        <div class="card"><div class="name">n8n-mcp-tools-expert</div><div class="purpose">Use the n8n-mcp tools effectively — search nodes, validate, manage workflows.</div></div>
+        <div class="card"><div class="name">n8n-code-javascript</div><div class="purpose">Write JavaScript in n8n Code nodes — <span class="path">$input/$json/$node</span>, HTTP, dates.</div></div>
+        <div class="card"><div class="name">n8n-code-python</div><div class="purpose">Write Python in n8n Code nodes — <span class="path">_input/_json</span>, standard library, limitations.</div></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Frontend, Design &amp; Performance</h3>
+      <div class="grid">
+        <div class="card"><div class="name">frontend-design</div><div class="purpose">Distinctive, production-grade frontend UI that avoids the generic AI aesthetic.</div></div>
+        <div class="card"><div class="name">ui-ux-pro-max</div><div class="purpose">Design intelligence — 67 styles, 161 palettes, 57 font pairings, 99 UX guidelines, 25 chart types.</div></div>
+        <div class="card"><div class="name">web-design-guidelines</div><div class="purpose">Review UI code against the Web Interface Guidelines — accessibility and UX.</div></div>
+        <div class="card"><div class="name">web-perf</div><div class="purpose">Core Web Vitals audit via Chrome DevTools — LCP, INP, CLS, render-blocking, caching.</div></div>
+        <div class="card"><div class="name">react-best-practices</div><div class="purpose">React / Next.js performance optimization patterns from Vercel Engineering.</div></div>
+        <div class="card"><div class="name">tweak</div><div class="purpose">Inject a live in-browser tweak panel into any HTML, then bake the chosen CSS back into source.</div></div>
+        <div class="card"><div class="name">canvas-design</div><div class="purpose">Create beautiful visual art in PNG / PDF — posters, designs, static pieces.</div></div>
+        <div class="card"><div class="name">brand-guidelines</div><div class="purpose">Apply Anthropic's official brand colors and typography to artifacts.</div></div>
+        <div class="card broken"><div class="name">wat-init<span class="tag broken">empty</span></div><div class="purpose">Intended to scaffold the WAT <span class="path">tools/</span> + <span class="path">workflows/</span> structure — currently has no SKILL.md.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUCKET 2 -->
+  <section class="bucket">
+    <div class="bucket-head"><h2>Project skills</h2><span class="badge">20</span></div>
+    <p class="bucket-sub"><span class="path">.claude/skills/</span> in the WorkOS folder · load only when working inside that project — the business operating system</p>
+
+    <div class="group">
+      <h3>Workspace Management</h3>
+      <div class="grid">
+        <div class="card"><div class="name">setup-workos</div><div class="purpose">First-run setup wizard for the WorkOS template — auto-detects existing workspaces and interviews for gaps.</div></div>
+        <div class="card"><div class="name">cleanup-workos</div><div class="purpose">Full housekeeping sweep — file placement, stale overviews, duplicate facts, rule drift, archive candidates.</div></div>
+        <div class="card"><div class="name">migrate-existing-workspace</div><div class="purpose">Audit and migrate an old Claude / Codex / Cursor / PARA workspace into WorkOS without folder debt.</div></div>
+        <div class="card"><div class="name">work-map</div><div class="purpose">Generate the map of areas, projects, and lab work — what's active and what owns what.</div></div>
+        <div class="card"><div class="name">new-area</div><div class="purpose">Create an ongoing business function with an <span class="path">_overview.md</span> entrypoint.</div></div>
+        <div class="card"><div class="name">new-project</div><div class="purpose">Create a time-bound project with success criteria and archive rules.</div></div>
+        <div class="card"><div class="name">process-inbox</div><div class="purpose">Triage <span class="path">01-inbox/</span> into canonical homes and extract durable facts.</div></div>
+        <div class="card"><div class="name">workos-reflect</div><div class="purpose">Lightweight capture pass — route durable residue from recent work to its canonical home.</div></div>
+        <div class="card"><div class="name">check-later</div><div class="purpose">Create a follow-up check in the local registry — explicit reminders and autonomous verifications.</div></div>
+        <div class="card"><div class="name">follow-up-runner</div><div class="purpose">Walk the follow-up registry and execute any check whose due time has passed.</div></div>
+        <div class="card"><div class="name">consolidate-memory</div><div class="purpose">Garden auto-memory — merge duplicates, retire stale entries, rebuild the index.</div></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Build &amp; Connect</h3>
+      <div class="grid">
+        <div class="card"><div class="name">skill-creator</div><div class="purpose">Create, modify, and benchmark skills; optimize descriptions for better triggering.</div></div>
+        <div class="card"><div class="name">export-skill</div><div class="purpose">Package a skill into a shareable file that installs cleanly in the Claude Desktop app.</div></div>
+        <div class="card"><div class="name">import-skill</div><div class="purpose">Install a skill from a zip or folder — with a security review first, since skills run code.</div></div>
+        <div class="card"><div class="name">mcp-setup</div><div class="purpose">Walk through connecting an external tool via MCP — find the server, get a token, wire it up safely.</div></div>
+        <div class="card"><div class="name">codex</div><div class="purpose">Talk to the OpenAI Codex CLI for plan refinement, code review, research, and brainstorming.</div></div>
+        <div class="card"><div class="name">codex-image</div><div class="purpose">OpenAI gpt-image-2 routed through the Codex CLI — uses a ChatGPT subscription, no API key.</div></div>
+        <div class="card"><div class="name">gpt-image</div><div class="purpose">Expert guidance for OpenAI gpt-image-2 — inpainting with masks, multi-reference edits, text rendering.</div></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Business</h3>
+      <div class="grid">
+        <div class="card"><div class="name">social-content</div><div class="purpose">Social content generator for X, Meta Threads, and LinkedIn — voice calibration, reusable post memory.</div></div>
+        <div class="card"><div class="name">bet-strategy</div><div class="purpose">Build a sports-betting plan from an odds screenshot plus a unit ceiling, then settle bets after results.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUCKET 3 -->
+  <section class="bucket">
+    <div class="bucket-head"><h2>Installed plugins</h2><span class="badge">1</span></div>
+    <p class="bucket-sub"><span class="path">~/.claude/plugins/</span> · the only installed plugin. Marketplace catalogs (anthropic-agent-skills, claude-plugins-official) are downloaded but not installed.</p>
+    <div class="group">
+      <div class="grid">
+        <div class="card"><div class="name">frontend-design@claude-plugins-official</div><div class="purpose">Official Anthropic plugin for distinctive, production-grade frontend interfaces.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    52 skills across 3 sources. The whole site is set to <span class="path">noindex</span>, so this page is reachable by URL but not indexed by search engines.
+  </footer>
+
+</div>
+</body>
+</html>
