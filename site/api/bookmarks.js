@@ -20,6 +20,10 @@ const AI_SEARCH_FALLBACK_MODEL = 'deepseek/deepseek-v4-flash'
 const AI_SEARCH_TIMEOUT_MS = 25000
 const AI_SEARCH_MAX_RESULTS = 24
 
+const TRANSLATE_MODEL = 'openrouter/owl-alpha'
+const TRANSLATE_FALLBACK_MODEL = 'deepseek/deepseek-v4-flash'
+const TRANSLATE_TIMEOUT_MS = 25000
+
 // Soft-delete: deleted bookmarks sit in "Recently deleted" for this many days, then purge.
 const TRASH_RETENTION_DAYS = 30
 
@@ -222,6 +226,71 @@ async function handleAiSearch(req, res, body) {
   })
 }
 
+async function translateWithModel(model, input) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), TRANSLATE_TIMEOUT_MS)
+  try {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      signal: controller.signal,
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://samuelhuang.org',
+        'X-Title': 'ENG - THAI Translator',
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          {
+            role: 'system',
+            content: `You translate and rewrite between English and Thai.
+
+If the input is English, rewrite it into natural English and provide a masculine, natural Thai translation.
+If the input is Thai, rewrite it into natural Thai and provide a casual, natural English translation.
+
+Avoid unnecessary slang, formality, and over-polishing. Sound normal and clear. Keep the response straightforward, concise, and easy to read.
+
+Return strict JSON only:
+{"source_language":"english|thai|mixed|unknown","english":"...","thai":"..."}`,
+          },
+          { role: 'user', content: input },
+        ],
+        response_format: { type: 'json_object' },
+        max_tokens: 1200,
+      }),
+    })
+    if (!res.ok) throw new Error(`OpenRouter ${model} returned ${res.status}`)
+    const payload = await res.json()
+    const parsed = extractJson(payload?.choices?.[0]?.message?.content || '')
+    if (!parsed) throw new Error(`OpenRouter ${model} returned unparseable response`)
+    return {
+      source_language: String(parsed.source_language || 'unknown').trim(),
+      english: String(parsed.english || '').trim(),
+      thai: String(parsed.thai || '').trim(),
+      model_used: model,
+    }
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
+async function handleTranslate(req, res, body) {
+  const input = String(body.input || '').trim()
+  if (!input) return res.status(400).json({ error: 'Text is required' })
+  if (!process.env.OPENROUTER_API_KEY) return res.status(500).json({ error: 'Translation is not configured' })
+
+  try {
+    return res.status(200).json({ translation: await translateWithModel(TRANSLATE_MODEL, input) })
+  } catch {
+    try {
+      return res.status(200).json({ translation: await translateWithModel(TRANSLATE_FALLBACK_MODEL, input) })
+    } catch (err) {
+      return res.status(502).json({ error: err.message || 'Translation failed' })
+    }
+  }
+}
+
 async function handleGet(req, res) {
   const { collection, q, tag, favorite, id } = req.query
 
@@ -304,6 +373,7 @@ async function handlePost(req, res) {
   const body = readBody(req)
   if (body.reorder) return handleReorder(req, res, body)
   if (body.aiSearch) return handleAiSearch(req, res, body)
+  if (body.translate) return handleTranslate(req, res, body)
   if (body.proofread) {
     try {
       const proofread = await proofreadBookmark({

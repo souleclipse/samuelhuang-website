@@ -2140,10 +2140,10 @@
     btn.textContent = 'Translating...'
     setTranslateStatus('Asking owl-alpha...')
     try {
-      const res = await apiFetch('/api/translate', {
+      const res = await apiFetch('/api/bookmarks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input }),
+        body: JSON.stringify({ translate: true, input }),
       })
       if (res.status === 401) { showAuth('Enter your dashboard password.'); return }
       const data = await safeJson(res)
