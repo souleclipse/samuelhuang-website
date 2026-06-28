@@ -1016,6 +1016,8 @@
   }
   .translate-field { display: grid; gap: 7px; min-width: 0; }
   .translate-field:first-child { grid-column: 1 / -1; }
+  .translate-field:not(:first-child) { grid-template-rows: auto 1fr; }
+  .translate-field:not(:first-child) .translate-output { height: 100%; }
   .translate-field label {
     font-size: 11.5px;
     color: var(--ink-mute);
@@ -1044,17 +1046,34 @@
     overflow-wrap: anywhere;
     resize: none;
   }
+  .translate-output-combo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .translate-main {
+    flex: 0 1 auto;
+    min-height: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
   .translate-pronunciation {
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: #10131A;
+    border-top: 1px solid var(--line);
     color: var(--ink-soft);
     font-size: 13px;
     line-height: 1.55;
-    min-height: 44px;
-    padding: 10px 12px;
+    padding-top: 10px;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+  }
+  .translate-pronunciation span {
+    display: block;
+    color: var(--ink-mute);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    margin-bottom: 4px;
+    text-transform: uppercase;
   }
   .translate-actions {
     display: flex;
@@ -2103,8 +2122,13 @@
             </div>
             <div class="translate-field">
               <label for="translateThai">Thai</label>
-              <div class="translate-output" id="translateThai"></div>
-              <div class="translate-pronunciation" id="translateThaiRomanization"></div>
+              <div class="translate-output translate-output-combo">
+                <div class="translate-main" id="translateThai"></div>
+                <div class="translate-pronunciation" id="translateThaiRomanizationWrap" hidden>
+                  <span>Pronunciation</span>
+                  <div id="translateThaiRomanization"></div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="translate-actions">
@@ -2138,6 +2162,7 @@
     })
     const meta = document.getElementById('translateMeta')
     if (meta) meta.textContent = 'Model: openrouter/owl-alpha'
+    document.getElementById('translateThaiRomanizationWrap')?.setAttribute('hidden', '')
     setTranslateStatus('')
   }
 
@@ -2164,7 +2189,9 @@
       const t = data.translation || {}
       document.getElementById('translateEnglish').textContent = t.english || ''
       document.getElementById('translateThai').textContent = t.thai || ''
-      document.getElementById('translateThaiRomanization').textContent = t.thai_romanization || ''
+      const romanization = t.thai_romanization || ''
+      document.getElementById('translateThaiRomanization').textContent = romanization
+      document.getElementById('translateThaiRomanizationWrap')?.toggleAttribute('hidden', !romanization)
       document.getElementById('translateMeta').textContent = `Model: ${t.model_used || 'openrouter/owl-alpha'} · Source: ${t.source_language || 'unknown'}`
       setTranslateStatus('Done', 'ok')
     } catch (err) {
