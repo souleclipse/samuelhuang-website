@@ -994,6 +994,87 @@
     color: var(--green);
   }
 
+  /* ────── ENG - THAI panel ────── */
+  .translate-panel {
+    display: grid;
+    gap: 12px;
+    max-width: 860px;
+    padding: 4px 0 40px;
+  }
+  .translate-card {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 16px;
+    display: grid;
+    gap: 12px;
+  }
+  .translate-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+  }
+  .translate-field { display: grid; gap: 7px; min-width: 0; }
+  .translate-field:first-child { grid-column: 1 / -1; }
+  .translate-field label {
+    font-size: 11.5px;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 700;
+  }
+  .translate-field textarea,
+  .translate-output {
+    width: 100%;
+    min-height: 180px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    line-height: 1.55;
+    padding: 11px 12px;
+    outline: none;
+    resize: vertical;
+  }
+  .translate-field textarea:focus { border-color: var(--green); }
+  .translate-output {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    resize: none;
+  }
+  .translate-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .translate-btn {
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .translate-btn.primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: #0B0C10;
+    font-weight: 700;
+  }
+  .translate-btn:hover { color: var(--ink); }
+  .translate-btn.primary:hover { color: #0B0C10; opacity: .88; }
+  .translate-btn:disabled { opacity: .55; cursor: progress; }
+  .translate-status { font-size: 12px; color: var(--ink-mute); }
+  .translate-status.err { color: var(--red); }
+  .translate-status.ok { color: var(--green); }
+  .translate-meta { font-size: 11.5px; color: var(--ink-mute); }
+  .translate-copy-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
   /* ────── Empty / loading ────── */
   .empty-state {
     text-align: center;
@@ -1317,6 +1398,7 @@
     .sync-status { display: none; }
     .main-body { padding: 0 14px 80px; }
     .grid-view { grid-template-columns: 1fr 1fr; }
+    .translate-grid { grid-template-columns: 1fr; }
 
     /* Touch has no hover: drop the drag/checkbox gutter + folder select,
        and keep the row actions permanently visible. */
@@ -1391,6 +1473,9 @@
   <nav class="sidebar" id="sidebar">
     <button class="nav-item active" data-filter="all" onclick="selectFilter('all')">
       <span class="icon">📚</span><span class="label">All bookmarks</span><span class="count" id="countAll">–</span>
+    </button>
+    <button class="nav-item" data-filter="translate" onclick="selectFilter('translate')">
+      <span class="icon">⇄</span><span class="label">ENG - THAI</span>
     </button>
     <button class="nav-item" data-filter="favorites" onclick="selectFilter('favorites')">
       <span class="icon">⭐</span><span class="label">Favorites</span><span class="count" id="countFav">–</span>
@@ -1991,6 +2076,108 @@
     applyFilters()
   }
 
+  function translatePanelHtml() {
+    return `
+      <div class="translate-panel">
+        <div class="translate-card">
+          <div class="translate-grid">
+            <div class="translate-field">
+              <label for="translateInput">Input</label>
+              <textarea id="translateInput" placeholder="English or Thai text"></textarea>
+            </div>
+            <div class="translate-field">
+              <label for="translateEnglish">English</label>
+              <div class="translate-output" id="translateEnglish"></div>
+            </div>
+            <div class="translate-field">
+              <label for="translateThai">Thai</label>
+              <div class="translate-output" id="translateThai"></div>
+            </div>
+          </div>
+          <div class="translate-actions">
+            <button class="translate-btn primary" id="translateRunBtn" onclick="runTranslate()">Translate</button>
+            <button class="translate-btn" onclick="clearTranslatePanel()">Clear</button>
+            <span class="translate-status" id="translateStatus"></span>
+          </div>
+          <div class="translate-copy-row">
+            <button class="translate-btn" onclick="copyTranslateOutput('english')">Copy English</button>
+            <button class="translate-btn" onclick="copyTranslateOutput('thai')">Copy Thai</button>
+            <button class="translate-btn" onclick="copyTranslateOutput('both')">Copy both</button>
+          </div>
+          <div class="translate-meta" id="translateMeta">Model: openrouter/owl-alpha</div>
+        </div>
+      </div>`
+  }
+
+  function setTranslateStatus(msg, mode='') {
+    const el = document.getElementById('translateStatus')
+    if (!el) return
+    el.textContent = msg || ''
+    el.className = 'translate-status' + (mode ? ' ' + mode : '')
+  }
+
+  function clearTranslatePanel() {
+    const input = document.getElementById('translateInput')
+    if (input) input.value = ''
+    ;['translateEnglish', 'translateThai'].forEach((id) => {
+      const el = document.getElementById(id)
+      if (el) el.textContent = ''
+    })
+    const meta = document.getElementById('translateMeta')
+    if (meta) meta.textContent = 'Model: openrouter/owl-alpha'
+    setTranslateStatus('')
+  }
+
+  async function runTranslate() {
+    const input = document.getElementById('translateInput').value.trim()
+    if (!input) {
+      document.getElementById('translateInput').focus()
+      setTranslateStatus('Add text', 'err')
+      return
+    }
+    const btn = document.getElementById('translateRunBtn')
+    btn.disabled = true
+    btn.textContent = 'Translating...'
+    setTranslateStatus('Asking owl-alpha...')
+    try {
+      const res = await apiFetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input }),
+      })
+      if (res.status === 401) { showAuth('Enter your dashboard password.'); return }
+      const data = await safeJson(res)
+      if (!res.ok) throw new Error(data.error || 'Translation failed')
+      const t = data.translation || {}
+      document.getElementById('translateEnglish').textContent = t.english || ''
+      document.getElementById('translateThai').textContent = t.thai || ''
+      document.getElementById('translateMeta').textContent = `Model: ${t.model_used || 'openrouter/owl-alpha'} · Source: ${t.source_language || 'unknown'}`
+      setTranslateStatus('Done', 'ok')
+    } catch (err) {
+      setTranslateStatus(err.message || 'Translation failed', 'err')
+    } finally {
+      btn.disabled = false
+      btn.textContent = 'Translate'
+    }
+  }
+
+  async function copyTranslateOutput(kind) {
+    const english = document.getElementById('translateEnglish')?.textContent || ''
+    const thai = document.getElementById('translateThai')?.textContent || ''
+    const value = kind === 'english'
+      ? english
+      : kind === 'thai'
+        ? thai
+        : `English:\n${english}\n\nThai:\n${thai}`.trim()
+    if (!value) { setTranslateStatus('Nothing to copy', 'err'); return }
+    try {
+      await navigator.clipboard.writeText(value)
+      setTranslateStatus('Copied', 'ok')
+    } catch {
+      setTranslateStatus('Could not copy', 'err')
+    }
+  }
+
   // ── Filter / load ─────────────────────────
   async function selectFilter(filter, slug) {
     currentFilter = filter; currentSlug = slug||null; currentTag = ''
@@ -1999,6 +2186,26 @@
     // are handled in the nav click handler so parents can expand without closing).
     if (filter !== 'collection') closeMobileSidebar()
     setSidebarActive(filter, slug)
+
+    if (filter === 'translate') {
+      clearSelection()
+      document.getElementById('addBar').style.display = 'none'
+      document.getElementById('mainTitle').textContent = 'ENG - THAI'
+      document.getElementById('resultCount').textContent = ''
+      document.querySelector('#mainToolbar .toolbar-right').style.display = 'none'
+      document.getElementById('gridContainer').style.display = 'none'
+      document.getElementById('listContainer').style.display = 'none'
+      document.getElementById('emptyState').classList.remove('visible')
+      document.getElementById('subPanel').classList.remove('visible')
+      document.getElementById('subColGrid').style.display = 'none'
+      document.getElementById('historyPanel').style.display = 'flex'
+      document.getElementById('mainToolbar').style.display = 'flex'
+      document.getElementById('historyPanel').innerHTML = translatePanelHtml()
+      return
+    }
+
+    document.getElementById('addBar').style.display = ''
+    document.querySelector('#mainToolbar .toolbar-right').style.display = ''
 
     if (filter === 'help') {
       document.getElementById('mainTitle').textContent = 'How to use'
