@@ -250,9 +250,10 @@ If the input is English, rewrite it into natural English and provide a masculine
 If the input is Thai, rewrite it into natural Thai and provide a casual, natural English translation.
 
 Avoid unnecessary slang, formality, and over-polishing. Sound normal and clear. Keep the response straightforward, concise, and easy to read.
+Also provide a simple readable romanization for the Thai line, similar to "Phrùng nī̂ mī ngān mậy?". Put only Latin characters and tone marks in the romanization, not Thai script.
 
 Return strict JSON only:
-{"source_language":"english|thai|mixed|unknown","english":"...","thai":"..."}`,
+{"source_language":"english|thai|mixed|unknown","english":"...","thai":"...","thai_romanization":"..."}`,
           },
           { role: 'user', content: input },
         ],
@@ -268,6 +269,7 @@ Return strict JSON only:
       source_language: String(parsed.source_language || 'unknown').trim(),
       english: String(parsed.english || '').trim(),
       thai: String(parsed.thai || '').trim(),
+      thai_romanization: String(parsed.thai_romanization || '').trim(),
       model_used: model,
     }
   } finally {

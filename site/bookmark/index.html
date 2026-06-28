@@ -1044,6 +1044,18 @@
     overflow-wrap: anywhere;
     resize: none;
   }
+  .translate-pronunciation {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #10131A;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.55;
+    min-height: 44px;
+    padding: 10px 12px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
   .translate-actions {
     display: flex;
     align-items: center;
@@ -2092,6 +2104,7 @@
             <div class="translate-field">
               <label for="translateThai">Thai</label>
               <div class="translate-output" id="translateThai"></div>
+              <div class="translate-pronunciation" id="translateThaiRomanization"></div>
             </div>
           </div>
           <div class="translate-actions">
@@ -2119,7 +2132,7 @@
   function clearTranslatePanel() {
     const input = document.getElementById('translateInput')
     if (input) input.value = ''
-    ;['translateEnglish', 'translateThai'].forEach((id) => {
+    ;['translateEnglish', 'translateThai', 'translateThaiRomanization'].forEach((id) => {
       const el = document.getElementById(id)
       if (el) el.textContent = ''
     })
@@ -2151,6 +2164,7 @@
       const t = data.translation || {}
       document.getElementById('translateEnglish').textContent = t.english || ''
       document.getElementById('translateThai').textContent = t.thai || ''
+      document.getElementById('translateThaiRomanization').textContent = t.thai_romanization || ''
       document.getElementById('translateMeta').textContent = `Model: ${t.model_used || 'openrouter/owl-alpha'} · Source: ${t.source_language || 'unknown'}`
       setTranslateStatus('Done', 'ok')
     } catch (err) {
@@ -2164,11 +2178,13 @@
   async function copyTranslateOutput(kind) {
     const english = document.getElementById('translateEnglish')?.textContent || ''
     const thai = document.getElementById('translateThai')?.textContent || ''
+    const romanization = document.getElementById('translateThaiRomanization')?.textContent || ''
+    const thaiBlock = [thai, romanization].filter(Boolean).join('\n')
     const value = kind === 'english'
       ? english
       : kind === 'thai'
-        ? thai
-        : `English:\n${english}\n\nThai:\n${thai}`.trim()
+        ? thaiBlock
+        : `English:\n${english}\n\nThai:\n${thaiBlock}`.trim()
     if (!value) { setTranslateStatus('Nothing to copy', 'err'); return }
     try {
       await navigator.clipboard.writeText(value)
