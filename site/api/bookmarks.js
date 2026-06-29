@@ -301,6 +301,16 @@ async function handleTranslate(req, res, body) {
 async function handleGet(req, res) {
   const { collection, q, tag, favorite, id } = req.query
 
+  // "Frequently used prompts" tab: reusable clipboard snippets, own table.
+  if (req.query.resource === 'prompts') {
+    const { data, error } = await supabase
+      .from('samuelh_prompts')
+      .select('id,name,body,sort_order')
+      .order('sort_order', { ascending: true })
+    if (error) return res.status(500).json({ error: error.message })
+    return res.status(200).json({ prompts: data || [] })
+  }
+
   if (id) {
     const { data, error } = await supabase
       .from('samuelh_bookmarks')
@@ -376,9 +386,43 @@ async function handleReorder(req, res, body) {
   return res.status(200).json({ ok: true })
 }
 
+async function handlePromptReorder(req, res, body) {
+  const ids = body.promptReorder
+  if (!Array.isArray(ids) || !ids.length) return res.status(400).json({ error: 'promptReorder must be a non-empty array' })
+  await Promise.all(ids.map((id, i) =>
+    supabase.from('samuelh_prompts').update({ sort_order: (i + 1) * 10 }).eq('id', id)
+  ))
+  return res.status(200).json({ ok: true })
+}
+
+async function handlePromptCreate(req, res, body) {
+  const name = String(body.prompt.name || '').trim()
+  const text = String(body.prompt.body || '').trim()
+  if (!name) return res.status(400).json({ error: 'name is required' })
+  if (!text) return res.status(400).json({ error: 'body is required' })
+
+  const { data: maxRow } = await supabase
+    .from('samuelh_prompts')
+    .select('sort_order')
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  const newSortOrder = ((maxRow?.sort_order || 0) + 10)
+
+  const { data, error } = await supabase
+    .from('samuelh_prompts')
+    .insert({ name, body: text, sort_order: newSortOrder })
+    .select('id,name,body,sort_order')
+    .single()
+  if (error) return res.status(500).json({ error: error.message })
+  return res.status(201).json({ prompt: data })
+}
+
 async function handlePost(req, res) {
   const body = readBody(req)
   if (body.reorder) return handleReorder(req, res, body)
+  if (body.promptReorder) return handlePromptReorder(req, res, body)
+  if (body.prompt) return handlePromptCreate(req, res, body)
   if (body.aiSearch) return handleAiSearch(req, res, body)
   if (body.translate) return handleTranslate(req, res, body)
   if (body.proofread) {
@@ -454,6 +498,22 @@ async function handlePost(req, res) {
 
 async function handlePatch(req, res) {
   const body = readBody(req)
+
+  // Frequently used prompts: update name/body.
+  if (body.promptId) {
+    const updates = { updated_at: new Date().toISOString() }
+    if (body.name !== undefined) updates.name = String(body.name || '').trim()
+    if (body.body !== undefined) updates.body = String(body.body || '').trim()
+    const { data, error } = await supabase
+      .from('samuelh_prompts')
+      .update(updates)
+      .eq('id', body.promptId)
+      .select('id,name,body,sort_order')
+      .single()
+    if (error) return res.status(500).json({ error: error.message })
+    return res.status(200).json({ prompt: data })
+  }
+
   const id = body.id
   if (!id) return res.status(400).json({ error: 'id is required' })
 
@@ -481,6 +541,14 @@ async function handlePatch(req, res) {
 
 async function handleDelete(req, res) {
   const body = readBody(req)
+
+  // Frequently used prompts: hard delete (lightweight, no trash).
+  if (body.promptId) {
+    const { error } = await supabase.from('samuelh_prompts').delete().eq('id', body.promptId)
+    if (error) return res.status(500).json({ error: error.message })
+    return res.status(200).json({ ok: true })
+  }
+
   const id = body.id || req.query.id
   if (!id) return res.status(400).json({ error: 'id is required' })
 

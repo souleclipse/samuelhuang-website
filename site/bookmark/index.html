@@ -994,6 +994,100 @@
     color: var(--green);
   }
 
+  /* ────── Frequently used prompts ────── */
+  .prompt-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 820px;
+    padding: 4px 0 40px;
+  }
+  .prompt-head {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .prompt-search {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--ink);
+    font-size: 13px;
+  }
+  .prompt-search:focus { outline: none; border-color: var(--green); }
+  .prompt-hint { font-size: 12px; color: var(--ink-mute); margin: 0; }
+  .prompt-empty {
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--ink-mute);
+    font-size: 13px;
+  }
+  .prompt-list { display: flex; flex-direction: column; gap: 8px; }
+  .prompt-row {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .prompt-row:hover { border-color: var(--green); }
+  .prompt-grip {
+    cursor: grab;
+    color: var(--ink-mute);
+    opacity: 0;
+    text-align: center;
+    user-select: none;
+  }
+  .prompt-row:hover .prompt-grip { opacity: 1; }
+  .prompt-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    padding: 0;
+    min-width: 0;
+  }
+  .prompt-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .prompt-preview {
+    font-size: 12px;
+    color: var(--ink-mute);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .prompt-actions { display: flex; gap: 4px; }
+  .prompt-actions .icon-btn { opacity: 0; }
+  .prompt-row:hover .prompt-actions .icon-btn { opacity: 1; }
+  .prompt-body-input {
+    width: 100%;
+    min-height: 160px;
+    resize: vertical;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .prompt-body-input:focus { outline: none; border-color: var(--green); }
+  @media (max-width: 540px) {
+    .prompt-actions .icon-btn,
+    .prompt-grip { opacity: 1; }
+  }
+
   /* ────── ENG - THAI panel ────── */
   .translate-panel {
     display: grid;
@@ -1533,6 +1627,9 @@
     <button class="nav-item" data-filter="recent" onclick="selectFilter('recent')">
       <span class="icon">🕘</span><span class="label">Recently added</span><span class="count" id="countRecent">10</span>
     </button>
+    <button class="nav-item" data-filter="prompts" onclick="selectFilter('prompts')">
+      <span class="icon">💬</span><span class="label">Frequently used prompts</span><span class="count" id="countPrompts">–</span>
+    </button>
     <div class="sidebar-sep"></div>
     <div class="folders-head">
       <span class="folders-head-label">Folders</span>
@@ -1703,6 +1800,34 @@
       <div class="edit-actions-right">
         <button class="modal-btn" onclick="closeFolderModal()">Cancel</button>
         <button class="modal-btn primary" id="folderSaveBtn" onclick="saveFolderModal()">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Frequently used prompt create/edit modal -->
+<div class="modal-overlay" id="promptOverlay" onclick="if(event.target===this) closePromptModal()">
+  <div class="edit-modal">
+    <div class="edit-head">
+      <h2 id="promptModalTitle">New prompt</h2>
+      <button class="icon-btn" onclick="closePromptModal()" title="Close">✕</button>
+    </div>
+    <div class="edit-body">
+      <input type="hidden" id="promptModalId">
+      <div class="field">
+        <label for="promptModalName">Name</label>
+        <input id="promptModalName" type="text" placeholder="e.g. Cold email opener" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="promptModalBody">Prompt</label>
+        <textarea id="promptModalBody" class="prompt-body-input" placeholder="The text that gets copied to your clipboard"></textarea>
+      </div>
+    </div>
+    <div class="edit-actions">
+      <div class="edit-actions-left"><span class="modal-status" id="promptModalStatus"></span></div>
+      <div class="edit-actions-right">
+        <button class="modal-btn" onclick="closePromptModal()">Cancel</button>
+        <button class="modal-btn primary" id="promptSaveBtn" onclick="savePromptModal()">Save</button>
       </div>
     </div>
   </div>
@@ -2235,6 +2360,167 @@
     }
   }
 
+  // ── Frequently used prompts ───────────────
+  let prompts = []
+  let promptSearch = ''
+  let promptSortable = null
+
+  async function loadPrompts() {
+    const panel = document.getElementById('historyPanel')
+    panel.innerHTML = '<div class="prompt-panel"><div class="prompt-empty">Loading…</div></div>'
+    try {
+      const res = await apiFetch('/api/bookmarks?resource=prompts')
+      const data = await safeJson(res)
+      if (!res.ok) throw new Error(data.error || 'Could not load prompts')
+      prompts = data.prompts || []
+    } catch (err) {
+      panel.innerHTML = `<div class="prompt-panel"><div class="prompt-empty">${esc(err.message || 'Could not load prompts')}</div></div>`
+      return
+    }
+    const countEl = document.getElementById('countPrompts')
+    if (countEl) countEl.textContent = prompts.length
+    renderPrompts()
+  }
+
+  function renderPrompts() {
+    const panel = document.getElementById('historyPanel')
+    const q = promptSearch.trim().toLowerCase()
+    const visible = q ? prompts.filter((p) => p.name.toLowerCase().includes(q)) : prompts
+
+    const rows = visible.map((p) => `
+      <div class="prompt-row" data-id="${esc(p.id)}">
+        <span class="prompt-grip drag-handle" title="Drag to reorder">⠿</span>
+        <button class="prompt-main" onclick="copyPrompt('${esc(p.id)}')" title="Click to copy">
+          <span class="prompt-name">${esc(p.name)}</span>
+          <span class="prompt-preview">${esc(p.body)}</span>
+        </button>
+        <div class="prompt-actions">
+          <button class="icon-btn" title="Edit" onclick="openPromptModal('edit','${esc(p.id)}')">✎</button>
+          <button class="icon-btn" title="Delete" onclick="deletePrompt('${esc(p.id)}')">✕</button>
+        </div>
+      </div>`).join('')
+
+    const list = visible.length
+      ? `<div class="prompt-list" id="promptList">${rows}</div>`
+      : `<div class="prompt-empty">${prompts.length ? 'No prompts match your search.' : 'No prompts yet. Add one to get started.'}</div>`
+
+    panel.innerHTML = `
+      <div class="prompt-panel">
+        <div class="prompt-head">
+          <input id="promptSearch" class="prompt-search" type="search" placeholder="Search prompts…" value="${esc(promptSearch)}" autocomplete="off">
+          <button class="modal-btn primary" onclick="openPromptModal('create')">＋ Add prompt</button>
+        </div>
+        <p class="prompt-hint">Click a prompt to copy it to your clipboard.</p>
+        ${list}
+      </div>`
+
+    const search = document.getElementById('promptSearch')
+    if (search) {
+      search.oninput = (e) => {
+        promptSearch = e.target.value
+        const cur = e.target.selectionStart
+        renderPrompts()
+        const next = document.getElementById('promptSearch')
+        if (next) { next.focus(); try { next.setSelectionRange(cur, cur) } catch {} }
+      }
+    }
+    initPromptSortable()
+  }
+
+  function initPromptSortable() {
+    const listEl = document.getElementById('promptList')
+    if (!listEl || typeof Sortable === 'undefined') return
+    if (promptSortable) { promptSortable.destroy(); promptSortable = null }
+    promptSortable = new Sortable(listEl, {
+      handle: '.prompt-grip',
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      dragClass: 'sortable-drag',
+      onEnd() {
+        const ids = [...listEl.querySelectorAll('[data-id]')].map((el) => el.dataset.id)
+        ids.forEach((id, i) => { const p = prompts.find((x) => x.id === id); if (p) p.sort_order = (i + 1) * 10 })
+        prompts.sort((a, b) => a.sort_order - b.sort_order)
+        apiFetch('/api/bookmarks', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ promptReorder: ids }),
+        }).catch(() => showToast('Could not save order', 'err'))
+      },
+    })
+  }
+
+  async function copyPrompt(id) {
+    const p = prompts.find((x) => x.id === id)
+    if (!p) return
+    try {
+      await navigator.clipboard.writeText(p.body)
+      showToast('Copied', 'ok')
+    } catch {
+      showToast('Could not copy', 'err')
+    }
+  }
+
+  function setPromptStatus(msg, mode='') {
+    const el = document.getElementById('promptModalStatus')
+    if (!el) return
+    el.textContent = msg || ''
+    el.className = 'modal-status' + (mode ? ' ' + mode : '')
+  }
+
+  function openPromptModal(mode, id) {
+    const p = mode === 'edit' ? prompts.find((x) => x.id === id) : null
+    document.getElementById('promptModalId').value = p?.id || ''
+    document.getElementById('promptModalTitle').textContent = mode === 'edit' ? 'Edit prompt' : 'New prompt'
+    document.getElementById('promptModalName').value = p?.name || ''
+    document.getElementById('promptModalBody').value = p?.body || ''
+    setPromptStatus('')
+    document.getElementById('promptOverlay').classList.add('visible')
+    setTimeout(() => document.getElementById('promptModalName').focus(), 50)
+  }
+
+  function closePromptModal() {
+    document.getElementById('promptOverlay').classList.remove('visible')
+  }
+
+  async function savePromptModal() {
+    const id = document.getElementById('promptModalId').value
+    const name = document.getElementById('promptModalName').value.trim()
+    const body = document.getElementById('promptModalBody').value.trim()
+    if (!name) { setPromptStatus('Name is required', 'err'); return }
+    if (!body) { setPromptStatus('Prompt text is required', 'err'); return }
+    const btn = document.getElementById('promptSaveBtn')
+    btn.disabled = true; setPromptStatus('Saving…')
+    try {
+      const res = id
+        ? await apiFetch('/api/bookmarks', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ promptId: id, name, body }) })
+        : await apiFetch('/api/bookmarks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: { name, body } }) })
+      const data = await safeJson(res)
+      if (!res.ok) throw new Error(data.error || 'Could not save prompt')
+      closePromptModal()
+      await loadPrompts()
+    } catch (err) {
+      setPromptStatus(err.message || 'Could not save prompt', 'err')
+    } finally {
+      btn.disabled = false
+    }
+  }
+
+  async function deletePrompt(id) {
+    const p = prompts.find((x) => x.id === id)
+    if (!p) return
+    if (!confirm(`Delete prompt "${p.name}"?`)) return
+    prompts = prompts.filter((x) => x.id !== id)
+    const countEl = document.getElementById('countPrompts')
+    if (countEl) countEl.textContent = prompts.length
+    renderPrompts()
+    try {
+      const res = await apiFetch('/api/bookmarks', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ promptId: id }) })
+      if (!res.ok) throw new Error()
+    } catch {
+      showToast('Could not delete', 'err')
+      loadPrompts()
+    }
+  }
+
   // ── Filter / load ─────────────────────────
   async function selectFilter(filter, slug) {
     currentFilter = filter; currentSlug = slug||null; currentTag = ''
@@ -2303,6 +2589,22 @@
       document.getElementById('historyPanel').style.display = 'flex'
       document.getElementById('mainToolbar').style.display = 'flex'
       loadHistory(); return
+    }
+
+    if (filter === 'prompts') {
+      document.getElementById('mainTitle').textContent = '💬 Frequently used prompts'
+      document.getElementById('resultCount').textContent = ''
+      document.getElementById('addBar').style.display = 'none'
+      document.getElementById('multiBar').style.display = 'none'
+      document.querySelector('#mainToolbar .toolbar-right').style.display = 'none'
+      document.getElementById('gridContainer').style.display = 'none'
+      document.getElementById('listContainer').style.display = 'none'
+      document.getElementById('emptyState').classList.remove('visible')
+      document.getElementById('subPanel').classList.remove('visible')
+      document.getElementById('subColGrid').style.display = 'none'
+      document.getElementById('historyPanel').style.display = 'flex'
+      document.getElementById('mainToolbar').style.display = 'flex'
+      loadPrompts(); return
     }
 
     document.getElementById('historyPanel').style.display = 'none'
