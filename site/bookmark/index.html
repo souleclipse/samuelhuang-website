@@ -2225,9 +2225,7 @@
   async function copyTranslateOutput(kind) {
     const english = document.getElementById('translateEnglish')?.textContent || ''
     const thai = document.getElementById('translateThai')?.textContent || ''
-    const romanization = document.getElementById('translateThaiRomanization')?.textContent || ''
-    const thaiBlock = [thai, romanization].filter(Boolean).join('\n')
-    const value = kind === 'thai' ? thaiBlock : english
+    const value = kind === 'thai' ? thai : english
     if (!value) { setTranslateStatus('Nothing to copy', 'err'); return }
     try {
       await navigator.clipboard.writeText(value)
